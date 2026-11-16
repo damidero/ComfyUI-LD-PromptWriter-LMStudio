@@ -82,17 +82,26 @@ function ensureThemeStyles() {
 }
 .ld-status {
     display: inline-flex;
-    align-items: center;
+    align-items: flex-start;
     flex: 1 1 auto;
     min-height: 22px;
     padding: 4px 10px;
-    border-radius: 999px;
+    border-radius: 10px;
     font-size: 11px;
-    line-height: 1.3;
+    line-height: 1.35;
     background: rgba(115, 215, 224, 0.1);
     border: 1px solid rgba(115, 215, 224, 0.18);
     color: #d7eef1;
-    overflow: hidden;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 90px;
+}
+.ld-status.ld-status-config {
+    min-height: 52px;
+    max-height: 96px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .ld-status.ok { background: rgba(134, 220, 186, 0.14); border-color: rgba(134, 220, 186, 0.35); color: #c8f0dc; }
 .ld-status.warn { background: rgba(242, 203, 118, 0.14); border-color: rgba(242, 203, 118, 0.35); color: #f6e2b0; }
@@ -169,12 +178,13 @@ function ensureThemeStyles() {
     padding: 6px;
 }
 .ld-desc {
-    height: 90px;
-    min-height: 90px;
-    max-height: 90px;
+    height: 60px;
+    min-height: 60px;
+    max-height: 60px;
     overflow: auto;
-    flex: 0 0 auto;
+    flex: 0 0 60px;
     font-size: 11px;
+    resize: none;
 }
 .ld-btn.ld-btn-small { padding: 4px 8px; font-size: 11px; border-radius: 8px; }
 
@@ -270,8 +280,141 @@ function ensureThemeStyles() {
     font-family: inherit;
 }
 .ld-picker button:hover { background: rgba(115, 215, 224, 0.16); }
-.ld-img-grid { min-height: 380px; flex: 1 1 auto; align-items: stretch; }
+.ld-img-grid { min-height: 0; flex: 0 0 auto; align-items: stretch; }
 .ld-panel.ld-writer-root { overflow-y: auto !important; }
+.ld-log-wrap { flex: 0 0 auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.ld-log {
+    height: 88px;
+    overflow: auto;
+    margin: 0;
+    padding: 6px 8px;
+    font-size: 11px;
+    line-height: 1.35;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(115, 215, 224, 0.22);
+    border-radius: 8px;
+    color: rgba(232, 238, 242, 0.88);
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.ld-log .ld-log-err { color: #ff8a8a; }
+.ld-idea-row { display: flex; flex-direction: column; gap: 5px; align-items: stretch; width: 100%; flex: 1 1 auto; min-height: 54px; }
+.ld-cam-col { display: flex; flex-direction: column; gap: 4px; width: 100%; flex: 0 0 auto; }
+.ld-field-stack { display: flex; flex-direction: column; gap: 4px; width: 100%; flex: 0 0 auto; }
+.ld-pos-row { display: flex; flex-direction: row; gap: 8px; align-items: stretch; width: 100%; flex: 0 0 auto; }
+.ld-pos-col { display: flex; flex-direction: column; gap: 4px; flex: 1 1 50%; min-width: 0; overflow: hidden; }
+.ld-neg-full { display: flex; flex-direction: column; gap: 4px; width: 100%; flex: 0 0 auto; }
+.ld-vista-es { display: flex; flex-direction: column; gap: 4px; flex: 1 1 50%; min-width: 0; margin-top: 0; }
+.ld-vista-es textarea {
+    height: 140px !important;
+    min-height: 140px !important;
+    max-height: 140px !important;
+    flex: 0 0 140px !important;
+    resize: none;
+    overflow-y: auto;
+}
+.ld-vista-es.ld-vista-hidden { display: none !important; }
+.ld-modify-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+.ld-modify-input {
+    flex: 1 1 auto;
+    min-width: 120px;
+    box-sizing: border-box;
+    background: #12181f;
+    color: #e8eef2;
+    border: 1px solid rgba(115, 215, 224, 0.22);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-family: inherit;
+    font-size: 12px;
+}
+.ld-modify-input:focus { outline: none; border-color: rgba(115, 215, 224, 0.7); }
+.ld-writer-head {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+    height: 28px;
+    box-sizing: border-box;
+    padding: 0 12px 0 20px;
+    margin: -10px -10px 2px;
+    border-bottom: 1px solid rgba(115, 215, 224, 0.22);
+    background: rgba(115, 215, 224, 0.08);
+    border-radius: 12px 12px 0 0;
+    pointer-events: none;
+}
+.ld-writer-head-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e8eef2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+    pointer-events: none;
+}
+.ld-fold {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(115, 215, 224, 0.2);
+    border-radius: 8px;
+    color: #d7eef1;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+    box-sizing: border-box;
+}
+.ld-fold:hover { border-color: rgba(115, 215, 224, 0.45); }
+.ld-switch-row { display: flex; gap: 8px; width: 100%; }
+.ld-switch {
+    flex: 1 1 50%;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 8px 10px;
+    border: 1px solid rgba(115, 215, 224, 0.28);
+    background: #12181f;
+    color: #c5d0d4;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: inherit;
+}
+.ld-switch.on {
+    background: linear-gradient(180deg, #73d7e0 0%, #4fb8c4 100%);
+    color: #0b1618;
+    border-color: rgba(115, 215, 224, 0.6);
+}
+.ld-modelo-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 4px 2px 2px;
+    box-sizing: border-box;
+}
+.ld-people-custom { width: 72px; flex: 0 0 72px; }
+.ld-tamano-size {
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: #d7eef1;
+    padding: 6px 4px 2px;
+    letter-spacing: 0.03em;
+    width: 100%;
+    box-sizing: border-box;
+}
 
 `;
     document.head.appendChild(css);
@@ -384,8 +527,132 @@ function hideWidget(widget) {
     widget.hidden = true;
     widget.computedHeight = 0;
     widget.computeSize = () => [0, -4];
+    // Keep the value in widgets_values / the queued prompt. If a hidden
+    // combo (e.g. Config.idioma) is omitted, later widgets such as
+    // descarga_idle_min (0) shift onto it and the queue fails.
+    widget.serialize = true;
     if (widget.element) {
         widget.element.style.display = "none";
+    }
+}
+
+function comboOptions(widget) {
+    if (!widget) return [];
+    const opts = widget.options?.values ?? widget.options;
+    if (!Array.isArray(opts)) return [];
+    return opts.map((o) => (o && typeof o === "object" ? o.value ?? o : o));
+}
+
+function sanitizeWidgetValue(widget) {
+    if (!widget) return;
+    const values = comboOptions(widget);
+    const isCombo =
+        values.length > 0 ||
+        String(widget.type || "").toLowerCase() === "combo";
+    if (!isCombo) return;
+    const current = widget.value;
+    if (values.includes(current)) return;
+    const asText = current == null ? "" : String(current).trim();
+    const match = values.find((opt) => String(opt) === asText || String(opt).toLowerCase() === asText.toLowerCase());
+    if (match !== undefined) {
+        widget.value = match;
+        return;
+    }
+    if (typeof current === "number" && current >= 0 && current < values.length) {
+        widget.value = values[current];
+        return;
+    }
+    if (/^\d+$/.test(asText)) {
+        const idx = Number(asText);
+        if (idx >= 0 && idx < values.length && !values.map(String).includes(asText)) {
+            widget.value = values[idx];
+            return;
+        }
+    }
+    const fallback = widget.options?.default ?? values[0];
+    if (fallback !== undefined) widget.value = fallback;
+}
+
+function isControlAfterValue(v) {
+    const s = String(v ?? "").toLowerCase();
+    return s === "fixed" || s === "increment" || s === "decrement" || s === "randomize";
+}
+
+function isLangValue(v, allowed) {
+    const s = String(v ?? "").trim();
+    if (allowed && allowed.includes(v)) return true;
+    return s === "Español" || s === "English" || /^eng/i.test(s) || /^esp/i.test(s);
+}
+
+function repairShiftedConfigWidgets(node) {
+    const typ = String(node?.type || node?.comfyClass || "");
+    if (typ && typ !== "LD_LMStudioConfig") return;
+    const idioma = widgetByName(node, "idioma");
+    const idle = widgetByName(node, "descarga_idle_min");
+    const extra = widgetByName(node, "extra_instructions");
+    const unload = widgetByName(node, "unload_after");
+    const ctrl = widgetByName(node, "control_after_generate");
+    const langs = comboOptions(idioma);
+    const allowed = langs.length ? langs : ["Español", "English"];
+
+    // Seed widgets inject control_after_generate after seed. If widgets_values
+    // omitted it, unload_after's boolean lands on control and everything after
+    // seed shifts (unload gets "", extra gets the language, idioma gets idle's 0).
+    if (ctrl && unload && !isControlAfterValue(ctrl.value) && typeof ctrl.value === "boolean") {
+        const stolenUnload = !!ctrl.value;
+        const stolenExtra = typeof unload.value === "string" ? unload.value : "";
+        const stolenLang = extra && isLangValue(extra.value, allowed) ? extra.value : null;
+        const stolenIdle = idioma && typeof idioma.value === "number" ? idioma.value : null;
+        ctrl.value = "fixed";
+        unload.value = stolenUnload;
+        if (extra) extra.value = isLangValue(stolenExtra, allowed) ? "" : stolenExtra;
+        if (stolenLang && idioma) idioma.value = stolenLang;
+        if (stolenIdle != null && idle) idle.value = stolenIdle;
+    }
+
+    if (idioma) {
+        if (!allowed.includes(idioma.value)) {
+            if (allowed.includes(extra?.value)) {
+                if (typeof idioma.value === "number" && idle) idle.value = idioma.value;
+                idioma.value = extra.value;
+                if (extra) extra.value = "";
+            } else {
+                if (typeof idioma.value === "number" && idle && (idle.value == null || idle.value === "")) {
+                    idle.value = idioma.value;
+                } else if (typeof idioma.value === "number" && idle && idle.value === 0 && idioma.value !== 0) {
+                    idle.value = idioma.value;
+                }
+                idioma.value = "Español";
+            }
+        }
+    }
+
+    if (unload && typeof unload.value !== "boolean") {
+        const s = String(unload.value ?? "").trim().toLowerCase();
+        if (s === "false" || s === "0") unload.value = false;
+        else if (s === "true" || s === "1") unload.value = true;
+        else unload.value = true;
+    }
+}
+
+function repairNodeWidgets(node) {
+    if (!node || !node.widgets) return;
+    repairShiftedConfigWidgets(node);
+    repairI2IWidgets(node);
+    for (const w of node.widgets) {
+        try {
+            sanitizeWidgetValue(w);
+        } catch (_e) {}
+    }
+}
+
+function repairAllGraphWidgets(graph) {
+    const g = graph || (typeof app !== "undefined" ? app.graph : null);
+    const nodes = g?._nodes || g?.nodes || [];
+    for (const n of nodes) {
+        try {
+            repairNodeWidgets(n);
+        } catch (_e) {}
     }
 }
 
@@ -484,25 +751,666 @@ function findUpstreamLoadImage(node, inputName) {
     return { filename, subfolder, type };
 }
 
+function findLoadImageOnWriterOrConfig(node, index) {
+    const slot = `image_${index}`;
+    const local = findUpstreamLoadImage(node, slot)
+        || (index === 1 ? findUpstreamLoadImage(node, "image") : null);
+    if (local) return local;
+    const cfg = findUpstreamConfig(node);
+    if (!cfg || cfg === node) return null;
+    return findUpstreamLoadImage(cfg, slot)
+        || (index === 1 ? findUpstreamLoadImage(cfg, "image") : null);
+}
+
 function findAllUpstreamImages(node) {
-    const image_1 = findUpstreamLoadImage(node, "image_1") || findUpstreamLoadImage(node, "image");
-    const image_2 = findUpstreamLoadImage(node, "image_2");
-    const image_3 = findUpstreamLoadImage(node, "image_3");
-    const image_4 = findUpstreamLoadImage(node, "image_4");
-    const images = { image_1, image_2, image_3, image_4 };
-    const n = [image_1, image_2, image_3, image_4].filter(Boolean).length;
+    const images = {};
+    for (let i = 1; i <= N_IMAGES; i++) {
+        images[`image_${i}`] = findLoadImageOnWriterOrConfig(node, i);
+    }
+    const n = Object.values(images).filter(Boolean).length;
     console.log("[LD-PromptWriter] imágenes en el pedido:", n, images);
     return { ...images, count: n };
 }
 
-const ASPECT_KEYS = ["accion", "persona", "fondo", "estilo", "ropa"];
+const N_IMAGES = 8;
+const PERSONAS_AUTO = "Auto (decide el LLM)";
+const PERSONAS_CUSTOM = "Personalizado";
+const PERSONAS_OPTIONS = [PERSONAS_AUTO, "1", "2", "3", "4", "5", "6", "7", "8", PERSONAS_CUSTOM];
+const MODELO_GEN = "LD_ModeloGen";
+
+const ASPECT_KEYS = ["accion", "pose", "persona", "ropa", "fondo", "estilo", "camara"];
 const ASPECT_LABELS = {
-    accion: "acción",
-    persona: "persona",
-    fondo: "fondo",
-    estilo: "estilo",
-    ropa: "ropa",
+    accion: "Acción",
+    pose: "Pose",
+    persona: "Persona",
+    ropa: "Ropa",
+    fondo: "Fondo / Escena",
+    estilo: "Estilo",
+    camara: "Cámara / POV",
 };
+const ASPECT_LABELS_EN = {
+    accion: "Action",
+    pose: "Pose",
+    persona: "Person",
+    ropa: "Clothing",
+    fondo: "Background / Scene",
+    estilo: "Style",
+    camara: "Camera / POV",
+};
+const CAMARA_AUTO = "(Automático - decide el LLM)";
+const CAMARA_OPTIONS = [
+    CAMARA_AUTO,
+    "Primer plano / Close-up",
+    "Plano medio / Medium shot",
+    "Plano americano / Cowboy shot",
+    "Cuerpo entero / Full body",
+    "Plano general / Wide shot",
+    "Picado / High angle",
+    "Contrapicado / Low angle",
+    "Vista cenital / Top-down",
+    "A nivel de ojos / Eye level",
+    "POV primera persona",
+    "Por encima del hombro / Over the shoulder",
+    "Perfil / Side view",
+    "De espaldas / From behind",
+    "Ángulo holandés / Dutch angle",
+    "Macro",
+    "Gran angular / Wide-angle lens",
+    "Teleobjetivo / Telephoto",
+    "Selfie",
+];
+const CAMARA_LABELS_EN = {
+    [CAMARA_AUTO]: "(Automatic — the LLM decides)",
+    "Primer plano / Close-up": "Close-up",
+    "Plano medio / Medium shot": "Medium shot",
+    "Plano americano / Cowboy shot": "Cowboy shot",
+    "Cuerpo entero / Full body": "Full body",
+    "Plano general / Wide shot": "Wide shot",
+    "Picado / High angle": "High angle",
+    "Contrapicado / Low angle": "Low angle",
+    "Vista cenital / Top-down": "Top-down",
+    "A nivel de ojos / Eye level": "Eye level",
+    "POV primera persona": "First-person POV",
+    "Por encima del hombro / Over the shoulder": "Over the shoulder",
+    "Perfil / Side view": "Side view",
+    "De espaldas / From behind": "From behind",
+    "Ángulo holandés / Dutch angle": "Dutch angle",
+    "Macro": "Macro",
+    "Gran angular / Wide-angle lens": "Wide-angle lens",
+    "Teleobjetivo / Telephoto": "Telephoto",
+    "Selfie": "Selfie",
+};
+
+const I18N = {
+    es: {
+        writerTitle: "LM Studio Prompt Writer (LD)",
+        estiloSalida: "Estilo de salida",
+        idea: "Idea",
+        ideaPh: "La idea (o dejala vacía y usá una imagen de referencia).",
+        generar: "✍️ Generar prompt",
+        limpiar: "🧹 Limpiar",
+        limpiarTitle: "Borra idea, prompts, las 8 imágenes y sus descripciones (no toca interruptores, estilo ni LoRA).",
+        useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
+        posLabel: "Prompt generado · positivo",
+        vistaEs: "Vista en español",
+        vistaPh: "Editable. Si la cambiás, se traduce al inglés antes de generar.",
+        usedEditedPos: "Usando el prompt en inglés (editado a mano).",
+        usedTranslatedEs: "Traduje la vista en español y actualicé el positivo.",
+        translatingEs: "⏳ Traduciendo la vista en español…",
+        translateFail: "❌ No pude traducir la vista en español.",
+        negLabel: "Negativo generado",
+        posPh: "Prompt positivo. Editable antes de correr el workflow.",
+        negPh: "Prompt negativo (Illustrious). En Krea2 suele quedar vacío.",
+        numPersonas: "N° de personas",
+        imagen: "Imagen {n}",
+        descPh: "Descripción informativa. Pulsá 🔄 Describir.",
+        describir: "🔄 Describir",
+        thumbPh: "Clic o arrastrá una imagen",
+        pickTitle: "Elegir de la carpeta input",
+        clearTitle: "Quitar imagen",
+        connected: "conectada",
+        missingCfg: "⚠️ Conectá el nodo LM Studio Config (LD) a la entrada config.",
+        missingIdea: "⚠️ Escribí una idea o elegí una imagen de referencia",
+        noImage: "⚠️ No hay imagen {n}. Elegí o arrastrá un archivo en la miniatura.",
+        describing: "⏳ Describiendo imagen {n}…",
+        described: "✅ Descripción de la imagen {n} lista (solo informativa).",
+        describeFail: "❌ No pude describir la imagen {n}.",
+        generating: "⏳ Generando...",
+        generatingN: "⏳ Generando con {n} imágenes (se describe cada una por separado)…",
+        genOk: "✅ Prompt generado. Revisalo y después ejecutá el workflow.",
+        genOkTriggers: "✅ Prompt generado. Los trigger words de los LoRA se completan al ejecutar el workflow.",
+        genFail: "❌ No pude generar el prompt.",
+        cleared: "🧹 Listo: idea, prompts, imágenes y descripciones borrados.",
+        uploadFail: "❌ No pude subir la imagen.",
+        connectedWarn: "⚠️ Esta columna usa la entrada IMAGE conectada.",
+        testing: "Probando conexión…",
+        refreshModels: "Actualizando modelos…",
+        modelsUpdated: "Modelos actualizados: {n}",
+        noModels: "LM Studio OK — ningún modelo de chat listado",
+        lmsDown: "❌ LM Studio no responde en {url}",
+        testOk: "✅ LM Studio OK",
+        netErr: "❌ Error de red ({status}).",
+        btnTest: "🔌 Probar conexión",
+        btnRefresh: "🔄 Actualizar modelos",
+        noteEstilo: "Si no hay interruptores activos en una imagen, se usan todos los aspectos (Todo). Si elegís un estilo de salida (p. ej. Realista), ese estilo gana sobre el interruptor «Estilo» de las imágenes.",
+        uploadItem: "⬆ Subir archivo…",
+        noInputImgs: "(no hay imágenes en input)",
+        camara: "Cámara",
+        actividad: "Actividad del LLM",
+        modificar: "✏️ Modificar",
+        cambios: "Cambios",
+        cambiosPh: "Ej.: cambiar el color de pelo a rojo",
+        modifying: "⏳ Aplicando cambios…",
+        modifyOk: "✅ Prompt modificado. Revisalo antes de ejecutar.",
+        modifyFail: "❌ No pude modificar el prompt.",
+        modifyNeedPrompt: "⚠️ Primero generá un prompt (o escribí uno en el recuadro positivo).",
+        modifyNeedChange: "⚠️ Escribí qué querés cambiar (por ejemplo el color de pelo).",
+        ajustes: "Ajustes",
+        seccionImagenes: "Imágenes de referencia",
+        personasAuto: "Auto (decide el LLM)",
+        personasCustom: "Personalizado",
+        guardarAuto: "Guardado automático",
+        btnGuardar: "💾 Guardar",
+        guardarSaving: "⏳ Guardando…",
+        guardarOk: "✅ Guardado: {name}",
+        guardarFail: "❌ No pude guardar.",
+        guardarNeedImage: "⚠️ No hay una imagen para guardar. Ejecutá el workflow primero.",
+        i2iLabel: "Imagen base (i2i)",
+        i2iHint: "Sin imagen: texto a imagen (denoise 1). Con imagen: i2i al tamaño de Tamaño.",
+        denoise: "Denoise",
+        stepsKrea2: "Steps Krea2",
+    },
+    en: {
+        writerTitle: "LM Studio Prompt Writer (LD)",
+        estiloSalida: "Output style",
+        idea: "Idea",
+        ideaPh: "The idea (or leave it empty and use a reference image).",
+        generar: "✍️ Generate prompt",
+        limpiar: "🧹 Clear",
+        limpiarTitle: "Clears idea, prompts, the 8 images and their descriptions (does not touch toggles, style or LoRA).",
+        useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
+        posLabel: "Generated prompt · positive",
+        vistaEs: "Spanish view",
+        vistaPh: "Editable. If you change it, it is translated to English before generating.",
+        usedEditedPos: "Using the English prompt (edited by hand).",
+        usedTranslatedEs: "Translated the Spanish view and updated the positive prompt.",
+        translatingEs: "⏳ Translating the Spanish view…",
+        translateFail: "❌ I couldn't translate the Spanish view.",
+        negLabel: "Generated negative",
+        posPh: "Positive prompt. Editable before you run the workflow.",
+        negPh: "Negative prompt (Illustrious). Usually empty for Krea2.",
+        numPersonas: "N° of people",
+        imagen: "Image {n}",
+        descPh: "Informational description. Click 🔄 Describe.",
+        describir: "🔄 Describe",
+        thumbPh: "Click or drop an image",
+        pickTitle: "Pick from the input folder",
+        clearTitle: "Remove image",
+        connected: "connected",
+        missingCfg: "⚠️ Connect the LM Studio Config (LD) node to the config input.",
+        missingIdea: "⚠️ Type an idea or choose a reference image",
+        noImage: "⚠️ No image {n}. Choose or drop a file on the thumbnail.",
+        describing: "⏳ Describing image {n}…",
+        described: "✅ Description of image {n} is ready (informational only).",
+        describeFail: "❌ I couldn't describe image {n}.",
+        generating: "⏳ Generating...",
+        generatingN: "⏳ Generating with {n} images (each one is described separately)…",
+        genOk: "✅ Prompt generated. Review it, then run the workflow.",
+        genOkTriggers: "✅ Prompt generated. LoRA trigger words are completed when you run the workflow.",
+        genFail: "❌ I couldn't generate the prompt.",
+        cleared: "🧹 Done: idea, prompts, images and descriptions were cleared.",
+        uploadFail: "❌ I couldn't upload the image.",
+        connectedWarn: "⚠️ This column uses the connected IMAGE input.",
+        testing: "Testing connection…",
+        refreshModels: "Refreshing models…",
+        modelsUpdated: "Models updated: {n}",
+        noModels: "LM Studio OK — no chat model listed",
+        lmsDown: "❌ LM Studio is not responding at {url}",
+        testOk: "✅ LM Studio OK",
+        netErr: "❌ Network error ({status}).",
+        btnTest: "🔌 Test connection",
+        btnRefresh: "🔄 Refresh models",
+        noteEstilo: "If no toggles are on for an image, every aspect is used (All). If you pick an output style (e.g. Realistic), it overrides the image «Style» toggle.",
+        uploadItem: "⬆ Upload file…",
+        noInputImgs: "(no images in input)",
+        camara: "Camera",
+        actividad: "LLM activity",
+        modificar: "✏️ Edit",
+        cambios: "Changes",
+        cambiosPh: "E.g.: change the hair color to red",
+        modifying: "⏳ Applying changes…",
+        modifyOk: "✅ Prompt updated. Review it before you run the workflow.",
+        modifyFail: "❌ I couldn't edit the prompt.",
+        modifyNeedPrompt: "⚠️ Generate a prompt first (or type one in the positive box).",
+        modifyNeedChange: "⚠️ Type the change you want (for example the hair color).",
+        ajustes: "Settings",
+        seccionImagenes: "Reference images",
+        personasAuto: "Auto (the LLM decides)",
+        personasCustom: "Custom",
+        guardarAuto: "Autosave",
+        btnGuardar: "💾 Save",
+        guardarSaving: "⏳ Saving…",
+        guardarOk: "✅ Saved: {name}",
+        guardarFail: "❌ Could not save.",
+        guardarNeedImage: "⚠️ No image to save. Run the workflow first.",
+        i2iLabel: "Base image (i2i)",
+        i2iHint: "No image: text-to-image (denoise 1). With an image: i2i at the Tamaño size.",
+        denoise: "Denoise",
+        stepsKrea2: "Krea2 steps",
+    },
+};
+
+
+const NOTES_RECOMENDACIONES = {
+    es: `Recomendaciones de modelos
+
+Krea2
+• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors
+• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)
+• VAE: qwen_image_vae.safetensors
+
+LoRAs
+• Los LoRA de Krea2 no sirven en Illustrious y al revés.
+  Cuando cambies de motor, cambiá también los LoRA del loader
+  (se usa un solo Lora Loader para las dos ramas).
+
+Illustrious
+• Checkpoint: waiIllustriousSDXL_v170.safetensors
+  El archivo tiene que estar en ComfyUI/models/checkpoints
+  y seleccionarse en el nodo Load Checkpoint.
+  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.
+• Alternativa realista: illustriousRealism_ilXL10V40.safetensors
+  (estilo más realista; también va en ComfyUI/models/checkpoints
+  y se elige en el mismo Load Checkpoint).
+• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).
+• Embeddings negativos: van en ComfyUI/models/embeddings
+  y se eligen en el nodo Embeddings negativos (LD)
+  (se agregan al prompt negativo de Illustrious).
+
+LLM (LM Studio)
+• Recomendado: qwen_qwen3-vl-8b-instruct
+  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).
+• Activá el servidor local de LM Studio (pestaña Developer / Local Server)
+  y usá esa URL en el nodo Config.
+
+Nodos necesarios
+
+• LD PromptWriter (LM Studio) — este pack
+• ComfyUI-Lora-Manager (Lora Loader)
+• ComfyUI-Custom-Scripts (PlaySound, opcional)
+El resto de los nodos son de ComfyUI (core).
+
+Instalación: ComfyUI Manager → Install via Git URL
+(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá.`,
+    en: `Model recommendations
+
+Krea2
+• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors
+• CLIP: qwen3vl_4b_fp8_scaled.safetensors (type krea2)
+• VAE: qwen_image_vae.safetensors
+
+LoRAs
+• Krea2 LoRAs do not work in Illustrious and vice versa.
+  When you switch engines, also change the LoRAs in the loader
+  (one shared Lora Loader is used for both branches).
+
+Illustrious
+• Checkpoint: waiIllustriousSDXL_v170.safetensors
+  Put the file in ComfyUI/models/checkpoints and select it
+  in the Load Checkpoint node.
+  CLIP and VAE are built in; you don't need to load them separately.
+• Realistic alternative: illustriousRealism_ilXL10V40.safetensors
+  (more realistic look; also goes in ComfyUI/models/checkpoints
+  and is selected in the same Load Checkpoint).
+• Sampler: euler ancestral (euler_a), 28 steps, CFG 5.5, ~1 MP (e.g. 2:3).
+• Negative embeddings go in ComfyUI/models/embeddings
+  and are chosen in the Embeddings negativos (LD) node
+  (they are appended to the Illustrious negative prompt).
+
+LLM (LM Studio)
+• Recommended: qwen_qwen3-vl-8b-instruct
+  (Qwen3-VL 8B Instruct, vision-capable; required for image description).
+• Enable the LM Studio local server (Developer / Local Server tab)
+  and use that URL in the Config node.
+
+Required nodes
+
+• LD PromptWriter (LM Studio) — this pack
+• ComfyUI-Lora-Manager (Lora Loader)
+• ComfyUI-Custom-Scripts (PlaySound, optional)
+All other nodes are ComfyUI core.
+
+Install: ComfyUI Manager → Install via Git URL
+(or git clone the repo into ComfyUI/custom_nodes), then restart.`,
+};
+
+function findModeloGen() {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    return nodes.find((n) => n && n.type === MODELO_GEN) || null;
+}
+
+function currentIdioma() {
+    const sel = findModeloGen();
+    if (sel) return String(widgetValue(sel, "idioma", "Español") || "Español");
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    const cfg = nodes.find((n) => n && n.type === CONFIG_NODE);
+    return cfg ? String(widgetValue(cfg, "idioma", "Español") || "Español") : "Español";
+}
+
+function currentLangFrom(node) {
+    const raw = currentIdioma();
+    return /^eng/i.test(raw) ? "en" : "es";
+}
+
+function syncIdiomaToConfig(idioma) {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (n.type !== CONFIG_NODE) continue;
+        const w = widgetByName(n, "idioma");
+        if (w && w.value !== idioma) w.value = idioma;
+    }
+}
+
+function applyNotesI18n() {
+    const lang = currentLangFrom();
+    const text = NOTES_RECOMENDACIONES[lang] || NOTES_RECOMENDACIONES.es;
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        const title = String(n.title || n.properties?.["Node name for S&R"] || "");
+        const typ = String(n.type || "");
+        if (typ !== "Note" && typ !== "MarkdownNote") continue;
+        if (!/recomendaciones de modelos|model recommendations/i.test(title) && n.id !== 186) {
+            continue;
+        }
+        if (Array.isArray(n.widgets_values) && n.widgets_values.length) n.widgets_values[0] = text;
+        const w = (n.widgets || [])[0];
+        if (w && w.value !== undefined) w.value = text;
+        if (n.properties) n.properties.text = text;
+        if (typeof n.setDirtyCanvas === "function") n.setDirtyCanvas(true, true);
+    }
+    app.graph?.setDirtyCanvas?.(true, true);
+}
+
+function t(nodeOrLang, key, vars) {
+    const lang = typeof nodeOrLang === "string" ? nodeOrLang : currentLangFrom(nodeOrLang);
+    let s = (I18N[lang] && I18N[lang][key]) || I18N.es[key] || key;
+    if (vars) {
+        for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
+    }
+    return s;
+}
+
+function aspectLabel(node, key) {
+    const lang = currentLangFrom(node);
+    const map = lang === "en" ? ASPECT_LABELS_EN : ASPECT_LABELS;
+    return map[key] || key;
+}
+
+function camaraLabel(nodeOrLang, value) {
+    const lang = typeof nodeOrLang === "string" ? nodeOrLang : currentLangFrom(nodeOrLang);
+    if (lang === "en") return CAMARA_LABELS_EN[value] || value;
+    return value;
+}
+
+function appendActivityLine(box, msg, err) {
+    if (!box || !msg) return;
+    const ts = new Date().toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
+    const line = document.createElement("div");
+    if (err) line.className = "ld-log-err";
+    line.textContent = `[${ts}] ${msg}`;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+}
+
+function hookActivityLog() {
+    if (hookActivityLog._on) return;
+    hookActivityLog._on = true;
+    api.addEventListener("ld_promptwriter_activity", (ev) => {
+        const d = ev?.detail ?? ev;
+        const msg = (d && (d.message || d.msg)) || (typeof d === "string" ? d : "");
+        if (!msg) return;
+        const err = d?.level === "err" || d?.key === "error";
+        document.querySelectorAll(".ld-log").forEach((box) => appendActivityLine(box, msg, err));
+    });
+    hookVistaEsEvents();
+}
+
+function hookVistaEsEvents() {
+    if (hookVistaEsEvents._on) return;
+    hookVistaEsEvents._on = true;
+    api.addEventListener("ld_promptwriter_vista_es", (ev) => {
+        const d = ev?.detail ?? ev;
+        const text = d && d.text != null ? d.text : (d?.vista_es ?? "");
+        const nodes = app.graph?._nodes || app.graph?.nodes || [];
+        for (const n of nodes) {
+            if (n?._ldPanel?.vistaEsArea) setVistaEs(n, text);
+        }
+    });
+    api.addEventListener("ld_promptwriter_desc", (ev) => {
+        const d = ev?.detail ?? ev;
+        const index = Number(d?.index || d?.n || 0);
+        if (!index) return;
+        const text = d?.text ?? d?.description ?? "";
+        const aspects = d?.aspects ?? "";
+        const nodes = app.graph?._nodes || app.graph?.nodes || [];
+        for (const n of nodes) {
+            if (isWriterNode(n) || n?._ldPanel?.cols) {
+                setImageDescription(n, index, text, aspects);
+                n._ldPanel?.syncToWidgets?.();
+            }
+        }
+    });
+}
+
+function setVistaEs(node, text, { clearDirty = true } = {}) {
+    if (!node) return;
+    const val = String(text ?? "");
+    node.properties = node.properties || {};
+    node.properties.ld_vista_es = val;
+    const panel = node._ldPanel;
+    if (panel?.vistaEsArea && panel.vistaEsArea.value !== val) {
+        panel.vistaEsArea.value = val;
+    }
+    if (clearDirty) {
+        node.properties.ld_vista_es_dirty = false;
+        node.properties.ld_pos_dirty = false;
+    }
+    applyVistaVisibility(node);
+}
+
+function applyVistaVisibility(node) {
+    const panel = node?._ldPanel;
+    if (!panel?.vistaWrap) return;
+    const hide = currentLangFrom(node) === "en";
+    panel.vistaWrap.classList.toggle("ld-vista-hidden", hide);
+    panel.vistaWrap.style.display = hide ? "none" : "";
+}
+
+function markPosDirty(node, dirty) {
+    node.properties = node.properties || {};
+    node.properties.ld_pos_dirty = !!dirty;
+}
+
+function markVistaDirty(node, dirty) {
+    node.properties = node.properties || {};
+    node.properties.ld_vista_es_dirty = !!dirty;
+    if (node._ldPanel?.vistaEsArea) {
+        node.properties.ld_vista_es = node._ldPanel.vistaEsArea.value;
+    }
+}
+
+const TODO_ASPECTS = ["accion", "pose", "persona", "ropa", "fondo", "estilo"];
+
+function aspectListForImage(node, index) {
+    let active = readImageAspects(node, index);
+    if (!active.length) active = TODO_ASPECTS.slice();
+    const estilo = String(widgetValue(node, "estilo_salida", ESTILO_SALIDA_DEFAULT) || ESTILO_SALIDA_DEFAULT);
+    if (estilo !== ESTILO_SALIDA_DEFAULT) active = active.filter((a) => a !== "estilo");
+    return active;
+}
+
+function aspectSignature(node, index) {
+    return aspectListForImage(node, index).slice().sort().join(",");
+}
+
+function getDescMeta(node) {
+    node.properties = node.properties || {};
+    if (!node.properties.ld_desc_meta || typeof node.properties.ld_desc_meta !== "object") {
+        node.properties.ld_desc_meta = {};
+    }
+    return node.properties.ld_desc_meta;
+}
+
+function setImageDescription(node, index, text, aspectsSig) {
+    const val = String(text || "");
+    const col = (node._ldPanel?.cols || []).find((c) => c.index === index);
+    if (col?.desc && col.desc.value !== val) col.desc.value = val;
+    const dw = widgetByName(node, `desc_imagen_${index}`);
+    if (dw) dw.value = val;
+    const meta = getDescMeta(node);
+    meta[String(index)] = String(aspectsSig || "");
+    node.properties.ld_desc_meta = meta;
+}
+
+function descriptionNeedsRefresh(node, index) {
+    const col = (node._ldPanel?.cols || []).find((c) => c.index === index);
+    const dw = widgetByName(node, `desc_imagen_${index}`);
+    const text = String((col?.desc?.value ?? dw?.value) || "").trim();
+    if (!text) return true;
+    const meta = getDescMeta(node);
+    return String(meta[String(index)] || "") !== aspectSignature(node, index);
+}
+
+async function postTranslateEs(body) {
+    const res = await api.fetchApi("/ld_promptwriter/translate_es", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    let data = null;
+    try {
+        data = await res.json();
+    } catch (_e) {
+        throw new Error(`Error de red o el servidor no respondió (${res.status || "sin estado"}).`);
+    }
+    if (!res.ok && !data?.message) {
+        throw new Error(`Error de red (${res.status}).`);
+    }
+    return data;
+}
+
+async function ensureEnglishFromSpanish(node, { setStatus } = {}) {
+    if (!node) return false;
+    if (currentLangFrom(node) === "en") return false;
+    const props = node.properties = node.properties || {};
+    if (props.ld_pos_dirty) return false;
+    if (!props.ld_vista_es_dirty) return false;
+    const panel = node._ldPanel;
+    const es = String(panel?.vistaEsArea?.value || props.ld_vista_es || "").trim();
+    if (!es) return false;
+    const cfgNode = findUpstreamConfig(node);
+    const cfg = readConfigValues(cfgNode);
+    if (!cfg) {
+        const msg = t(node, "missingCfg");
+        setStatus?.(msg);
+        throw new Error(msg);
+    }
+    setStatus?.(t(node, "translatingEs"));
+    const data = await postTranslateEs({
+        ...cfg,
+        text: es,
+        vista_es: es,
+        idioma: cfg.idioma || "Español",
+        unload_after: false,
+        descarga_idle_min: cfg.descarga_idle_min || 0,
+    });
+    if (!data?.ok) {
+        const msg = data?.message || t(node, "translateFail");
+        setStatus?.(msg);
+        throw new Error(msg);
+    }
+    const english = data.positive || data.english || "";
+    if (panel?.pos) panel.pos.value = english;
+    const pw = widgetByName(node, "prompt_generado");
+    if (pw) pw.value = english;
+    props.ld_vista_es = es;
+    props.ld_vista_es_dirty = false;
+    props.ld_pos_dirty = false;
+    panel?.syncToWidgets?.();
+    return true;
+}
+
+async function ensureImageDescriptions(node, { setStatus } = {}) {
+    if (!node) return;
+    const needed = [];
+    for (let i = 1; i <= N_IMAGES; i++) {
+        const img = refImageInfo(node, i);
+        if (!img) continue;
+        if (!descriptionNeedsRefresh(node, i)) continue;
+        needed.push({
+            i,
+            img,
+            aspects: aspectListForImage(node, i),
+            sig: aspectSignature(node, i),
+        });
+    }
+    if (!needed.length) return;
+    const cfgNode = findUpstreamConfig(node);
+    const cfg = readConfigValues(cfgNode);
+    if (!cfg) {
+        const msg = t(node, "missingCfg");
+        setStatus?.(msg);
+        throw new Error(msg);
+    }
+    for (const item of needed) {
+        setStatus?.(t(node, "describing", { n: item.i }));
+        const data = await postDescribe({
+            url: cfg.url,
+            model: cfg.model,
+            image: item.img,
+            aspects: item.aspects,
+            index: item.i,
+            temperature: 0.3,
+            max_tokens: 400,
+            unload_after: false,
+            descarga_idle_min: cfg.descarga_idle_min || 0,
+            idioma: cfg.idioma || "Español",
+        });
+        if (!data?.ok) {
+            throw new Error(data?.message || t(node, "describeFail", { n: item.i }));
+        }
+        setImageDescription(node, item.i, data.description || "", data.aspects || item.sig);
+    }
+    node._ldPanel?.syncToWidgets?.();
+}
+
+async function resolveEditedPrompts(node, { setStatus, pos } = {}) {
+    const props = node.properties = node.properties || {};
+    const en = String(pos?.value || widgetValue(node, "prompt_generado", "") || "").trim();
+    if (props.ld_pos_dirty && en) {
+        setStatus?.(t(node, "usedEditedPos"));
+        props.ld_pos_dirty = false;
+        node._ldPanel?.syncToWidgets?.();
+        return "english";
+    }
+    if (await ensureEnglishFromSpanish(node, { setStatus })) {
+        setStatus?.(t(node, "usedTranslatedEs"));
+        return "spanish";
+    }
+    return "";
+}
+
+function migrateAccionPoseSplit(node) {
+    if (!node || node.properties?.ld_accion_pose_split) return;
+    for (let i = 1; i <= N_IMAGES; i++) {
+        const acc = widgetByName(node, `img${i}_accion`);
+        const pose = widgetByName(node, `img${i}_pose`);
+        if (pose && acc && !!acc.value) pose.value = true;
+    }
+    node.properties = node.properties || {};
+    node.properties.ld_accion_pose_split = true;
+}
+
 
 function readImageAspects(node, index) {
     const active = [];
@@ -560,9 +1468,7 @@ function imageViewUrl(info) {
 }
 
 function refImageInfo(node, index) {
-    const connected =
-        findUpstreamLoadImage(node, `image_${index}`) ||
-        (index === 1 ? findUpstreamLoadImage(node, "image") : null);
+    const connected = findLoadImageOnWriterOrConfig(node, index);
     if (connected) return { ...connected, connected: true };
     return parseArchivo(widgetValue(node, `archivo_imagen_${index}`, ""));
 }
@@ -608,7 +1514,7 @@ function showImagePicker(anchor, onPick) {
     box.style.top = `${Math.min(rect.bottom + 4, window.innerHeight - 80)}px`;
     const uploadBtn = document.createElement("button");
     uploadBtn.type = "button";
-    uploadBtn.textContent = "⬆ Subir archivo…";
+    uploadBtn.textContent = t("es", "uploadItem"); uploadBtn.dataset.i18n = "uploadItem";
     uploadBtn.addEventListener("click", () => {
         closeLdPicker();
         onPick({ upload: true });
@@ -771,7 +1677,11 @@ function uniqueTriggers(words) {
 }
 
 async function readUpstreamLoraTriggers(node) {
-    const origin = walkUpstream(node, "lora_triggers");
+    let origin = walkUpstream(node, "lora_triggers");
+    if (!origin) {
+        const cfg = findUpstreamConfig(node);
+        if (cfg && cfg !== node) origin = walkUpstream(cfg, "lora_triggers");
+    }
     if (!origin) return { text: "", source: "none" };
     const typ = String(origin.type || origin.comfyClass || "");
     const isLoader = /lora\s*loader/i.test(typ) || typ.includes("LoraManager") || typ.includes("Lora Loader");
@@ -819,6 +1729,8 @@ function readConfigValues(cfgNode) {
         seed: widgetValue(cfgNode, "seed", 0),
         extra_instructions: widgetValue(cfgNode, "extra_instructions", ""),
         unload_after: !!widgetValue(cfgNode, "unload_after", true),
+        idioma: currentIdioma(),
+        descarga_idle_min: widgetValue(cfgNode, "descarga_idle_min", 0),
     };
 }
 
@@ -838,6 +1750,26 @@ async function postGenerate(body) {
     }
     if (!res.ok && !data?.message) {
         throw new Error(`Error de red (${res.status}).`);
+    }
+    return data;
+}
+
+async function postModify(body) {
+    const res = await api.fetchApi("/ld_promptwriter/modify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    let data = null;
+    try {
+        data = await res.json();
+    } catch (_e) {
+        throw new Error(
+            `Error de red o el servidor no respondió (${res.status || "sin estado"}).`
+        );
+    }
+    if (!res.ok && !data?.message) {
+        throw new Error(`Error de red (${res.status || "sin estado"}).`);
     }
     return data;
 }
@@ -874,7 +1806,7 @@ async function attachModelRefresh(node, setStatus) {
         if (!combo) return;
         const url = widgetUrl(node);
         if (fromButton) {
-            setStatus?.("Actualizando modelos…");
+            setStatus?.(t(node, "refreshModels"));
         }
         try {
             const data = await fetchModels(url);
@@ -884,54 +1816,62 @@ async function attachModelRefresh(node, setStatus) {
                 if (data.reachable) {
                     setStatus?.(
                         models.length > 0
-                            ? `Modelos actualizados: ${models.length}`
-                            : "LM Studio OK — ningún modelo de chat listado"
+                            ? t(node, "modelsUpdated", { n: models.length })
+                            : t(node, "noModels")
                     );
                 } else {
-                    setStatus?.(`❌ LM Studio no responde en ${url}`);
+                    setStatus?.(t(node, "lmsDown", { url }));
                     applyModelOptions(combo, [], combo.value);
                 }
             }
         } catch (_err) {
             applyModelOptions(combo, [], combo.value);
             if (fromButton) {
-                setStatus?.(`❌ LM Studio no responde en ${url}`);
+                setStatus?.(t(node, "lmsDown", { url }));
             }
         }
     };
 
     const refreshBtn = node.addWidget(
         "button",
-        "🔄 Actualizar modelos",
+        t(node, "btnRefresh"),
         null,
         () => node._ldRefreshModels(true)
     );
+    node._ldRefreshBtn = refreshBtn;
     refreshBtn.serialize = false;
     moveWidgetAfter(node, refreshBtn, "model");
 
-    const testBtn = node.addWidget("button", "🔌 Probar conexión", null, async () => {
+    const testBtn = node.addWidget("button", t(node, "btnTest"), null, async () => {
+        node._ldTestBtn = testBtn;
         const url = widgetUrl(node);
-        setStatus?.("Probando conexión…");
+        setStatus?.(t(node, "testing"));
         try {
             const res = await api.fetchApi(
                 `/ld_promptwriter/test?url=${encodeURIComponent(url)}`
             );
             const data = await res.json();
             if (!res.ok && !data?.message) {
-                setStatus?.(`❌ Error de red (${res.status}).`);
+                setStatus?.(t(node, "netErr", { status: res.status }));
                 return;
             }
             const msg =
                 data.message ||
                 (data.reachable
-                    ? "✅ LM Studio OK"
-                    : `❌ LM Studio no responde en ${url}`);
+                    ? t(node, "testOk")
+                    : t(node, "lmsDown", { url }));
             setStatus?.(msg);
         } catch (err) {
-            setStatus?.(`❌ ${err?.message || "Error de red al probar la conexión."}`);
+            setStatus?.(`❌ ${err?.message || t(node, "netErr", { status: "red" })}`);
         }
     });
     testBtn.serialize = false;
+    node._ldTestBtn = testBtn;
+    node._ldRefreshI18n = () => {
+        if (node._ldRefreshBtn) node._ldRefreshBtn.name = t(node, "btnRefresh");
+        if (node._ldTestBtn) node._ldTestBtn.name = t(node, "btnTest");
+        node.graph?.setDirtyCanvas?.(true);
+    };
 
     const combo = widgetByName(node, "model");
     if (combo) {
@@ -949,11 +1889,12 @@ function attachStatusLine(node, compact, tone) {
     el.className = "ld-status";
     const wrap = styleEl("div", { width: "100%", boxSizing: "border-box", padding: "2px 2px 0 2px" });
     wrap.className = `ld-panel ${tone === "config" ? "ld-config" : ""}`;
+    if (tone === "config") el.classList.add("ld-status-config");
     Object.assign(wrap.style, {
         display: "flex",
-        alignItems: "center",
+        alignItems: "stretch",
         padding: "6px 8px",
-        minHeight: compact ? "28px" : "34px",
+        minHeight: tone === "config" ? "64px" : (compact ? "28px" : "34px"),
     });
     wrap.appendChild(el);
     const dom = node.addDOMWidget("ld_status", "div", wrap, {
@@ -961,7 +1902,9 @@ function attachStatusLine(node, compact, tone) {
         serialize: false,
     });
     dom.serialize = false;
-    if (compact) {
+    if (tone === "config") {
+        dom.computeSize = (width) => [width || 200, 80];
+    } else if (compact) {
         dom.computeSize = (width) => [width || 200, 36];
     }
     const setStatus = (msg) => setStatusBadge(el, msg);
@@ -975,7 +1918,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         display: "flex",
         flexDirection: "column",
         gap: "8px",
-        height: "100%",
+        height: "auto",
         width: "100%",
         boxSizing: "border-box",
         padding: "10px",
@@ -1010,10 +1953,21 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     let ideaArea = null;
     let estiloSel = null;
     let useBox = null;
+    let camSel = null;
+    let camWrap = null;
+    let useNote = null;
     if (includeIdea) {
-        const estiloLabel = styleEl("div", {}, "estilo de salida");
+        const ideaLabel = styleEl("div", {}, t(node, "idea")); ideaLabel.dataset.i18n = "idea";
+        ideaLabel.className = "ld-label";
+        left.appendChild(ideaLabel);
+        ideaArea = makeTextarea(t(node, "ideaPh"), "1 1 auto"); ideaArea.dataset.i18nPh = "ideaPh";
+        ideaArea.style.minHeight = "54px";
+        left.appendChild(ideaArea);
+
+        const estiloStack = styleEl("div", {});
+        estiloStack.className = "ld-field-stack";
+        const estiloLabel = styleEl("div", {}, t(node, "estiloSalida")); estiloLabel.dataset.i18n = "estiloSalida";
         estiloLabel.className = "ld-label";
-        left.appendChild(estiloLabel);
         estiloSel = document.createElement("select");
         estiloSel.className = "ld-select";
         for (const opt of ESTILO_SALIDA_OPTIONS) {
@@ -1023,22 +1977,28 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             estiloSel.appendChild(o);
         }
         estiloSel.value = ESTILO_SALIDA_DEFAULT;
-        left.appendChild(estiloSel);
-
-        const note = styleEl(
-            "div",
-            {},
-            "Si no hay interruptores activos en una imagen, se usan todos los aspectos (todo). Si elegís un estilo de salida (p. ej. Realista), ese estilo gana sobre el interruptor «estilo» de las imágenes."
-        );
+        const note = styleEl("div", {}, t(node, "noteEstilo"));
         note.className = "ld-note";
-        left.appendChild(note);
+        note.dataset.i18n = "noteEstilo";
+        estiloStack.append(estiloLabel, estiloSel, note);
+        left.appendChild(estiloStack);
 
-        const ideaLabel = styleEl("div", {}, "idea");
-        ideaLabel.className = "ld-label";
-        left.appendChild(ideaLabel);
-        ideaArea = makeTextarea("La idea (o dejala vacía y usá una imagen de referencia).", "1 1 auto");
-        ideaArea.style.minHeight = "54px";
-        left.appendChild(ideaArea);
+        const camLabel = styleEl("div", {}, t(node, "camara"));
+        camLabel.className = "ld-label";
+        camLabel.dataset.i18n = "camara";
+        camSel = document.createElement("select");
+        camSel.className = "ld-select";
+        for (const val of CAMARA_OPTIONS) {
+            const o = document.createElement("option");
+            o.value = val;
+            o.textContent = camaraLabel(node, val);
+            camSel.appendChild(o);
+        }
+        camSel.value = String(widgetValue(node, "camara", CAMARA_AUTO) || CAMARA_AUTO);
+        camWrap = styleEl("div", {});
+        camWrap.className = "ld-field-stack";
+        camWrap.append(camLabel, camSel);
+        left.appendChild(camWrap);
     }
 
     const actions = styleEl("div", {
@@ -1048,67 +2008,216 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         gap: "8px",
         flex: "0 0 auto",
     });
-    const btn = styleEl("button", {}, "✍️ Generar prompt");
+    const btn = styleEl("button", {}, t(node, "generar")); btn.dataset.i18n = "generar";
     btn.className = `ld-btn ${tone === "old" ? "ld-btn-purple" : ""}`;
     const status = styleEl("div", { flex: "1 1 auto" }, "");
     status.className = "ld-status";
-    const clearAllBtn = styleEl("button", {}, "🧹 Limpiar");
+    const clearAllBtn = styleEl("button", {}, t(node, "limpiar")); clearAllBtn.dataset.i18n = "limpiar";
     clearAllBtn.type = "button";
     clearAllBtn.className = "ld-btn ld-btn-blue";
-    clearAllBtn.title = "Borra idea, prompts, las 4 imágenes y sus descripciones (no toca interruptores, estilo ni LoRA).";
+    clearAllBtn.title = t(node, "limpiarTitle"); clearAllBtn.dataset.i18nTitle = "limpiarTitle";
     if (tone === "old") clearAllBtn.style.display = "none";
     actions.append(btn, clearAllBtn, status);
     right.appendChild(actions);
+    const modifyRow = styleEl("div", {});
+    modifyRow.className = "ld-modify-row";
+    const cambiosLabel = styleEl("div", {}, t(node, "cambios"));
+    cambiosLabel.className = "ld-label";
+    cambiosLabel.dataset.i18n = "cambios";
+    cambiosLabel.style.flex = "0 0 auto";
+    const cambiosInput = document.createElement("input");
+    cambiosInput.type = "text";
+    cambiosInput.className = "ld-modify-input";
+    cambiosInput.placeholder = t(node, "cambiosPh");
+    cambiosInput.dataset.i18nPh = "cambiosPh";
+    const modifyBtn = styleEl("button", {}, t(node, "modificar"));
+    modifyBtn.type = "button";
+    modifyBtn.className = "ld-btn ld-btn-blue";
+    modifyBtn.dataset.i18n = "modificar";
+    modifyRow.append(cambiosLabel, cambiosInput, modifyBtn);
+    right.appendChild(modifyRow);
+    const logWrap = styleEl("div", {});
+    logWrap.className = "ld-log-wrap";
+    const logLabel = styleEl("div", {}, t(node, "actividad"));
+    logLabel.className = "ld-label";
+    logLabel.dataset.i18n = "actividad";
+    const logBox = styleEl("div", {});
+    logBox.className = "ld-log";
+    logBox.setAttribute("aria-readonly", "true");
+    logWrap.append(logLabel, logBox);
+    right.appendChild(logWrap);
+    hookActivityLog();
     const setStatus = (msg) => setStatusBadge(status, msg);
 
+    modifyBtn.addEventListener("click", async () => {
+        const change = String(cambiosInput.value || "").trim();
+        const current = String(pos?.value || "").trim();
+        if (!current) {
+            setStatus(t(node, "modifyNeedPrompt"));
+            return;
+        }
+        if (!change) {
+            setStatus(t(node, "modifyNeedChange"));
+            return;
+        }
+        const cfgNode = findUpstreamConfig(node);
+        const cfg = readConfigValues(cfgNode);
+        if (!cfg) {
+            setStatus(t(node, "missingCfg"));
+            return;
+        }
+        modifyBtn.disabled = true;
+        btn.disabled = true;
+        setStatus(t(node, "modifying"));
+        try {
+            await ensureEnglishFromSpanish(node, { setStatus });
+            const promptNow = String(pos?.value || "").trim() || current;
+            const data = await postModify({
+                ...cfg,
+                prompt: promptNow,
+                prompt_generado: promptNow,
+                negative: String(neg?.value || ""),
+                negativo_generado: String(neg?.value || ""),
+                change,
+                cambios: change,
+                idioma: cfg.idioma || "Español",
+            });
+            if (!data?.ok) {
+                setStatus(data?.message || t(node, "modifyFail"));
+                return;
+            }
+            if (pos) pos.value = data.positive || "";
+            if (neg && data.negative != null) neg.value = data.negative;
+            setVistaEs(node, data.vista_es || "");
+            syncToWidgets();
+            setStatus(t(node, "modifyOk"));
+        } catch (err) {
+            setStatus(`❌ ${err?.message || t(node, "modifyFail")}`);
+        } finally {
+            modifyBtn.disabled = false;
+            btn.disabled = false;
+        }
+    });
+    cambiosInput.addEventListener("keydown", (ev) => {
+        if (ev.key === "Enter") {
+            ev.preventDefault();
+            modifyBtn.click();
+        }
+    });
+
     if (includeIdea) {
-        const useNote = styleEl(
+        useNote = styleEl(
             "div",
             { fontSize: "11px", color: "rgba(232,238,242,0.72)", lineHeight: "1.35" },
-            "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan."
+            t(node, "useNote")
         );
         useNote.className = "ld-note";
+        useNote.dataset.i18n = "useNote";
         right.appendChild(useNote);
     }
 
     const mid = styleEl("div", {
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         gap: "8px",
         flex: "0 0 auto",
-        alignItems: "flex-start",
+        alignItems: "stretch",
         overflow: "hidden",
+        width: "100%",
     });
-    const midL = styleEl("div", { display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 60%", minWidth: "0", overflow: "hidden" });
-    const midR = styleEl("div", { display: "flex", flexDirection: "column", gap: "4px", flex: "1 1 40%", minWidth: "0", overflow: "hidden" });
-    const posLabel = styleEl("div", {}, "prompt generado · positivo");
+    const posRow = styleEl("div", {});
+    posRow.className = "ld-pos-row";
+    const midL = styleEl("div", {});
+    midL.className = "ld-pos-col";
+    const midR = styleEl("div", {});
+    midR.className = "ld-neg-full";
+    const posLabel = styleEl("div", {}, t(node, "posLabel")); posLabel.dataset.i18n = "posLabel";
     posLabel.className = "ld-label";
     midL.appendChild(posLabel);
-    const pos = makeTextarea("Prompt positivo. Editable antes de correr el workflow.", "0 0 auto");
+    const pos = makeTextarea(t(node, "posPh"), "0 0 auto"); pos.dataset.i18nPh = "posPh";
     Object.assign(pos.style, { height: "140px", minHeight: "140px", maxHeight: "140px", overflow: "auto", resize: "none" });
     midL.appendChild(pos);
-    const negLabel = styleEl("div", {}, "negativo generado");
+    const vistaWrap = styleEl("div", {});
+    vistaWrap.className = "ld-vista-es";
+    const vistaLabel = styleEl("div", {}, t(node, "vistaEs"));
+    vistaLabel.className = "ld-label";
+    vistaLabel.dataset.i18n = "vistaEs";
+    const vistaEsArea = makeTextarea(t(node, "vistaPh"), "0 0 140px");
+    vistaEsArea.dataset.i18nPh = "vistaPh";
+    Object.assign(vistaEsArea.style, {
+        height: "140px",
+        minHeight: "140px",
+        maxHeight: "140px",
+        overflow: "auto",
+        resize: "none",
+        flex: "0 0 140px",
+    });
+    vistaWrap.append(vistaLabel, vistaEsArea);
+    posRow.append(midL, vistaWrap);
+    const negLabel = styleEl("div", {}, t(node, "negLabel")); negLabel.dataset.i18n = "negLabel";
     negLabel.className = "ld-label";
     midR.appendChild(negLabel);
-    const neg = makeTextarea("Prompt negativo (Illustrious). En Krea2 suele quedar vacío.", "0 0 auto");
+    const neg = makeTextarea(t(node, "negPh"), "0 0 auto"); neg.dataset.i18nPh = "negPh";
     Object.assign(neg.style, { height: "70px", minHeight: "70px", maxHeight: "70px", overflow: "auto", resize: "none" });
     midR.appendChild(neg);
-    mid.append(midL, midR);
+    const peopleLabel = styleEl("div", {}, t(node, "numPersonas"));
+    peopleLabel.className = "ld-label";
+    peopleLabel.dataset.i18n = "numPersonas";
+    const peopleRow = styleEl("div", { display: "flex", gap: "6px", alignItems: "center" });
+    const peopleSel = document.createElement("select");
+    peopleSel.className = "ld-select";
+    const peopleCustom = document.createElement("input");
+    peopleCustom.type = "number";
+    peopleCustom.min = "1";
+    peopleCustom.max = "99";
+    peopleCustom.step = "1";
+    peopleCustom.className = "ld-modify-input ld-people-custom";
+    const refreshPeopleOpts = () => {
+        const keep = peopleSel.value;
+        peopleSel.innerHTML = "";
+        for (const val of PERSONAS_OPTIONS) {
+            const o = document.createElement("option");
+            o.value = val;
+            o.textContent = val === PERSONAS_AUTO ? t(node, "personasAuto") : val === PERSONAS_CUSTOM ? t(node, "personasCustom") : val;
+            peopleSel.appendChild(o);
+        }
+        const allowed = new Set(PERSONAS_OPTIONS);
+        peopleSel.value = allowed.has(keep) ? keep : (allowed.has(String(widgetValue(node, "num_personas", "1"))) ? String(widgetValue(node, "num_personas", "1")) : "1");
+        peopleCustom.style.display = peopleSel.value === PERSONAS_CUSTOM ? "" : "none";
+    };
+    peopleCustom.value = String(widgetValue(node, "num_personas_custom", 1) || 1);
+    refreshPeopleOpts();
+    const savedP = String(widgetValue(node, "num_personas", "1") || "1");
+    if ([...peopleSel.options].some((o) => o.value === savedP)) peopleSel.value = savedP;
+    peopleCustom.style.display = peopleSel.value === PERSONAS_CUSTOM ? "" : "none";
+    peopleSel.addEventListener("change", () => {
+        peopleCustom.style.display = peopleSel.value === PERSONAS_CUSTOM ? "" : "none";
+    });
+    peopleRow.append(peopleSel, peopleCustom);
+    if (includeIdea && camWrap) {
+        const peopleStack = styleEl("div", {});
+        peopleStack.className = "ld-field-stack";
+        peopleStack.append(peopleLabel, peopleRow);
+        left.insertBefore(peopleStack, camWrap);
+    } else {
+        midR.append(peopleLabel, peopleRow);
+    }
+    mid.append(posRow, midR);
 
     const grid = styleEl("div", {});
     grid.className = "ld-img-grid";
     const cols = [];
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= N_IMAGES; i++) {
         const col = styleEl("div", {});
         col.className = "ld-img-col";
-        const title = styleEl("div", {}, `imagen ${i}`);
+        const title = styleEl("div", {}, t(node, "imagen", { n: i })); title.dataset.i18n = "imagen"; title.dataset.i18nN = String(i);
         title.className = "ld-label";
         col.appendChild(title);
         const chips = styleEl("div", {});
         chips.className = "ld-chip-row";
         const chipMap = {};
         for (const key of ASPECT_KEYS) {
-            const chip = styleEl("button", {}, ASPECT_LABELS[key]);
+            const chip = styleEl("button", {}, aspectLabel(node, key));
             chip.type = "button";
             chip.className = "ld-chip";
             chip.dataset.aspect = key;
@@ -1125,22 +2234,22 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         col.appendChild(chips);
         const thumb = styleEl("div", {});
         thumb.className = "ld-thumb";
-        const ph = styleEl("div", {}, "Clic o arrastrá una imagen");
+        const ph = styleEl("div", {}, t(node, "thumbPh")); ph.dataset.i18n = "thumbPh";
         ph.className = "ld-thumb-ph";
         const imgEl = document.createElement("img");
         imgEl.alt = "";
         imgEl.style.display = "none";
-        const badge = styleEl("div", {}, "conectada");
+        const badge = styleEl("div", {}, t(node, "connected")); badge.dataset.i18n = "connected";
         badge.className = "ld-thumb-badge";
         badge.style.display = "none";
         const pickBtn = styleEl("button", {}, "📂");
         pickBtn.type = "button";
         pickBtn.className = "ld-thumb-pick";
-        pickBtn.title = "Elegir de la carpeta input";
+        pickBtn.title = t(node, "pickTitle"); pickBtn.dataset.i18nTitle = "pickTitle";
         const clearBtn = styleEl("button", {}, "✖");
         clearBtn.type = "button";
         clearBtn.className = "ld-thumb-clear";
-        clearBtn.title = "Quitar imagen";
+        clearBtn.title = t(node, "clearTitle"); clearBtn.dataset.i18nTitle = "clearTitle";
         const fileInput = document.createElement("input");
         fileInput.type = "file";
         fileInput.accept = "image/*";
@@ -1198,7 +2307,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                 const info = await uploadInputImage(file);
                 setArchivo(info);
             } catch (err) {
-                setStatus(`❌ ${err.message || "No pude subir la imagen."}`);
+                setStatus(`❌ ${err.message || t(node, "uploadFail")}`);
             }
         });
         for (const evn of ["dragenter", "dragover"]) {
@@ -1215,7 +2324,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             ev.preventDefault();
             thumb.classList.remove("drag");
             if (refImageInfo(node, i)?.connected) {
-                setStatus("⚠️ Esta columna usa la entrada IMAGE conectada.");
+                setStatus(t(node, "connectedWarn"));
                 return;
             }
             const file = ev.dataTransfer?.files?.[0];
@@ -1224,14 +2333,15 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                 const info = await uploadInputImage(file);
                 setArchivo(info);
             } catch (err) {
-                setStatus(`❌ ${err.message || "No pude subir la imagen."}`);
+                setStatus(`❌ ${err.message || t(node, "uploadFail")}`);
             }
         });
-        const desc = makeTextarea("Descripción informativa. Pulsá 🔄 Describir.", "1 1 auto");
+        const desc = makeTextarea(t(node, "descPh"), "0 0 60px"); desc.dataset.i18nPh = "descPh";
         desc.className = "ld-textarea ld-desc";
+        Object.assign(desc.style, { height: "60px", minHeight: "60px", maxHeight: "60px", overflow: "auto", resize: "none", flex: "0 0 60px" });
         desc.readOnly = true;
         col.appendChild(desc);
-        const dBtn = styleEl("button", {}, "🔄 Describir");
+        const dBtn = styleEl("button", {}, t(node, "describir")); dBtn.dataset.i18n = "describir";
         dBtn.type = "button";
         dBtn.className = "ld-btn ld-btn-small";
         col.appendChild(dBtn);
@@ -1239,9 +2349,51 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         cols.push({ index: i, desc, button: dBtn, chips: chipMap, refreshThumb });
     }
 
+    let writerHead = null;
+    if (String(node.type || node.comfyClass || "") === "LD_LMStudioPromptWriterV2") {
+        writerHead = styleEl("div", {}, "");
+        writerHead.className = "ld-writer-head";
+        const titleEl = styleEl("div", {}, t(node, "writerTitle"));
+        titleEl.className = "ld-writer-head-title";
+        titleEl.dataset.i18n = "writerTitle";
+        writerHead.appendChild(titleEl);
+    }
+    const foldAjustes = styleEl("button", {}, "");
+    foldAjustes.type = "button";
+    foldAjustes.className = "ld-fold";
+    const foldImagenes = styleEl("button", {}, "");
+    foldImagenes.type = "button";
+    foldImagenes.className = "ld-fold";
+    const refreshFolds = () => {
+        const hideA = !!widgetValue(node, "ocultar_ajustes", false);
+        const hideI = !!widgetValue(node, "ocultar_imagenes", false);
+        foldAjustes.textContent = (hideA ? "▸ " : "▾ ") + t(node, "ajustes");
+        foldImagenes.textContent = (hideI ? "▸ " : "▾ ") + t(node, "seccionImagenes");
+        left.style.display = hideA ? "none" : "";
+        if (typeof useNote !== "undefined" && useNote) useNote.style.display = hideA ? "none" : "";
+        grid.style.display = hideI ? "none" : "";
+        left.style.flex = hideA ? "0 0 0" : "1 1 42%";
+        right.style.flex = hideA ? "1 1 auto" : "1 1 58%";
+    };
+    foldAjustes.addEventListener("click", () => {
+        const w = widgetByName(node, "ocultar_ajustes");
+        if (w) w.value = !w.value;
+        refreshFolds();
+        scheduleWriterResize(node);
+        node.graph?.setDirtyCanvas?.(true);
+    });
+    foldImagenes.addEventListener("click", () => {
+        const w = widgetByName(node, "ocultar_imagenes");
+        if (w) w.value = !w.value;
+        refreshFolds();
+        scheduleWriterResize(node);
+        node.graph?.setDirtyCanvas?.(true);
+    });
     if (includeIdea) {
         top.append(left, right);
-        root.append(top, mid, grid);
+        if (writerHead) root.append(writerHead, foldAjustes, top, mid, foldImagenes, grid);
+        else root.append(foldAjustes, top, mid, foldImagenes, grid);
+        refreshFolds();
     } else {
         root.append(right, mid);
     }
@@ -1261,7 +2413,27 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             const ev = String(ew.value ?? ESTILO_SALIDA_DEFAULT);
             if (estiloSel.value !== ev) estiloSel.value = ev;
         }
+        const nwP = widgetByName(node, "num_personas");
+        if (peopleSel && nwP) {
+            const pv = String(nwP.value ?? "1");
+            if (peopleSel.value !== pv) peopleSel.value = pv;
+            if (peopleCustom) peopleCustom.style.display = peopleSel.value === PERSONAS_CUSTOM ? "" : "none";
+        }
+        const nwC = widgetByName(node, "num_personas_custom");
+        if (peopleCustom && nwC && String(peopleCustom.value) !== String(nwC.value ?? 1)) {
+            peopleCustom.value = String(nwC.value ?? 1);
+        }
+        const cw = widgetByName(node, "camara");
+        if (includeIdea && camSel && cw) {
+            const cv = String(cw.value ?? CAMARA_AUTO);
+            if (camSel.value !== cv) camSel.value = cv;
+        }
         if (includeIdea && useBox && uw) useBox.checked = !!uw.value;
+        if (vistaEsArea) {
+            const savedVista = String(node.properties?.ld_vista_es ?? "");
+            if (vistaEsArea.value !== savedVista) vistaEsArea.value = savedVista;
+        }
+        applyVistaVisibility(node);
         for (const col of cols) {
             for (const key of ASPECT_KEYS) {
                 const on = !!widgetValue(node, `img${col.index}_${key}`, false);
@@ -1283,49 +2455,72 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (includeIdea && ideaArea && iw) iw.value = ideaArea.value;
         if (includeIdea && estiloSel && ew) ew.value = estiloSel.value;
         if (includeIdea && useBox && uw) uw.value = useBox.checked;
+        const nwP = widgetByName(node, "num_personas");
+        if (peopleSel && nwP) nwP.value = peopleSel.value;
+        const nwC = widgetByName(node, "num_personas_custom");
+        if (peopleCustom && nwC) {
+            const n = parseInt(peopleCustom.value, 10);
+            nwC.value = Number.isFinite(n) && n >= 1 ? n : 1;
+        }
+        const cw = widgetByName(node, "camara");
+        if (includeIdea && camSel && cw) cw.value = camSel.value;
         for (const col of cols) {
             const dw = widgetByName(node, `desc_imagen_${col.index}`);
             if (dw) dw.value = col.desc.value;
         }
         node.graph?.setDirtyCanvas?.(true);
     };
-    pos.addEventListener("input", syncToWidgets);
+    pos.addEventListener("input", () => {
+        syncToWidgets();
+        markPosDirty(node, true);
+    });
+    vistaEsArea.addEventListener("input", () => {
+        markVistaDirty(node, true);
+    });
     neg.addEventListener("input", syncToWidgets);
     ideaArea?.addEventListener("input", syncToWidgets);
     estiloSel?.addEventListener("change", syncToWidgets);
     useBox?.addEventListener("change", syncToWidgets);
+    peopleSel?.addEventListener("change", syncToWidgets);
+    peopleCustom?.addEventListener("input", syncToWidgets);
+    camSel?.addEventListener("change", syncToWidgets);
 
     for (const col of cols) {
         col.button.addEventListener("click", async () => {
             const img = refImageInfo(node, col.index);
             if (!img) {
-                setStatus(`⚠️ No hay imagen ${col.index}. Elegí o arrastrá un archivo en la miniatura.`);
+                setStatus(t(node, "noImage", { n: col.index }));
                 return;
             }
             const cfgNode = findUpstreamConfig(node);
             const cfg = readConfigValues(cfgNode);
             if (!cfg) {
-                setStatus("⚠️ Conectá el nodo LM Studio Config (LD) a la entrada config.");
+                setStatus(t(node, "missingCfg"));
                 return;
             }
-            setStatus(`⏳ Describiendo imagen ${col.index}…`);
+            setStatus(t(node, "describing", { n: col.index }));
             col.button.disabled = true;
             try {
+                const aspects = aspectListForImage(node, col.index);
                 const data = await postDescribe({
                     url: cfg.url,
                     model: cfg.model,
                     image: img,
+                    aspects,
+                    index: col.index,
                     temperature: 0.3,
                     max_tokens: 400,
-                    unload_after: !!cfg.unload_after,
+                    unload_after: false,
+                    descarga_idle_min: cfg.descarga_idle_min || 0,
+                    idioma: cfg.idioma || "Español",
                 });
                 if (!data?.ok) {
-                    setStatus(data?.message || `❌ No pude describir la imagen ${col.index}.`);
+                    setStatus(data?.message || t(node, "describeFail", { n: col.index }));
                     return;
                 }
-                col.desc.value = data.description || "";
+                setImageDescription(node, col.index, data.description || "", data.aspects || aspectSignature(node, col.index));
                 syncToWidgets();
-                setStatus(`✅ Descripción de la imagen ${col.index} lista (solo informativa).`);
+                setStatus(t(node, "described", { n: col.index }));
             } catch (err) {
                 setStatus(`❌ ${err?.message || "No pude describir la imagen."}`);
             } finally {
@@ -1338,6 +2533,11 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (ideaArea) ideaArea.value = "";
         pos.value = "";
         neg.value = "";
+        setVistaEs(node, "");
+        node.properties = node.properties || {};
+        node.properties.ld_desc_meta = {};
+        node.properties.ld_pos_dirty = false;
+        node.properties.ld_vista_es_dirty = false;
         for (const col of cols) {
             col.desc.value = "";
             const aw = widgetByName(node, `archivo_imagen_${col.index}`);
@@ -1345,15 +2545,24 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             col.refreshThumb?.();
         }
         syncToWidgets();
+        if (logBox) logBox.innerHTML = "";
+        if (cambiosInput) cambiosInput.value = "";
         status.textContent = "";
         status.className = "ld-status";
-        setStatus("🧹 Listo: idea, prompts, imágenes y descripciones borrados.");
+        setStatus(t(node, "cleared"));
     });
 
     btn.addEventListener("click", async () => {
         setStatus("⏳ Generando...");
         btn.disabled = true;
         try {
+            syncToWidgets();
+            const used = await resolveEditedPrompts(node, { setStatus, pos });
+            if (used) {
+                syncToWidgets();
+                return;
+            }
+            await ensureImageDescriptions(node, { setStatus });
             syncToWidgets();
             await onGenerate({
                 setStatus,
@@ -1369,10 +2578,51 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         }
     });
 
-    return { root, pos, neg, ideaArea, estiloSel, setStatus, syncFromWidgets, syncToWidgets, btn };
+    const applyI18n = () => {
+        root.querySelectorAll("[data-i18n]").forEach((el) => {
+            const key = el.dataset.i18n;
+            const n = el.dataset.i18nN;
+            el.textContent = n ? t(node, key, { n }) : t(node, key);
+        });
+        root.querySelectorAll("[data-i18n-ph]").forEach((el) => {
+            el.placeholder = t(node, el.dataset.i18nPh);
+        });
+        root.querySelectorAll("[data-i18n-title]").forEach((el) => {
+            el.title = t(node, el.dataset.i18nTitle);
+        });
+        for (const col of cols) {
+            for (const key of ASPECT_KEYS) {
+                if (col.chips[key]) col.chips[key].textContent = aspectLabel(node, key);
+            }
+        }
+        if (camSel) {
+            for (const o of camSel.options) o.textContent = camaraLabel(node, o.value);
+        }
+        if (peopleSel) {
+            for (const o of peopleSel.options) {
+                o.textContent = o.value === PERSONAS_AUTO ? t(node, "personasAuto") : o.value === PERSONAS_CUSTOM ? t(node, "personasCustom") : o.value;
+            }
+        }
+        applyVistaVisibility(node);
+        refreshFolds();
+        scheduleWriterResize(node);
+    };
+
+    applyVistaVisibility(node);
+    if (vistaEsArea) {
+        const savedVista = String(node.properties?.ld_vista_es ?? "");
+        if (savedVista) vistaEsArea.value = savedVista;
+    }
+
+    return { root, pos, neg, ideaArea, estiloSel, peopleSel, camSel, logBox, setStatus, syncFromWidgets, syncToWidgets, btn, applyI18n, vistaEsArea, vistaWrap, cols };
 }
 
+const WRITER_HEAD_H = 28;
+const WRITER_SLOT_Y = 14;
+
 function visibleHeaderHeight(node) {
+    const typ = String(node?.type || node?.comfyClass || "");
+    if (typ === "LD_LMStudioPromptWriterV2") return 0;
     let y = 30;
     try {
         if (typeof LiteGraph !== "undefined" && LiteGraph.NODE_TITLE_HEIGHT) {
@@ -1436,48 +2686,430 @@ function hookExecuted(nodeType) {
                 : message.negativo_generado;
             negW.value = v ?? "";
         }
+        if (message && Object.prototype.hasOwnProperty.call(message, "vista_es")) {
+            const v = Array.isArray(message.vista_es) ? message.vista_es[0] : message.vista_es;
+            setVistaEs(this, v ?? "");
+        }
         this._ldPanel?.syncFromWidgets();
     };
 }
 
 function setupConfigNode(nodeType) {
-    const onNodeCreated = nodeType.prototype.onNodeCreated;
-    nodeType.prototype.onNodeCreated = function () {
-        onNodeCreated?.apply(this, arguments);
+    installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
         applyNodeTheme(this, THEME.config);
         const setStatus = attachStatusLine(this, true, "config");
         attachModelRefresh(this, setStatus);
-    };
-    const onConfigure = nodeType.prototype.onConfigure;
-    nodeType.prototype.onConfigure = function (info) {
-        onConfigure?.apply(this, arguments);
+        shrinkExtraInstructions(this);
+        hookIdiomaWidget(this);
+        if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
+        if (!this.size || this.size[1] < 760) {
+            if (typeof this.setSize === "function") this.setSize([400, 820]);
+            else this.size = [400, 820];
+        }
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
         applyNodeTheme(this, THEME.config);
         const combo = widgetByName(this, "model");
         if (combo && isAuto(combo.value)) combo.value = AUTO_MODEL;
+        shrinkExtraInstructions(this);
+        hookIdiomaWidget(this);
+        if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
         this._ldRefreshModels?.(false);
+        refreshAllWriterI18n();
+    });
+}
+
+function shrinkExtraInstructions(node) {
+    const w = widgetByName(node, "extra_instructions");
+    if (!w) return;
+    w.computeSize = (width) => [width || 200, 52];
+    if (w.inputEl) {
+        w.inputEl.style.minHeight = "36px";
+        w.inputEl.style.height = "40px";
+        w.inputEl.style.maxHeight = "52px";
+    }
+}
+
+function hookIdiomaWidget(node) {
+    const w = widgetByName(node, "idioma");
+    if (!w || w._ldIdiomaHooked) return;
+    w._ldIdiomaHooked = true;
+    if (w.label !== undefined) w.label = "idioma";
+    const orig = w.callback;
+    w.callback = function (...args) {
+        orig?.apply(this, args);
+        const idioma = String(w.value || "Español");
+        if (node.type === MODELO_GEN) syncIdiomaToConfig(idioma);
+        if (node.type === CONFIG_NODE) {
+            const sel = findModeloGen();
+            const sw = sel && widgetByName(sel, "idioma");
+            if (sw && sw.value !== idioma) sw.value = idioma;
+        }
+        refreshAllWriterI18n();
+        node.graph?.setDirtyCanvas?.(true);
     };
 }
 
+function refreshAllWriterI18n() {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        n._ldPanel?.applyI18n?.();
+        n._ldRefreshI18n?.();
+    }
+    applyNotesI18n();
+}
+
+function applyBranchMode(modelo) {
+    const want = String(modelo || "Krea2");
+    const modeName = want === "Illustrious" ? "Illustrious (tags)" : "Krea2 (natural)";
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (n.type === CONFIG_NODE) {
+            const w = widgetByName(n, "mode");
+            if (w && w.value !== modeName) w.value = modeName;
+        }
+        const br = n.properties?.ld_branch;
+        if (!br) continue;
+        const on = (br === "illustrious") === (want === "Illustrious");
+        n.mode = on ? 0 : 2; // 2 = mute
+    }
+    app.graph?.setDirtyCanvas?.(true, true);
+}
+
+function setupModeloGen(nodeType) {
+    const paint = (node) => applyNodeTheme(node, { color: "#473122", bgcolor: "#1b222b" });
+    const ensureUi = (node) => {
+        paint(node);
+        hideWidget(widgetByName(node, "modelo"));
+        hideWidget(widgetByName(node, "idioma"));
+        hookIdiomaWidget(node);
+        if (node._ldModeloUi) {
+            node._ldRefreshI18n?.();
+            return;
+        }
+        const root = styleEl("div", {});
+        root.className = "ld-modelo-panel";
+        const langLabel = styleEl("div", {}, t(node, "idioma") === "idioma" ? "Idioma" : t(node, "idioma"));
+        langLabel.className = "ld-label";
+        langLabel.dataset.i18n = "idiomaSel";
+        langLabel.textContent = currentLangFrom(node) === "en" ? "Language" : "Idioma";
+        const langSel = document.createElement("select");
+        langSel.className = "ld-select";
+        for (const [val, es, en] of [["Español", "Español", "Spanish"], ["English", "English", "English"]]) {
+            const o = document.createElement("option");
+            o.value = val;
+            o.textContent = currentLangFrom(node) === "en" ? en : es;
+            langSel.appendChild(o);
+        }
+        langSel.value = String(widgetValue(node, "idioma", "Español") || "Español");
+        langSel.addEventListener("change", () => {
+            const w = widgetByName(node, "idioma");
+            if (w) w.value = langSel.value;
+            syncIdiomaToConfig(langSel.value);
+            refreshAllWriterI18n();
+            node.graph?.setDirtyCanvas?.(true, true);
+        });
+        const row = styleEl("div", {});
+        row.className = "ld-switch-row";
+        const mkSwitch = (value, label) => {
+            const b = styleEl("button", {}, label);
+            b.type = "button";
+            b.className = "ld-switch";
+            b.dataset.modelo = value;
+            b.addEventListener("click", () => {
+                const w = widgetByName(node, "modelo");
+                if (w) w.value = value;
+                refreshSw();
+                applyBranchMode(value);
+                node.graph?.setDirtyCanvas?.(true, true);
+            });
+            return b;
+        };
+        const swK = mkSwitch("Krea2", "Krea2");
+        const swI = mkSwitch("Illustrious", "Illustrious");
+        row.append(swK, swI);
+        const refreshSw = () => {
+            const cur = String(widgetValue(node, "modelo", "Krea2") || "Krea2");
+            const il = cur !== "Krea2" && /illust/i.test(cur);
+            swK.classList.toggle("on", !il);
+            swI.classList.toggle("on", il);
+        };
+        root.append(langLabel, langSel, row);
+        const mw = widgetByName(node, "modelo");
+        if (mw) {
+            const orig = mw.callback;
+            mw.callback = (...args) => {
+                orig?.apply(this, args);
+                refreshSw();
+                applyBranchMode(mw.value);
+            };
+        }
+        const dom = node.addDOMWidget("ld_modelo_ui", "div", root, { serialize: false });
+        if (dom) {
+            dom.serialize = false;
+            dom.computeSize = (width) => [width || 200, 96];
+        }
+        // idioma first visually: DOM already starts with language, then switches.
+        node._ldModeloUi = root;
+        node._ldRefreshI18n = () => {
+            langLabel.textContent = currentLangFrom(node) === "en" ? "Language" : "Idioma";
+            const map = { Español: currentLangFrom(node) === "en" ? "Spanish" : "Español", English: "English" };
+            for (const o of langSel.options) o.textContent = map[o.value] || o.value;
+            langSel.value = String(widgetValue(node, "idioma", "Español") || "Español");
+            refreshSw();
+        };
+        refreshSw();
+        hookIdiomaWidget(node);
+    };
+    installSafeHook(nodeType, "onNodeCreated", function () {
+        ensureUi(this);
+        setTimeout(() => {
+            applyBranchMode(widgetValue(this, "modelo", "Krea2"));
+            applyNotesI18n();
+        }, 50);
+        if (!this.size || this.size[0] < 400) {
+            if (typeof this.setSize === "function") this.setSize([420, 220]);
+            else this.size = [420, 220];
+        }
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
+        ensureUi(this);
+        applyBranchMode(widgetValue(this, "modelo", "Krea2"));
+        applyNotesI18n();
+    });
+}
+
+
 const WRITER_NODE_W = 1320;
-const WRITER_NODE_H = 1040;
-const WRITER_NODE_H_MAX = 1300;
-const WRITER_PANEL_H = WRITER_NODE_H - 36;
+const WRITER_NODE_H = 800;
+const WRITER_NODE_H_MAX = 2000;
+const WRITER_PANEL_H_MIN = 260;
+
+function scheduleWriterResize(node) {
+    if (!node) return;
+    if (node._ldResizeTok) cancelAnimationFrame(node._ldResizeTok);
+    node._ldResizeTok = requestAnimationFrame(() => {
+        node._ldResizeTok = 0;
+        const el = node._ldPanel?.root;
+        if (!el) return;
+        el.style.height = "auto";
+        const panelH = Math.max(WRITER_PANEL_H_MIN, Math.ceil(el.scrollHeight || 0));
+        if (node._ldPanelH && Math.abs(node._ldPanelH - panelH) < 2) return;
+        node._ldPanelH = panelH;
+        const nodeH = panelH + visibleHeaderHeight(node) + 4;
+        const w = Math.max(1100, Math.min(node.size?.[0] || WRITER_NODE_W, 1800));
+        if (!node.size || node.size[0] !== w || Math.abs((node.size[1] || 0) - nodeH) >= 2) {
+            if (typeof node.setSize === "function") node.setSize([w, nodeH]);
+            else node.size = [w, nodeH];
+        }
+        const dom = (node.widgets || []).find((x) => x && x.name === "ld_writer_panel");
+        if (dom) {
+            dom.computeSize = (width) => [width || 0, panelH];
+            dom.getMinHeight = () => panelH;
+            dom.getMaxHeight = () => panelH;
+        }
+        node.graph?.setDirtyCanvas?.(true);
+    });
+}
 
 function clampWriterSize(node) {
     const w = Math.max(1100, Math.min(node.size?.[0] || WRITER_NODE_W, 1800));
-    let h = node.size?.[1] || WRITER_NODE_H;
-    if (h < WRITER_NODE_H || h > WRITER_NODE_H_MAX) h = WRITER_NODE_H;
-    if (!node.size || node.size[0] !== w || node.size[1] !== h) {
+    if (node.size && node.size[0] !== w) {
+        const h = node.size[1] || WRITER_NODE_H;
         if (typeof node.setSize === "function") node.setSize([w, h]);
         else node.size = [w, h];
+    }
+    scheduleWriterResize(node);
+}
+
+const WRITER_MOVED_INPUTS = new Set([
+    "image",
+    "image_1", "image_2", "image_3", "image_4",
+    "image_5", "image_6", "image_7", "image_8",
+    "lora_triggers", "neg_embeddings",
+]);
+
+function writerDefinedInputNames(node) {
+    const names = new Set(["config"]);
+    const data = node?.constructor?.nodeData || {};
+    const input = data.input || {};
+    for (const group of [input.required, input.optional]) {
+        if (group && typeof group === "object") {
+            for (const k of Object.keys(group)) names.add(k);
+        }
+    }
+    return names;
+}
+
+function cleanupWriterGraphSlots(node) {
+    if (!node) return;
+    node.properties = node.properties || {};
+    node.properties.ld_io_on_config = true;
+    const defined = writerDefinedInputNames(node);
+    const inputs = node.inputs || [];
+    for (let i = inputs.length - 1; i >= 0; i--) {
+        const inp = inputs[i];
+        if (!inp) continue;
+        const name = String(inp.name || "");
+        if (name === "config") continue;
+        if (inp.widget) continue;
+        const connected = inp.link != null;
+        const stale = WRITER_MOVED_INPUTS.has(name) || !defined.has(name);
+        if (!connected && stale) {
+            if (typeof node.removeInput === "function") node.removeInput(i);
+            else inputs.splice(i, 1);
+        }
+    }
+    for (const inp of node.inputs || []) {
+        if (!inp || inp.widget) continue;
+        if (inp.name === "config") {
+            inp.hidden = false;
+            inp.pos = [0, WRITER_SLOT_Y];
+        } else {
+            inp.hidden = inp.link == null;
+        }
+    }
+    while (node.outputs && node.outputs.length) {
+        if (typeof node.removeOutput === "function") node.removeOutput(node.outputs.length - 1);
+        else node.outputs.pop();
+    }
+    node.setDirtyCanvas?.(true, true);
+}
+
+function liteGraphNoTitle() {
+    return (typeof LiteGraph !== "undefined" && LiteGraph.NO_TITLE != null) ? LiteGraph.NO_TITLE : 1;
+}
+
+function propertyCanBeSet(obj, name) {
+    if (obj == null) return false;
+    let cur = obj;
+    while (cur && cur !== Object.prototype) {
+        let desc = null;
+        try {
+            desc = Object.getOwnPropertyDescriptor(cur, name);
+        } catch (_e) {
+            return false;
+        }
+        if (desc) {
+            if (typeof desc.set === "function") return true;
+            if (Object.prototype.hasOwnProperty.call(desc, "writable")) return !!desc.writable;
+            if (typeof desc.get === "function" && !desc.set) return false;
+            return false;
+        }
+        try {
+            cur = Object.getPrototypeOf(cur);
+        } catch (_e) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function trySetTitleMode(target, value) {
+    if (!target) return false;
+    try {
+        if (!propertyCanBeSet(target, "title_mode")) return false;
+        target.title_mode = value;
+        return true;
+    } catch (_e) {
+        return false;
+    }
+}
+
+function applyWriterTypeChrome(nodeType) {
+    if (!nodeType) return;
+    const noTitle = liteGraphNoTitle();
+    try {
+        trySetTitleMode(nodeType, noTitle);
+    } catch (_e) {}
+    try {
+        trySetTitleMode(nodeType.prototype, noTitle);
+    } catch (_e) {}
+}
+
+function hideWriterTitleBarFallback(node) {
+    if (!node) return;
+    try {
+        node.flags = node.flags || {};
+    } catch (_e) {}
+    if (node._ldTitleBarNoop) return;
+    try {
+        node.onDrawTitleBar = function () {
+            // Custom DOM title lives in the panel; do not draw the LiteGraph title bar.
+        };
+        node._ldTitleBarNoop = true;
+    } catch (_e) {}
+}
+
+function applyWriterChrome(node) {
+    if (!node) return;
+    // Never assign instance.title_mode: in current ComfyUI it can be a
+    // getter-only property and throws TypeError, aborting workflow load.
+    try {
+        hideWriterTitleBarFallback(node);
+    } catch (_e) {}
+    try {
+        cleanupWriterGraphSlots(node);
+    } catch (err) {
+        console.warn("[LD-PromptWriter] cleanupWriterGraphSlots:", err);
+    }
+}
+
+function installSafeHook(nodeType, hookName, fn) {
+    const orig = nodeType.prototype[hookName];
+    nodeType.prototype[hookName] = function (...args) {
+        try {
+            if (typeof orig === "function") orig.apply(this, args);
+        } catch (err) {
+            console.warn(`[LD-PromptWriter] ${hookName} (original):`, err);
+        }
+        try {
+            return fn.apply(this, args);
+        } catch (err) {
+            console.warn(`[LD-PromptWriter] ${hookName}:`, err);
+        }
+    };
+}
+
+function repairI2IWidgets(node) {
+    const typ = String(node?.type || node?.comfyClass || "");
+    if (typ !== "LD_ImagenBaseI2I") return;
+    const modeloW = widgetByName(node, "modelo");
+    const denoiseW = widgetByName(node, "denoise");
+    if (modeloW || !denoiseW) return;
+    const wv = Array.isArray(node.widgets_values) ? node.widgets_values : null;
+    const isModelo = (v) => /^(krea2|illustrious)$/i.test(String(v ?? "").trim());
+    if (wv && wv.length >= 4 && isModelo(wv[0])) {
+        const stepsW = widgetByName(node, "steps_krea2");
+        const archW = widgetByName(node, "archivo");
+        denoiseW.value = wv[1];
+        if (stepsW) stepsW.value = wv[2];
+        if (archW) archW.value = wv[3];
+        node.widgets_values = wv.slice(1);
+        return;
+    }
+    if (isModelo(denoiseW.value)) {
+        const stepsW = widgetByName(node, "steps_krea2");
+        const archW = widgetByName(node, "archivo");
+        denoiseW.value = stepsW ? stepsW.value : 0.6;
+        if (stepsW) stepsW.value = archW ? archW.value : 8;
+        if (archW && (typeof archW.value === "number" || /^\d+$/.test(String(archW.value)))) {
+            archW.value = "";
+        }
     }
 }
 
 function setupWriterV2(nodeType) {
+    try {
+        applyWriterTypeChrome(nodeType);
+    } catch (_e) {}
     const origComputeSize = nodeType.prototype.computeSize;
     nodeType.prototype.computeSize = function () {
-        return [WRITER_NODE_W, WRITER_NODE_H];
+        const panelH = this._ldPanelH || WRITER_NODE_H;
+        return [this.size?.[0] || WRITER_NODE_W, panelH + visibleHeaderHeight(this) + 4];
     };
 
     const hideWriterWidgets = (node) => {
@@ -1487,12 +3119,16 @@ function setupWriterV2(nodeType) {
         }
     };
 
-    const onNodeCreated = nodeType.prototype.onNodeCreated;
-    nodeType.prototype.onNodeCreated = function () {
-        onNodeCreated?.apply(this, arguments);
+    const hideWriterGraphSlots = (node) => {
+        applyWriterChrome(node);
+    };
+
+    installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
         applyNodeTheme(this, THEME.writer);
         hideWriterWidgets(this);
+        hideWriterGraphSlots(this);
+        migrateAccionPoseSplit(this);
 
         const panel = buildWriterPanel(this, {
             includeIdea: true,
@@ -1501,13 +3137,13 @@ function setupWriterV2(nodeType) {
                 const cfgNode = findUpstreamConfig(this);
                 const cfg = readConfigValues(cfgNode);
                 if (!cfg) {
-                    setStatus("⚠️ Conectá el nodo LM Studio Config (LD) a la entrada config.");
+                    setStatus(t(this, "missingCfg"));
                     return;
                 }
                 const idea = String(widgetValue(this, "idea", "")).trim();
                 const refs = {};
                 let n = 0;
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refImageInfo(this, i);
                     if (img) {
                         refs[i] = img;
@@ -1515,7 +3151,7 @@ function setupWriterV2(nodeType) {
                     }
                 }
                 if (!idea && !n) {
-                    setStatus(MISSING_IDEA_OR_IMAGE);
+                    setStatus(t(this, "missingIdea"));
                     return;
                 }
                 const estilo = String(widgetValue(this, "estilo_salida", ESTILO_SALIDA_DEFAULT));
@@ -1532,13 +3168,19 @@ function setupWriterV2(nodeType) {
                     usar_imagen_1: widgetValue(this, "usar_imagen_1", "todo"),
                     usar_imagen_2: widgetValue(this, "usar_imagen_2", "todo"),
                     estilo_salida: estilo,
+                    idioma: cfg.idioma || "Español",
+                    num_personas: String(widgetValue(this, "num_personas", "1") || "1"),
+                    num_personas_custom: widgetValue(this, "num_personas_custom", 1),
+                    camara: String(widgetValue(this, "camara", CAMARA_AUTO) || CAMARA_AUTO),
                 };
-                for (let i = 1; i <= 4; i++) {
+                for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refs[i];
                     if (img) {
                         body[`image_${i}`] = img;
                         body[`archivo_imagen_${i}`] = serializeArchivo(img);
                     }
+                    body[`desc_imagen_${i}`] = String(widgetValue(this, `desc_imagen_${i}`, "") || "");
+                    body[`desc_aspects_${i}`] = aspectSignature(this, i);
                     const active = readImageAspects(this, i);
                     aspects[String(i)] = active;
                     for (const k of ASPECT_KEYS) {
@@ -1547,11 +3189,7 @@ function setupWriterV2(nodeType) {
                 }
                 body.aspects = aspects;
                 if (triggerInfo.text) body.lora_triggers = triggerInfo.text;
-                setStatus(
-                    n > 1
-                        ? `⏳ Generando con ${n} imágenes (se describe cada una por separado)…`
-                        : "⏳ Generando..."
-                );
+                setStatus(n > 1 ? t(this, "generatingN", { n }) : t(this, "generating"));
                 console.log("[LD-PromptWriter] POST /generate con", n, "imagen(es)", body);
                 let data;
                 try {
@@ -1561,21 +3199,23 @@ function setupWriterV2(nodeType) {
                     return;
                 }
                 if (!data?.ok) {
-                    setStatus(data?.message || "❌ No pude generar el prompt.");
+                    setStatus(data?.message || t(this, "genFail"));
                     return;
                 }
                 pos.value = data.positive || "";
                 neg.value = data.negative || "";
+                setVistaEs(this, data.vista_es || "");
                 syncToWidgets();
                 if (!triggerInfo.text && (triggerInfo.source === "unknown" || triggerInfo.source === "loader-no-words")) {
-                    setStatus("✅ Prompt generado. Los trigger words de los LoRA se completan al ejecutar el workflow.");
+                    setStatus(t(this, "genOkTriggers"));
                 } else {
-                    setStatus("✅ Prompt generado. Revisalo y después ejecutá el workflow.");
+                    setStatus(t(this, "genOk"));
                 }
             },
         });
         this._ldPanel = panel;
         this._ldSetStatus = panel.setStatus;
+        hookWriterSerialize(this);
 
         const self = this;
         const dom = this.addDOMWidget("ld_writer_panel", "div", panel.root, {
@@ -1583,34 +3223,74 @@ function setupWriterV2(nodeType) {
             serialize: false,
         });
         dom.serialize = false;
-        // Fixed height: never derive it from node.size (that fed back into
-        // node.computeSize and made the node grow on every load/resize).
-        dom.computeSize = (width) => [width || 0, WRITER_PANEL_H];
-        dom.getMinHeight = () => WRITER_PANEL_H;
-        dom.getMaxHeight = () => WRITER_PANEL_H;
+        // Height comes from content (cached _ldPanelH). Never read node.size
+        // here — that fed back into computeSize and made the node grow.
+        const panelH = () => this._ldPanelH || WRITER_PANEL_H_MIN;
+        dom.computeSize = (width) => [width || 0, panelH()];
+        dom.getMinHeight = () => panelH();
+        dom.getMaxHeight = () => panelH();
         dom.draw = function () {
-            const header = visibleHeaderHeight(self);
-            placeDom(this.element || panel.root, self, { header, left: 6, margin: 4 });
+            placeDom(this.element || panel.root, self, { header: 0, left: 0, margin: 0 });
         };
 
-        clampWriterSize(this);
         panel.syncFromWidgets();
-    };
+        clampWriterSize(this);
+    });
 
-    const onConfigure = nodeType.prototype.onConfigure;
-    nodeType.prototype.onConfigure = function (info) {
-        onConfigure?.apply(this, arguments);
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
         applyNodeTheme(this, THEME.writer);
         hideWriterWidgets(this);
+        hideWriterGraphSlots(this);
+        migrateAccionPoseSplit(this);
         clampWriterSize(this);
+        hookWriterSerialize(this);
         this._ldPanel?.syncFromWidgets();
-    };
+    });
     const onResize = nodeType.prototype.onResize;
     nodeType.prototype.onResize = function (size) {
         onResize?.apply(this, arguments);
         if (size && size[1] > WRITER_NODE_H_MAX) size[1] = WRITER_NODE_H_MAX;
     };
+    const origGetConnectionPos = nodeType.prototype.getConnectionPos;
+    nodeType.prototype.getConnectionPos = function (is_input, slot, out) {
+        if (is_input) {
+            const inp = this.inputs?.[slot];
+            if (inp && inp.name === "config") {
+                out = out || [0, 0];
+                const pos = this.pos || [0, 0];
+                out[0] = (pos[0] || 0);
+                out[1] = (pos[1] || 0) + WRITER_SLOT_Y;
+                return out;
+            }
+        }
+        if (typeof origGetConnectionPos === "function") {
+            return origGetConnectionPos.apply(this, arguments);
+        }
+        return out || [0, 0];
+    };
     hookExecuted(nodeType);
+}
+
+function restoreTamanoWidget(node, name) {
+    const w = widgetByName(node, name);
+    if (!w) return null;
+    // If it was hidden or converted to an input, bring the combo back.
+    if (w.origType && String(w.type || "").includes("converted")) {
+        w.type = w.origType;
+        delete w.origType;
+    }
+    w.hidden = false;
+    w.computedHeight = undefined;
+    if (typeof w.computeSize === "function" && w.computeSize([]) && false) {
+        /* noop: keep real computeSize unless we hid it */
+    }
+    if (w._ldHidden) {
+        delete w.computeSize;
+        delete w._ldHidden;
+    }
+    if (w.element) w.element.style.display = "";
+    return w;
 }
 
 function setupTamano(nodeType) {
@@ -1619,83 +3299,123 @@ function setupTamano(nodeType) {
         const mp = widgetValue(node, "megapixeles", "1.08 MP");
         const swap = !!widgetValue(node, "intercambiar", false);
         const [w, h] = computeTamano(prop, mp, swap);
-        return `${w}×${h}`;
+        return [w, h, `≈ ${w} × ${h} px`];
     };
     const refresh = (node) => {
-        const label = sizeLabel(node);
-        const pretty = label.replace("×", " × ");
+        const [w, h, pretty] = sizeLabel(node);
         const res = widgetByName(node, "resultado");
-        if (res) res.value = pretty;
-        node._ldTamanoLabel = label;
+        if (res) res.value = `${w} × ${h}`;
+        if (node._ldTamanoEl) node._ldTamanoEl.textContent = pretty;
+        node._ldTamanoLabel = pretty;
         node.graph?.setDirtyCanvas?.(true);
     };
-    const decorateMp = (node) => {
-        const mp = widgetByName(node, "megapixeles");
-        if (!mp || mp._ldDecorated) return;
-        mp._ldDecorated = true;
-        const origDraw = mp.draw;
-        mp.draw = function (ctx, n, width, y, height) {
-            const gap = 100;
-            if (typeof origDraw === "function") {
-                origDraw.call(this, ctx, n, Math.max(80, width - gap), y, height);
-            }
-            const label = node._ldTamanoLabel || sizeLabel(node);
-            ctx.save();
-            ctx.font = "bold 12px sans-serif";
-            ctx.fillStyle = "#d7eef1";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.fillText(label, width - 6, y + height / 2);
-            ctx.restore();
-        };
-    };
-    const onNodeCreated = nodeType.prototype.onNodeCreated;
-    nodeType.prototype.onNodeCreated = function () {
-        onNodeCreated?.apply(this, arguments);
-        applyNodeTheme(this, { color: "#44391f", bgcolor: "#1b222b" });
-        for (const name of ["proporcion", "megapixeles", "intercambiar"]) {
-            const w = widgetByName(this, name);
-            if (w) {
-                const orig = w.callback;
-                w.callback = (...args) => {
-                    orig?.apply(this, args);
-                    refresh(this);
-                };
-            }
+    const ensureSizeLabel = (node) => {
+        if (node._ldTamanoEl && widgetByName(node, "ld_tamano_size")) {
+            refresh(node);
+            return;
         }
-        const res = widgetByName(this, "resultado");
+        const el = document.createElement("div");
+        el.className = "ld-tamano-size";
+        el.textContent = sizeLabel(node)[2];
+        const dom = node.addDOMWidget("ld_tamano_size", "div", el, { serialize: false });
+        if (dom) {
+            dom.serialize = false;
+            dom.computeSize = (width) => [width || 200, 32];
+        }
+        node._ldTamanoEl = el;
+        moveWidgetAfter(node, dom, "megapixeles");
+        refresh(node);
+    };
+    const hookWidgets = (node) => {
+        for (const name of ["proporcion", "megapixeles", "intercambiar"]) {
+            const w = restoreTamanoWidget(node, name);
+            if (!w || w._ldTamanoHooked) continue;
+            w._ldTamanoHooked = true;
+            const orig = w.callback;
+            w.callback = function (...args) {
+                orig?.apply(this, args);
+                refresh(node);
+            };
+        }
+        const res = widgetByName(node, "resultado");
         if (res) {
             res.disabled = true;
             if (res.inputEl) res.inputEl.readOnly = true;
             hideWidget(res);
         }
-        decorateMp(this);
-        refresh(this);
-        if (!this.size || this.size[0] < 300) {
-            if (typeof this.setSize === "function") this.setSize([300, 180]);
-            else this.size = [300, 180];
-        }
+        ensureSizeLabel(node);
+        refresh(node);
     };
-    const onConfigure = nodeType.prototype.onConfigure;
-    nodeType.prototype.onConfigure = function (info) {
-        onConfigure?.apply(this, arguments);
+    installSafeHook(nodeType, "onNodeCreated", function () {
         applyNodeTheme(this, { color: "#44391f", bgcolor: "#1b222b" });
-        refresh(this);
-    };
+        hookWidgets(this);
+        if (!this.size || this.size[0] < 300 || this.size[1] < 220) {
+            if (typeof this.setSize === "function") this.setSize([300, 230]);
+            else this.size = [300, 230];
+        }
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
+        applyNodeTheme(this, { color: "#44391f", bgcolor: "#1b222b" });
+        hookWidgets(this);
+    });
     const onExecuted = nodeType.prototype.onExecuted;
     nodeType.prototype.onExecuted = function (message) {
         onExecuted?.apply(this, arguments);
         const res = widgetByName(this, "resultado");
         const v = message?.resultado;
         if (res && v != null) res.value = Array.isArray(v) ? v[0] : v;
+        refresh(this);
     };
 }
 
 
+function formatEmbeddingToken(name, weight) {
+    const base = String(name || "").split(/[\\/]/).pop().replace(/\.(pt|safetensors|bin|pth)$/i, "").trim();
+    if (!base || /^\(?ninguno\)?$/i.test(base) || /^\(?none\)?$/i.test(base)) return "";
+    const w = Number(weight);
+    if (!Number.isFinite(w) || Math.abs(w - 1) < 0.001) return `embedding:${base}`;
+    const ws = String(Math.round(w * 1000) / 1000);
+    return `(embedding:${base}:${ws})`;
+}
+
+function setupEmbeddings(nodeType) {
+    installSafeHook(nodeType, "onNodeCreated", function () {
+        applyNodeTheme(this, { color: "#3a2a44", bgcolor: "#1b222b" });
+        if (this._ldEmbBtn) return;
+        const self = this;
+        const btn = this.addWidget("button", "➕ Agregar", null, () => {
+            const name = widgetValue(self, "embedding", "");
+            const peso = widgetValue(self, "peso", 1);
+            const token = formatEmbeddingToken(name, peso);
+            const lista = widgetByName(self, "lista");
+            if (!token || !lista) return;
+            const cur = String(lista.value || "").trim();
+            const lines = cur ? cur.split(/\n/).map((s) => s.trim()).filter(Boolean) : [];
+            if (lines.some((l) => l.toLowerCase() === token.toLowerCase() || l.toLowerCase() === token.toLowerCase().replace(/^embedding:/, ""))) {
+                return;
+            }
+            lista.value = cur ? `${cur}\n${token}` : token;
+            self.graph?.setDirtyCanvas?.(true);
+        });
+        if (btn) {
+            btn.serialize = false;
+            moveWidgetAfter(self, btn, "peso");
+        }
+        this._ldEmbBtn = true;
+        if (!this.size || this.size[0] < 320) {
+            if (typeof this.setSize === "function") this.setSize([411, 220]);
+            else this.size = [411, 220];
+        }
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
+        applyNodeTheme(this, { color: "#3a2a44", bgcolor: "#1b222b" });
+    });
+}
+
 function setupOldWriter(nodeType) {
-    const onNodeCreated = nodeType.prototype.onNodeCreated;
-    nodeType.prototype.onNodeCreated = function () {
-        onNodeCreated?.apply(this, arguments);
+    installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
         applyNodeTheme(this, THEME.old);
         hideWidget(widgetByName(this, "prompt_generado"));
@@ -1708,7 +3428,7 @@ function setupOldWriter(nodeType) {
                 const img = findUpstreamLoadImage(this, "image");
                 const idea = String(widgetValue(this, "idea", "")).trim();
                 if (!idea && !img) {
-                    setStatus(MISSING_IDEA_OR_IMAGE);
+                    setStatus(t(this, "missingIdea"));
                     return;
                 }
                 const body = {
@@ -1731,17 +3451,19 @@ function setupOldWriter(nodeType) {
                     return;
                 }
                 if (!data?.ok) {
-                    setStatus(data?.message || "❌ No pude generar el prompt.");
+                    setStatus(data?.message || t(this, "genFail"));
                     return;
                 }
                 pos.value = data.positive || "";
                 neg.value = data.negative || "";
+                setVistaEs(this, data.vista_es || "");
                 syncToWidgets();
-                setStatus("✅ Prompt generado. Revisalo y después ejecutá el workflow.");
+                setStatus(t(this, "genOk"));
             },
         });
         this._ldPanel = panel;
         this._ldSetStatus = panel.setStatus;
+        hookWriterSerialize(this);
 
         const dom = this.addDOMWidget("ld_side_panel", "div", panel.root, {
             hideOnZoom: false,
@@ -1760,11 +3482,10 @@ function setupOldWriter(nodeType) {
             else this.size = [900, 500];
         }
         panel.syncFromWidgets();
-    };
+    });
 
-    const onConfigure = nodeType.prototype.onConfigure;
-    nodeType.prototype.onConfigure = function (info) {
-        onConfigure?.apply(this, arguments);
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
         applyNodeTheme(this, THEME.old);
         hideWidget(widgetByName(this, "prompt_generado"));
         hideWidget(widgetByName(this, "negativo_generado"));
@@ -1772,24 +3493,447 @@ function setupOldWriter(nodeType) {
         if (combo && isAuto(combo.value)) combo.value = AUTO_MODEL;
         this._ldPanel?.syncFromWidgets();
         this._ldRefreshModels?.(false);
-    };
+    });
     hookExecuted(nodeType);
 }
 
 
 
+function imagesFromGuardarNode(node) {
+    const out = app.nodeOutputs?.[String(node.id)] ?? app.nodeOutputs?.[node.id];
+    if (Array.isArray(out?.images) && out.images.length) return out.images;
+    if (Array.isArray(node.images) && node.images.length) return node.images;
+    const imgs = node.imgs || node.imageIndex != null && node.overridenImgs;
+    if (Array.isArray(node.imgs) && node.imgs.length) {
+        return node.imgs
+            .map((img) => {
+                const src = img?.src || img?.currentSrc || "";
+                if (!src) return null;
+                try {
+                    const u = new URL(src, location.origin);
+                    const filename = u.searchParams.get("filename");
+                    if (!filename) return null;
+                    return {
+                        filename,
+                        subfolder: u.searchParams.get("subfolder") || "",
+                        type: u.searchParams.get("type") || "temp",
+                    };
+                } catch (_e) {
+                    return null;
+                }
+            })
+            .filter(Boolean);
+    }
+    return [];
+}
+
+async function postGuardarImagen(body) {
+    const res = await api.fetchApi("/ld_promptwriter/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    let data = null;
+    try {
+        data = await res.json();
+    } catch (_e) {
+        data = null;
+    }
+    if (!res.ok || !data?.ok) {
+        const msg = data?.message || `HTTP ${res.status}`;
+        throw new Error(msg);
+    }
+    return data;
+}
+
+function setupGuardarImagen(nodeType) {
+    const paint = (node) => applyNodeTheme(node, { color: "#344029", bgcolor: "#1b222b" });
+    const ensureUi = (node) => {
+        paint(node);
+        const autoW = widgetByName(node, "guardado_automatico");
+        if (autoW && autoW.label !== undefined) autoW.label = t(node, "guardarAuto");
+        if (node._ldGuardarUi) {
+            node._ldRefreshI18n?.();
+            return;
+        }
+        const setStatus = (msg, kind) => {
+            if (!node._ldGuardarStatus) return;
+            node._ldGuardarStatus.textContent = msg || "";
+            node._ldGuardarStatus.className = "ld-status" + (kind ? " " + kind : "");
+        };
+        const status = document.createElement("div");
+        status.className = "ld-status";
+        status.style.minHeight = "18px";
+        status.style.fontSize = "11px";
+        const statusDom = node.addDOMWidget("ld_guardar_status", "div", status, { serialize: false, hideOnZoom: false });
+        if (statusDom) {
+            statusDom.serialize = false;
+            statusDom.computeSize = (width) => [width || 200, 24];
+        }
+        node._ldGuardarStatus = status;
+        const btn = node.addWidget("button", t(node, "btnGuardar"), null, async () => {
+            const images = imagesFromGuardarNode(node);
+            if (!images.length) {
+                setStatus(t(node, "guardarNeedImage"), "warn");
+                node.graph?.setDirtyCanvas?.(true);
+                return;
+            }
+            setStatus(t(node, "guardarSaving"));
+            node.graph?.setDirtyCanvas?.(true);
+            try {
+                const data = await postGuardarImagen({
+                    images,
+                    filename_prefix: widgetValue(node, "filename_prefix", "ComfyUI"),
+                });
+                const name = (data.saved || []).map((s) => s.filename || s).filter(Boolean).join(", ") || data.message || "";
+                setStatus(t(node, "guardarOk", { name }), "ok");
+            } catch (err) {
+                const msg = String(err?.message || err || "");
+                setStatus(msg ? `${t(node, "guardarFail")} ${msg}` : t(node, "guardarFail"), "err");
+            }
+            node.graph?.setDirtyCanvas?.(true);
+        });
+        if (btn) {
+            btn.serialize = false;
+            btn._ldGuardarBtn = true;
+        }
+        node._ldGuardarBtn = btn;
+        node._ldRefreshI18n = () => {
+            const aw = widgetByName(node, "guardado_automatico");
+            if (aw && aw.label !== undefined) aw.label = t(node, "guardarAuto");
+            if (node._ldGuardarBtn) node._ldGuardarBtn.name = t(node, "btnGuardar");
+        };
+        node._ldGuardarUi = true;
+    };
+    installSafeHook(nodeType, "onNodeCreated", function () {
+        ensureUi(this);
+        // Never shrink a node that already has preview space reserved.
+        if (!this.size) this.size = [393, 648];
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
+        ensureUi(this);
+    });
+}
+
+
+function setupImagenBaseI2I(nodeType) {
+    const paint = (node) => applyNodeTheme(node, { color: "#203c40", bgcolor: "#1b222b" });
+    const ensureUi = (node) => {
+        paint(node);
+        hideWidget(widgetByName(node, "archivo"));
+        const modeloW = widgetByName(node, "modelo");
+        const modeloLinked = (node.inputs || []).some((i) => i.name === "modelo" && i.link != null);
+        if (modeloLinked) hideWidget(modeloW);
+        const denoiseW = widgetByName(node, "denoise");
+        if (denoiseW && denoiseW.label !== undefined) denoiseW.label = t(node, "denoise");
+        const stepsW = widgetByName(node, "steps_krea2");
+        if (stepsW && stepsW.label !== undefined) stepsW.label = t(node, "stepsKrea2");
+        if (node._ldI2iUi) {
+            node._ldRefreshI18n?.();
+            return;
+        }
+
+        const root = document.createElement("div");
+        root.className = "ld-panel";
+        root.style.padding = "6px 8px 8px";
+        const label = document.createElement("div");
+        label.className = "ld-label";
+        label.dataset.i18n = "i2iLabel";
+        label.textContent = t(node, "i2iLabel");
+        const hint = document.createElement("div");
+        hint.className = "ld-hint";
+        hint.dataset.i18n = "i2iHint";
+        hint.textContent = t(node, "i2iHint");
+        hint.style.fontSize = "11px";
+        hint.style.opacity = "0.75";
+        hint.style.margin = "0 0 6px";
+
+        const thumb = document.createElement("div");
+        thumb.className = "ld-thumb";
+        thumb.style.height = "140px";
+        thumb.style.width = "100%";
+        thumb.style.position = "relative";
+        thumb.style.cursor = "pointer";
+        const ph = document.createElement("div");
+        ph.className = "ld-thumb-ph";
+        ph.dataset.i18n = "thumbPh";
+        ph.textContent = t(node, "thumbPh");
+        const imgEl = document.createElement("img");
+        imgEl.alt = "";
+        imgEl.style.display = "none";
+        const pickBtn = document.createElement("button");
+        pickBtn.type = "button";
+        pickBtn.className = "ld-thumb-pick";
+        pickBtn.textContent = "📂";
+        pickBtn.dataset.i18nTitle = "pickTitle";
+        pickBtn.title = t(node, "pickTitle");
+        const clearBtn = document.createElement("button");
+        clearBtn.type = "button";
+        clearBtn.className = "ld-thumb-clear";
+        clearBtn.textContent = "✖";
+        clearBtn.dataset.i18nTitle = "clearTitle";
+        clearBtn.title = t(node, "clearTitle");
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.style.display = "none";
+        thumb.append(ph, imgEl, pickBtn, clearBtn, fileInput);
+        const nameEl = document.createElement("div");
+        nameEl.className = "ld-thumb-name";
+        root.append(label, hint, thumb, nameEl);
+
+        const setArchivo = (info) => {
+            const w = widgetByName(node, "archivo");
+            if (w) w.value = info ? serializeArchivo(info) : "";
+            node.graph?.setDirtyCanvas?.(true, true);
+            refreshThumb();
+        };
+        const refreshThumb = () => {
+            const info = parseArchivo(widgetValue(node, "archivo", ""));
+            const has = !!(info && info.filename);
+            thumb.classList.toggle("has-img", has);
+            if (has) {
+                imgEl.src = imageViewUrl(info);
+                imgEl.style.display = "block";
+                ph.style.display = "none";
+                nameEl.textContent = info.filename + (info.subfolder ? ` (${info.subfolder})` : "");
+            } else {
+                imgEl.removeAttribute("src");
+                imgEl.style.display = "none";
+                ph.style.display = "block";
+                nameEl.textContent = "";
+            }
+        };
+        const pickFile = () => fileInput.click();
+        thumb.addEventListener("click", (ev) => {
+            if (ev.target === pickBtn || ev.target === clearBtn) return;
+            pickFile();
+        });
+        thumb.addEventListener("dragover", (ev) => {
+            ev.preventDefault();
+            thumb.classList.add("drag");
+        });
+        thumb.addEventListener("dragleave", () => thumb.classList.remove("drag"));
+        thumb.addEventListener("drop", async (ev) => {
+            ev.preventDefault();
+            thumb.classList.remove("drag");
+            const file = ev.dataTransfer?.files?.[0];
+            if (!file) return;
+            try {
+                setArchivo(await uploadInputImage(file));
+            } catch (err) {
+                nameEl.textContent = String(err?.message || err || t(node, "uploadFail"));
+            }
+        });
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            fileInput.value = "";
+            if (!file) return;
+            try {
+                setArchivo(await uploadInputImage(file));
+            } catch (err) {
+                nameEl.textContent = String(err?.message || err || t(node, "uploadFail"));
+            }
+        });
+        pickBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            showImagePicker(pickBtn, async (picked) => {
+                if (picked?.upload) {
+                    pickFile();
+                    return;
+                }
+                if (picked?.filename) setArchivo(picked);
+            });
+        });
+        clearBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            setArchivo(null);
+        });
+
+        const dom = node.addDOMWidget("ld_i2i_thumb", "div", root, { serialize: false, hideOnZoom: false });
+        if (dom) {
+            dom.serialize = false;
+            dom.computeSize = (width) => [width || 200, 210];
+        }
+        node._ldRefreshI18n = () => {
+            label.textContent = t(node, "i2iLabel");
+            hint.textContent = t(node, "i2iHint");
+            ph.textContent = t(node, "thumbPh");
+            pickBtn.title = t(node, "pickTitle");
+            clearBtn.title = t(node, "clearTitle");
+            const d = widgetByName(node, "denoise");
+            if (d && d.label !== undefined) d.label = t(node, "denoise");
+            const s = widgetByName(node, "steps_krea2");
+            if (s && s.label !== undefined) s.label = t(node, "stepsKrea2");
+        };
+        node._ldI2iUi = true;
+        refreshThumb();
+    };
+
+    installSafeHook(nodeType, "onNodeCreated", function () {
+        ensureUi(this);
+        if (!this.size || this.size[0] < 300) {
+            if (typeof this.setSize === "function") this.setSize([400, 320]);
+            else this.size = [400, 320];
+        }
+    });
+    installSafeHook(nodeType, "onConfigure", function (info) {
+        repairNodeWidgets(this);
+        ensureUi(this);
+    });
+}
+
+function isWriterNode(node) {
+    const typ = String(node?.type || node?.comfyClass || "");
+    return typ === "LD_LMStudioPromptWriterV2" || typ === "LD_LMStudioPromptWriter";
+}
+
+function syncWriterPanelToWidgets(node) {
+    if (!node) return;
+    const panel = node._ldPanel;
+    panel?.syncToWidgets?.();
+    if (!panel) return;
+    const pw = widgetByName(node, "prompt_generado");
+    const nw = widgetByName(node, "negativo_generado");
+    const iw = widgetByName(node, "idea");
+    if (panel.pos && pw) pw.value = panel.pos.value;
+    if (panel.neg && nw) nw.value = panel.neg.value;
+    if (panel.ideaArea && iw) iw.value = panel.ideaArea.value;
+    if (Array.isArray(node.widgets) && Array.isArray(node.widgets_values)) {
+        node.widgets.forEach((w, i) => {
+            if (!w || w.serialize === false) return;
+            if (i < node.widgets_values.length && (w.name === "prompt_generado" || w.name === "negativo_generado" || w.name === "idea")) {
+                node.widgets_values[i] = w.value;
+            }
+        });
+    }
+}
+
+function syncAllWriterPanelsToWidgets() {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (isWriterNode(n)) syncWriterPanelToWidgets(n);
+    }
+}
+
+function hookWriterSerialize(node) {
+    if (!node || node._ldSerializeHooked) return;
+    node._ldSerializeHooked = true;
+    for (const name of ["prompt_generado", "negativo_generado", "idea"]) {
+        const w = widgetByName(node, name);
+        if (!w) continue;
+        w.serialize = true;
+        const orig = w.serializeValue?.bind(w);
+        w.serializeValue = async function (n, index) {
+            const target = n || node;
+            const panel = target?._ldPanel;
+            if (name === "prompt_generado" && panel?.pos) return String(panel.pos.value ?? "");
+            if (name === "negativo_generado" && panel?.neg) return String(panel.neg.value ?? "");
+            if (name === "idea" && panel?.ideaArea) return String(panel.ideaArea.value ?? "");
+            if (typeof orig === "function") return await orig(n, index);
+            return this.value;
+        };
+    }
+}
+
+function injectWriterPromptsIntoGraphPrompt(result) {
+    if (!result) return result;
+    const output = result.output || result;
+    if (!output || typeof output !== "object") return result;
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (!isWriterNode(n)) continue;
+        const entry = output[n.id] || output[String(n.id)];
+        if (!entry || typeof entry !== "object") continue;
+        if (!entry.inputs || typeof entry.inputs !== "object") entry.inputs = entry.inputs || {};
+        const panel = n._ldPanel;
+        const pos = panel?.pos ? String(panel.pos.value ?? "") : String(widgetValue(n, "prompt_generado", "") || "");
+        const neg = panel?.neg ? String(panel.neg.value ?? "") : String(widgetValue(n, "negativo_generado", "") || "");
+        const idea = panel?.ideaArea ? String(panel.ideaArea.value ?? "") : String(widgetValue(n, "idea", "") || "");
+        entry.inputs.prompt_generado = pos;
+        entry.inputs.negativo_generado = neg;
+        if (panel?.ideaArea || widgetByName(n, "idea")) entry.inputs.idea = idea;
+        if (pos.trim()) entry.inputs.usar_prompt_generado = true;
+        for (let i = 1; i <= N_IMAGES; i++) {
+            const dw = widgetByName(n, `desc_imagen_${i}`);
+            const col = (panel?.cols || []).find((c) => c.index === i);
+            const desc = String((col?.desc?.value ?? dw?.value) || "");
+            if (desc) entry.inputs[`desc_imagen_${i}`] = desc;
+            const sig = aspectSignature(n, i);
+            if (sig) entry.inputs[`desc_aspects_${i}`] = sig;
+        }
+    }
+    return result;
+}
+
+async function prepareAllWritersForQueue() {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (!isWriterNode(n)) continue;
+        const setStatus = n._ldPanel?.setStatus || n._ldSetStatus;
+        await ensureEnglishFromSpanish(n, { setStatus });
+        const pos = String(n._ldPanel?.pos?.value || widgetValue(n, "prompt_generado", "") || "").trim();
+        if (!pos) await ensureImageDescriptions(n, { setStatus });
+    }
+}
+
 app.registerExtension({
     name: "LD.LMStudioPromptWriter",
+
     async beforeRegisterNodeDef(nodeType, nodeData) {
         const name = nodeData.name;
         if (name === CONFIG_NODE) {
             setupConfigNode(nodeType);
+        } else if (name === "LD_ModeloGen") {
+            setupModeloGen(nodeType);
         } else if (name === WRITER_V2) {
             setupWriterV2(nodeType);
         } else if (name === "LD_Tamano") {
             setupTamano(nodeType);
+        } else if (name === "LD_EmbeddingsNegativos") {
+            setupEmbeddings(nodeType);
+        } else if (name === "LD_GuardarImagen") {
+            setupGuardarImagen(nodeType);
+        } else if (name === "LD_ImagenBaseI2I") {
+            setupImagenBaseI2I(nodeType);
         } else if (name === OLD_WRITER) {
             setupOldWriter(nodeType);
+        }
+    },
+    loadedGraphNode(node) {
+        try {
+            repairNodeWidgets(node);
+        } catch (err) {
+            console.warn("[LD-PromptWriter] loadedGraphNode repair:", err);
+        }
+        try {
+            const typ = String(node?.type || node?.comfyClass || "");
+            if (typ === "LD_LMStudioPromptWriterV2") applyWriterChrome(node);
+        } catch (err) {
+            console.warn("[LD-PromptWriter] loadedGraphNode chrome:", err);
+        }
+    },
+    async setup() {
+        if (app._ldRepairQueueHooked) return;
+        app._ldRepairQueueHooked = true;
+        const orig = app.queuePrompt?.bind(app);
+        if (orig) {
+            app.queuePrompt = async function (...args) {
+                repairAllGraphWidgets(app.graph);
+                await prepareAllWritersForQueue();
+                syncAllWriterPanelsToWidgets();
+                return orig(...args);
+            };
+        }
+        if (!app._ldGraphToPromptHooked && typeof app.graphToPrompt === "function") {
+            app._ldGraphToPromptHooked = true;
+            const origGTP = app.graphToPrompt.bind(app);
+            app.graphToPrompt = async function (...args) {
+                syncAllWriterPanelsToWidgets();
+                const result = await origGTP(...args);
+                return injectWriterPromptsIntoGraphPrompt(result);
+            };
         }
     },
 });
