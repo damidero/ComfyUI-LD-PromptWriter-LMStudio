@@ -1,0 +1,14 @@
+[project]
+name = "comfyui-ld-promptwriter-lmstudio"
+description = "LM Studio prompt writer for ComfyUI (Krea2 / Illustrious) with reference images, per-image toggles and an aspect/MP size node."
+version = "1.0.0"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/damidero/ComfyUI-LD-PromptWriter-LMStudio"
+
+[tool.comfy]
+PublisherId = "damidero"
+DisplayName = "LD PromptWriter (LM Studio)"
+Icon = ""
