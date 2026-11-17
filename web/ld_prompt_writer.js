@@ -1065,6 +1065,23 @@ LLM (LM Studio)
 • Activá el servidor local de LM Studio (pestaña Developer / Local Server)
   y usá esa URL en el nodo Config.
 
+Vista en español
+• Primero se genera el prompt en inglés. Después, una llamada aparte
+  traduce al español el inglés FINAL (con los triggers de LoRA).
+• Podés editar el español: antes de generar o encolar se traduce
+  de vuelta al inglés.
+• Con Español es una llamada extra al LLM (un poco más lento).
+• Si agregás un LoRA después de generar, apretá Generar de nuevo
+  para que el español lo incluya.
+• En Illustrious se muestra una explicación de los tags.
+
+Ropa (selector del Writer)
+• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).
+• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al
+  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).
+• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.
+  Nunca se cambia solo.
+
 Nodos necesarios
 
 • LD PromptWriter (LM Studio) — este pack
@@ -1104,6 +1121,24 @@ LLM (LM Studio)
   (Qwen3-VL 8B Instruct, vision-capable; required for image description).
 • Enable the LM Studio local server (Developer / Local Server tab)
   and use that URL in the Config node.
+
+Spanish view
+• The English prompt is generated first. Then a separate call
+  translates the FINAL English (with the LoRA triggers) into Spanish.
+• You can edit the Spanish: before generating or queueing it is
+  translated back to English.
+• With Español this is one extra LLM call (a bit slower).
+• If you add a LoRA after generating, press Generate again
+  so the Spanish includes it.
+• Illustrious shows an explanation of the tags.
+
+Clothing (Writer selector)
+• LoRA: clothing from the LoRA triggers (the LLM decides if there are none).
+• Photo: clothing from the image with the Clothing chip wins. Picked
+  automatically when you turn a Clothing chip on; back to LoRA when
+  they are all off (or with Clear).
+• Nude: no clothing; ignores clothing from images and LoRAs.
+  Never changed automatically.
 
 Required nodes
 
