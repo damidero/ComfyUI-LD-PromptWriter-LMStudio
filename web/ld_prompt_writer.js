@@ -851,7 +851,7 @@ const I18N = {
         ideaPh: "La idea (o dejala vacía y usá una imagen de referencia).",
         generar: "✍️ Generar prompt",
         limpiar: "🧹 Limpiar",
-        limpiarTitle: "Borra idea, prompts, las 8 imágenes y sus descripciones (no toca interruptores, estilo ni LoRA).",
+        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones (no toca interruptores, estilo ni LoRA).",
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
         vistaEs: "Vista en español",
@@ -882,7 +882,7 @@ const I18N = {
         genOk: "✅ Prompt generado. Revisalo y después ejecutá el workflow.",
         genOkTriggers: "✅ Prompt generado. Los trigger words de los LoRA se completan al ejecutar el workflow.",
         genFail: "❌ No pude generar el prompt.",
-        cleared: "🧹 Listo: idea, prompts, imágenes y descripciones borrados.",
+        cleared: "🧹 Listo: idea, prompts, imágenes, selecciones y descripciones borrados.",
         uploadFail: "❌ No pude subir la imagen.",
         connectedWarn: "⚠️ Esta columna usa la entrada IMAGE conectada.",
         testing: "Probando conexión…",
@@ -929,7 +929,7 @@ const I18N = {
         ideaPh: "The idea (or leave it empty and use a reference image).",
         generar: "✍️ Generate prompt",
         limpiar: "🧹 Clear",
-        limpiarTitle: "Clears idea, prompts, the 8 images and their descriptions (does not touch toggles, style or LoRA).",
+        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions (does not touch toggles, style or LoRA).",
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
         vistaEs: "Spanish view",
@@ -960,7 +960,7 @@ const I18N = {
         genOk: "✅ Prompt generated. Review it, then run the workflow.",
         genOkTriggers: "✅ Prompt generated. LoRA trigger words are completed when you run the workflow.",
         genFail: "❌ I couldn't generate the prompt.",
-        cleared: "🧹 Done: idea, prompts, images and descriptions were cleared.",
+        cleared: "🧹 Done: idea, prompts, images, selections and descriptions were cleared.",
         uploadFail: "❌ I couldn't upload the image.",
         connectedWarn: "⚠️ This column uses the connected IMAGE input.",
         testing: "Testing connection…",
@@ -2549,6 +2549,11 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             col.desc.value = "";
             const aw = widgetByName(node, `archivo_imagen_${col.index}`);
             if (aw) aw.value = "";
+            for (const [key, chip] of Object.entries(col.chips || {})) {
+                const cw = widgetByName(node, `img${col.index}_${key}`);
+                if (cw) cw.value = false;
+                chip.classList.remove("on");
+            }
             col.refreshThumb?.();
         }
         syncToWidgets();
