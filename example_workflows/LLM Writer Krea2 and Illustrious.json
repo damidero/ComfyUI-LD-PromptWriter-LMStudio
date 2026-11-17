@@ -1,1 +1,4290 @@
-{"id":"6aa22b9a-045a-471b-866c-f5ce8df390f2","revision":0,"last_node_id":195,"last_link_id":512,"nodes":[{"id":152,"type":"PlaySound|pysssss","pos":[5240,280],"size":[270,106],"flags":{"collapsed":true,"pinned":true},"order":23,"mode":0,"inputs":[{"localized_name":"any","name":"any","type":"*","link":461},{"localized_name":"mode","name":"mode","type":"COMBO","widget":{"name":"mode"},"link":null},{"localized_name":"volume","name":"volume","type":"FLOAT","widget":{"name":"volume"},"link":null},{"localized_name":"file","name":"file","type":"STRING","widget":{"name":"file"},"link":null}],"outputs":[{"localized_name":"*","name":"*","shape":6,"type":"*","links":null}],"properties":{"cnr_id":"comfyui-custom-scripts","ver":"1.2.5","Node name for S&R":"PlaySound|pysssss","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"mode":true,"volume":true,"file":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["always",0.5,"notify.mp3"],"widgets_values_named":{"mode":"always","volume":0.5,"file":"notify.mp3"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":30,"type":"VAEDecode","pos":[5240,210],"size":[210,50],"flags":{"collapsed":true,"pinned":true},"order":20,"mode":0,"inputs":[{"localized_name":"muestras","name":"samples","type":"LATENT","link":197},{"localized_name":"vae","name":"vae","type":"VAE","link":313}],"outputs":[{"localized_name":"IMAGEN","name":"IMAGE","type":"IMAGE","slot_index":0,"links":[459]}],"title":"VAEDecode (Krea2)","properties":{"cnr_id":"comfy-core","ver":"0.3.61","Node name for S&R":"VAEDecode","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{},"version":"8.0.1","input_ue_unconnectable":{}}},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":100,"type":"VAELoader","pos":[47.816650390625,783.6666564941406],"size":[270,58],"flags":{"pinned":true},"order":0,"mode":0,"inputs":[{"localized_name":"nombre_de_vae","name":"vae_name","type":"COMBO","widget":{"name":"vae_name"},"link":null}],"outputs":[{"localized_name":"VAE","name":"VAE","type":"VAE","links":[313,511]}],"properties":{"cnr_id":"comfy-core","ver":"0.3.75","Node name for S&R":"VAELoader","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"vae_name":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["qwen_image_vae.safetensors"],"widgets_values_named":{"vae_name":"qwen_image_vae.safetensors"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":63,"type":"KSamplerAdvanced","pos":[3497.008251953124,388.66168518066416],"size":[270,862],"flags":{"pinned":true},"order":18,"mode":0,"inputs":[{"localized_name":"modelo","name":"model","type":"MODEL","link":464},{"localized_name":"positivo","name":"positive","type":"CONDITIONING","link":479},{"localized_name":"negativo","name":"negative","type":"CONDITIONING","link":463},{"localized_name":"imagen_latente","name":"latent_image","type":"LATENT","link":506},{"localized_name":"añadir_ruido","name":"add_noise","type":"COMBO","widget":{"name":"add_noise"},"link":null},{"localized_name":"semilla_de_ruido","name":"noise_seed","type":"INT","widget":{"name":"noise_seed"},"link":null},{"localized_name":"pasos","name":"steps","type":"INT","widget":{"name":"steps"},"link":null},{"localized_name":"cfg","name":"cfg","type":"FLOAT","widget":{"name":"cfg"},"link":null},{"localized_name":"nombre_del_muestreador","name":"sampler_name","type":"COMBO","widget":{"name":"sampler_name"},"link":null},{"localized_name":"programador","name":"scheduler","type":"COMBO","widget":{"name":"scheduler"},"link":null},{"localized_name":"iniciar_en_paso","name":"start_at_step","type":"INT","widget":{"name":"start_at_step"},"link":509},{"localized_name":"terminar_en_paso","name":"end_at_step","type":"INT","widget":{"name":"end_at_step"},"link":null},{"localized_name":"devolver_con_ruido_residual","name":"return_with_leftover_noise","type":"COMBO","widget":{"name":"return_with_leftover_noise"},"link":null}],"outputs":[{"localized_name":"LATENTE","name":"LATENT","type":"LATENT","links":[197]}],"properties":{"cnr_id":"comfy-core","ver":"0.3.61","Node name for S&R":"KSamplerAdvanced","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"add_noise":true,"noise_seed":true,"steps":true,"cfg":true,"sampler_name":true,"scheduler":true,"start_at_step":true,"end_at_step":true,"return_with_leftover_noise":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["enable",238712869449310,"randomize",8,1,"euler","simple",0,9999,"disable"],"widgets_values_named":{"add_noise":"enable","noise_seed":238712869449310,"control_after_generate":"randomize","steps":8,"cfg":1,"sampler_name":"euler","scheduler":"simple","start_at_step":0,"end_at_step":9999,"return_with_leftover_noise":"disable"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":168,"type":"Lora Loader (LoraManager)","pos":[610,70],"size":[411.4241027832031,563.52978515625],"flags":{"pinned":true},"order":10,"mode":0,"inputs":[{"localized_name":"model","name":"model","type":"MODEL","link":500},{"localized_name":"text","name":"text","type":"AUTOCOMPLETE_TEXT_LORAS","widget":{"name":"text"},"link":null},{"localized_name":"loras","name":"loras","type":"LORAS","widget":{"name":"loras"},"link":null},{"name":"clip","shape":7,"type":"CLIP","link":501},{"name":"lora_stack","shape":7,"type":"LORA_STACK","link":null}],"outputs":[{"localized_name":"MODELO","name":"MODEL","type":"MODEL","links":[464,502]},{"localized_name":"CLIP","name":"CLIP","type":"CLIP","links":[467,503,504]},{"localized_name":"trigger_words","name":"trigger_words","type":"STRING","links":[474]},{"localized_name":"loaded_loras","name":"loaded_loras","type":"STRING","links":null}],"title":"Lora Loader","properties":{"cnr_id":"comfyui-lora-manager","ver":"392c157cb531805888d4d5054db58dd38ac721ee","Node name for S&R":"Lora Loader (LoraManager)","__lm_widget_ids":["__lm_autocomplete_meta_text","text","loras"],"ue_properties":{"widget_ue_connectable":{"text":true,"loras":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[{"version":1,"textWidgetName":"text"},"",[]],"widgets_values_named":{"__lm_autocomplete_meta_text":{"version":1,"textWidgetName":"text"},"text":"","loras":[]},"color":"#26374b","bgcolor":"#1b222b"},{"id":106,"type":"LD_GuardarImagen","pos":[3819.9485668945304,96.09847167968746],"size":[393.3962083069025,648],"flags":{"pinned":true},"order":22,"mode":0,"inputs":[{"localized_name":"images","name":"images","type":"IMAGE","link":459},{"localized_name":"filename_prefix","name":"filename_prefix","type":"STRING","widget":{"name":"filename_prefix"},"link":null},{"localized_name":"guardado_automatico","name":"guardado_automatico","type":"BOOLEAN","widget":{"name":"guardado_automatico"},"link":null}],"outputs":[{"localized_name":"images","name":"images","type":"IMAGE","links":[461]}],"title":"Guardar (Krea2)","properties":{"Node name for S&R":"LD_GuardarImagen","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"filename_prefix":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["Krea2",true],"widgets_values_named":{"filename_prefix":"Krea2","guardado_automatico":true},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":98,"type":"UNETLoader","pos":[35.5333251953125,343.5],"size":[420,82],"flags":{"pinned":true},"order":1,"mode":0,"inputs":[{"localized_name":"nombre_de_unet","name":"unet_name","type":"COMBO","widget":{"name":"unet_name"},"link":null},{"localized_name":"tipo_dato_peso","name":"weight_dtype","type":"COMBO","widget":{"name":"weight_dtype"},"link":null}],"outputs":[{"localized_name":"MODELO","name":"MODEL","type":"MODEL","links":[496]}],"properties":{"cnr_id":"comfy-core","ver":"0.3.75","Node name for S&R":"UNETLoader","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"unet_name":true,"weight_dtype":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["Krea2-Turbo-HD-V1-int8_convrot.safetensors","default"],"widgets_values_named":{"unet_name":"Krea2-Turbo-HD-V1-int8_convrot.safetensors","weight_dtype":"default"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":99,"type":"CLIPLoader","pos":[45.5833740234375,624.1667175292969],"size":[306,106],"flags":{"pinned":true},"order":2,"mode":0,"inputs":[{"localized_name":"nombre_de_clip","name":"clip_name","type":"COMBO","widget":{"name":"clip_name"},"link":null},{"localized_name":"tipo","name":"type","type":"COMBO","widget":{"name":"type"},"link":null},{"localized_name":"dispositivo","name":"device","shape":7,"type":"COMBO","widget":{"name":"device"},"link":null}],"outputs":[{"localized_name":"CLIP","name":"CLIP","type":"CLIP","links":[497]}],"properties":{"cnr_id":"comfy-core","ver":"0.3.75","Node name for S&R":"CLIPLoader","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"clip_name":true,"type":true,"device":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["qwen3vl_4b_fp8_scaled.safetensors","krea2","default"],"widgets_values_named":{"clip_name":"qwen3vl_4b_fp8_scaled.safetensors","type":"krea2","device":"default"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":173,"type":"ConditioningZeroOut","pos":[5240,140],"size":[300,46],"flags":{"collapsed":true,"pinned":true},"order":16,"mode":0,"inputs":[{"localized_name":"acondicionamiento","name":"conditioning","type":"CONDITIONING","link":480}],"outputs":[{"localized_name":"ACONDICIONAMIENTO","name":"CONDITIONING","type":"CONDITIONING","links":[463]}],"title":"Zero Out (Krea2)","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"ConditioningZeroOut","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{},"version":"8.0.1","input_ue_unconnectable":{}}},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":175,"type":"LD_LMStudioPromptWriterV2","pos":[1606.5371497288234,50.61982462228827],"size":[1320,1495],"flags":{"pinned":true},"order":12,"mode":0,"inputs":[{"localized_name":"config","name":"config","type":"LD_LMSTUDIO_CFG","pos":[0,14],"link":472},{"localized_name":"idea","name":"idea","type":"STRING","widget":{"name":"idea"},"link":null},{"localized_name":"usar_imagen_1","name":"usar_imagen_1","type":"COMBO","widget":{"name":"usar_imagen_1"},"link":null},{"localized_name":"usar_imagen_2","name":"usar_imagen_2","type":"COMBO","widget":{"name":"usar_imagen_2"},"link":null},{"localized_name":"usar_prompt_generado","name":"usar_prompt_generado","type":"BOOLEAN","widget":{"name":"usar_prompt_generado"},"link":null},{"localized_name":"prompt_generado","name":"prompt_generado","type":"STRING","widget":{"name":"prompt_generado"},"link":null},{"localized_name":"negativo_generado","name":"negativo_generado","type":"STRING","widget":{"name":"negativo_generado"},"link":null},{"localized_name":"estilo_salida","name":"estilo_salida","type":"COMBO","widget":{"name":"estilo_salida"},"link":null},{"localized_name":"img1_accion","name":"img1_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img1_accion"},"link":null},{"localized_name":"img1_persona","name":"img1_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img1_persona"},"link":null},{"localized_name":"img1_fondo","name":"img1_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img1_fondo"},"link":null},{"localized_name":"img1_estilo","name":"img1_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img1_estilo"},"link":null},{"localized_name":"img1_ropa","name":"img1_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img1_ropa"},"link":null},{"localized_name":"desc_imagen_1","name":"desc_imagen_1","shape":7,"type":"STRING","widget":{"name":"desc_imagen_1"},"link":null},{"localized_name":"img2_accion","name":"img2_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img2_accion"},"link":null},{"localized_name":"img2_persona","name":"img2_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img2_persona"},"link":null},{"localized_name":"img2_fondo","name":"img2_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img2_fondo"},"link":null},{"localized_name":"img2_estilo","name":"img2_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img2_estilo"},"link":null},{"localized_name":"img2_ropa","name":"img2_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img2_ropa"},"link":null},{"localized_name":"desc_imagen_2","name":"desc_imagen_2","shape":7,"type":"STRING","widget":{"name":"desc_imagen_2"},"link":null},{"localized_name":"img3_accion","name":"img3_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img3_accion"},"link":null},{"localized_name":"img3_persona","name":"img3_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img3_persona"},"link":null},{"localized_name":"img3_fondo","name":"img3_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img3_fondo"},"link":null},{"localized_name":"img3_estilo","name":"img3_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img3_estilo"},"link":null},{"localized_name":"img3_ropa","name":"img3_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img3_ropa"},"link":null},{"localized_name":"desc_imagen_3","name":"desc_imagen_3","shape":7,"type":"STRING","widget":{"name":"desc_imagen_3"},"link":null},{"localized_name":"img4_accion","name":"img4_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img4_accion"},"link":null},{"localized_name":"img4_persona","name":"img4_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img4_persona"},"link":null},{"localized_name":"img4_fondo","name":"img4_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img4_fondo"},"link":null},{"localized_name":"img4_estilo","name":"img4_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img4_estilo"},"link":null},{"localized_name":"img4_ropa","name":"img4_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img4_ropa"},"link":null},{"localized_name":"desc_imagen_4","name":"desc_imagen_4","shape":7,"type":"STRING","widget":{"name":"desc_imagen_4"},"link":null},{"localized_name":"archivo_imagen_1","name":"archivo_imagen_1","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_1"},"link":null},{"localized_name":"archivo_imagen_2","name":"archivo_imagen_2","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_2"},"link":null},{"localized_name":"archivo_imagen_3","name":"archivo_imagen_3","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_3"},"link":null},{"localized_name":"archivo_imagen_4","name":"archivo_imagen_4","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_4"},"link":null},{"localized_name":"num_personas","name":"num_personas","shape":7,"type":"COMBO","widget":{"name":"num_personas"},"link":null},{"localized_name":"camara","name":"camara","shape":7,"type":"COMBO","widget":{"name":"camara"},"link":null},{"localized_name":"img1_camara","name":"img1_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img1_camara"},"link":null},{"localized_name":"img2_camara","name":"img2_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img2_camara"},"link":null},{"localized_name":"img3_camara","name":"img3_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img3_camara"},"link":null},{"localized_name":"img4_camara","name":"img4_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img4_camara"},"link":null},{"localized_name":"img1_pose","name":"img1_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img1_pose"},"link":null},{"localized_name":"img2_pose","name":"img2_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img2_pose"},"link":null},{"localized_name":"img3_pose","name":"img3_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img3_pose"},"link":null},{"localized_name":"img4_pose","name":"img4_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img4_pose"},"link":null},{"localized_name":"archivo_imagen_5","name":"archivo_imagen_5","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_5"},"link":null},{"localized_name":"desc_imagen_5","name":"desc_imagen_5","shape":7,"type":"STRING","widget":{"name":"desc_imagen_5"},"link":null},{"localized_name":"img5_accion","name":"img5_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img5_accion"},"link":null},{"localized_name":"img5_pose","name":"img5_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img5_pose"},"link":null},{"localized_name":"img5_persona","name":"img5_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img5_persona"},"link":null},{"localized_name":"img5_ropa","name":"img5_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img5_ropa"},"link":null},{"localized_name":"img5_fondo","name":"img5_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img5_fondo"},"link":null},{"localized_name":"img5_estilo","name":"img5_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img5_estilo"},"link":null},{"localized_name":"img5_camara","name":"img5_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img5_camara"},"link":null},{"localized_name":"archivo_imagen_6","name":"archivo_imagen_6","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_6"},"link":null},{"localized_name":"desc_imagen_6","name":"desc_imagen_6","shape":7,"type":"STRING","widget":{"name":"desc_imagen_6"},"link":null},{"localized_name":"img6_accion","name":"img6_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img6_accion"},"link":null},{"localized_name":"img6_pose","name":"img6_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img6_pose"},"link":null},{"localized_name":"img6_persona","name":"img6_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img6_persona"},"link":null},{"localized_name":"img6_ropa","name":"img6_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img6_ropa"},"link":null},{"localized_name":"img6_fondo","name":"img6_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img6_fondo"},"link":null},{"localized_name":"img6_estilo","name":"img6_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img6_estilo"},"link":null},{"localized_name":"img6_camara","name":"img6_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img6_camara"},"link":null},{"localized_name":"archivo_imagen_7","name":"archivo_imagen_7","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_7"},"link":null},{"localized_name":"desc_imagen_7","name":"desc_imagen_7","shape":7,"type":"STRING","widget":{"name":"desc_imagen_7"},"link":null},{"localized_name":"img7_accion","name":"img7_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img7_accion"},"link":null},{"localized_name":"img7_pose","name":"img7_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img7_pose"},"link":null},{"localized_name":"img7_persona","name":"img7_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img7_persona"},"link":null},{"localized_name":"img7_ropa","name":"img7_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img7_ropa"},"link":null},{"localized_name":"img7_fondo","name":"img7_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img7_fondo"},"link":null},{"localized_name":"img7_estilo","name":"img7_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img7_estilo"},"link":null},{"localized_name":"img7_camara","name":"img7_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img7_camara"},"link":null},{"localized_name":"archivo_imagen_8","name":"archivo_imagen_8","shape":7,"type":"STRING","widget":{"name":"archivo_imagen_8"},"link":null},{"localized_name":"desc_imagen_8","name":"desc_imagen_8","shape":7,"type":"STRING","widget":{"name":"desc_imagen_8"},"link":null},{"localized_name":"img8_accion","name":"img8_accion","shape":7,"type":"BOOLEAN","widget":{"name":"img8_accion"},"link":null},{"localized_name":"img8_pose","name":"img8_pose","shape":7,"type":"BOOLEAN","widget":{"name":"img8_pose"},"link":null},{"localized_name":"img8_persona","name":"img8_persona","shape":7,"type":"BOOLEAN","widget":{"name":"img8_persona"},"link":null},{"localized_name":"img8_ropa","name":"img8_ropa","shape":7,"type":"BOOLEAN","widget":{"name":"img8_ropa"},"link":null},{"localized_name":"img8_fondo","name":"img8_fondo","shape":7,"type":"BOOLEAN","widget":{"name":"img8_fondo"},"link":null},{"localized_name":"img8_estilo","name":"img8_estilo","shape":7,"type":"BOOLEAN","widget":{"name":"img8_estilo"},"link":null},{"localized_name":"img8_camara","name":"img8_camara","shape":7,"type":"BOOLEAN","widget":{"name":"img8_camara"},"link":null},{"localized_name":"num_personas_custom","name":"num_personas_custom","shape":7,"type":"INT","widget":{"name":"num_personas_custom"},"link":null},{"localized_name":"ocultar_ajustes","name":"ocultar_ajustes","shape":7,"type":"BOOLEAN","widget":{"name":"ocultar_ajustes"},"link":null},{"localized_name":"ocultar_imagenes","name":"ocultar_imagenes","shape":7,"type":"BOOLEAN","widget":{"name":"ocultar_imagenes"},"link":null}],"outputs":[],"properties":{"Node name for S&R":"LD_LMStudioPromptWriterV2","ld_io_on_config":true,"ld_accion_pose_split":true,"ue_properties":{"widget_ue_connectable":{"idea":true,"usar_imagen_1":true,"usar_imagen_2":true,"usar_prompt_generado":true,"prompt_generado":true,"negativo_generado":true,"estilo_salida":true,"img1_accion":true,"img1_persona":true,"img1_fondo":true,"img1_estilo":true,"img1_ropa":true,"desc_imagen_1":true,"img2_accion":true,"img2_persona":true,"img2_fondo":true,"img2_estilo":true,"img2_ropa":true,"desc_imagen_2":true,"img3_accion":true,"img3_persona":true,"img3_fondo":true,"img3_estilo":true,"img3_ropa":true,"desc_imagen_3":true,"img4_accion":true,"img4_persona":true,"img4_fondo":true,"img4_estilo":true,"img4_ropa":true,"desc_imagen_4":true,"archivo_imagen_1":true,"archivo_imagen_2":true,"archivo_imagen_3":true,"archivo_imagen_4":true,"num_personas":true},"version":"8.0.1","input_ue_unconnectable":{}},"ld_vista_es":"","ld_vista_es_dirty":false,"ld_pos_dirty":false,"ld_desc_meta":{}},"widgets_values":["","todo","todo",true,"","","(como la referencia)",false,false,false,false,true,"",false,false,false,false,false,"",false,true,false,false,false,"",false,false,false,false,false,"","","","","","Auto (decide el LLM)","(Automático - decide el LLM)",false,true,false,false,true,false,false,false,"","",false,false,false,false,false,false,false,"","",false,false,false,false,false,false,false,"","",false,false,false,false,false,false,false,"","",false,false,false,false,false,false,false,1,false,false],"widgets_values_named":{"idea":"","usar_imagen_1":"todo","usar_imagen_2":"todo","usar_prompt_generado":true,"prompt_generado":"","negativo_generado":"","estilo_salida":"(como la referencia)","img1_accion":false,"img1_persona":false,"img1_fondo":false,"img1_estilo":false,"img1_ropa":true,"desc_imagen_1":"","img2_accion":false,"img2_persona":false,"img2_fondo":false,"img2_estilo":false,"img2_ropa":false,"desc_imagen_2":"","img3_accion":false,"img3_persona":true,"img3_fondo":false,"img3_estilo":false,"img3_ropa":false,"desc_imagen_3":"","img4_accion":false,"img4_persona":false,"img4_fondo":false,"img4_estilo":false,"img4_ropa":false,"desc_imagen_4":"","archivo_imagen_1":"","archivo_imagen_2":"","archivo_imagen_3":"","archivo_imagen_4":"","num_personas":"Auto (decide el LLM)","camara":"(Automático - decide el LLM)","img1_camara":false,"img2_camara":true,"img3_camara":false,"img4_camara":false,"img1_pose":true,"img2_pose":false,"img3_pose":false,"img4_pose":false,"archivo_imagen_5":"","desc_imagen_5":"","img5_accion":false,"img5_pose":false,"img5_persona":false,"img5_ropa":false,"img5_fondo":false,"img5_estilo":false,"img5_camara":false,"archivo_imagen_6":"","desc_imagen_6":"","img6_accion":false,"img6_pose":false,"img6_persona":false,"img6_ropa":false,"img6_fondo":false,"img6_estilo":false,"img6_camara":false,"archivo_imagen_7":"","desc_imagen_7":"","img7_accion":false,"img7_pose":false,"img7_persona":false,"img7_ropa":false,"img7_fondo":false,"img7_estilo":false,"img7_camara":false,"archivo_imagen_8":"","desc_imagen_8":"","img8_accion":false,"img8_pose":false,"img8_persona":false,"img8_ropa":false,"img8_fondo":false,"img8_estilo":false,"img8_camara":false,"num_personas_custom":1,"ocultar_ajustes":false,"ocultar_imagenes":false},"color":"#203c40","bgcolor":"#1b222b"},{"id":176,"type":"CLIPTextEncode","pos":[5240,70],"size":[320,150],"flags":{"collapsed":true,"pinned":true},"order":13,"mode":0,"inputs":[{"localized_name":"clip","name":"clip","type":"CLIP","link":467},{"localized_name":"texto","name":"text","type":"STRING","widget":{"name":"text"},"link":466}],"outputs":[{"localized_name":"ACONDICIONAMIENTO","name":"CONDITIONING","type":"CONDITIONING","links":[479,480]}],"title":"CLIP Encode (Writer)","properties":{"cnr_id":"comfy-core","ver":"0.3.62","Node name for S&R":"CLIPTextEncode","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"text":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[""],"widgets_values_named":{"text":""},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":178,"type":"LD_LMStudioConfig","pos":[1171,70],"size":[400,820],"flags":{"pinned":true},"order":11,"mode":0,"inputs":[{"localized_name":"image_1","name":"image_1","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_2","name":"image_2","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_3","name":"image_3","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_4","name":"image_4","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_5","name":"image_5","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_6","name":"image_6","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_7","name":"image_7","shape":7,"type":"IMAGE","link":null},{"localized_name":"image_8","name":"image_8","shape":7,"type":"IMAGE","link":null},{"localized_name":"lora_triggers","name":"lora_triggers","shape":7,"type":"STRING","link":474},{"localized_name":"neg_embeddings","name":"neg_embeddings","shape":7,"type":"STRING","link":495},{"localized_name":"url","name":"url","type":"STRING","widget":{"name":"url"},"link":null},{"localized_name":"model","name":"model","type":"COMBO","widget":{"name":"model"},"link":null},{"localized_name":"mode","name":"mode","type":"COMBO","widget":{"name":"mode"},"link":null},{"localized_name":"temperature","name":"temperature","type":"FLOAT","widget":{"name":"temperature"},"link":null},{"localized_name":"max_tokens","name":"max_tokens","type":"INT","widget":{"name":"max_tokens"},"link":null},{"localized_name":"seed","name":"seed","type":"INT","widget":{"name":"seed"},"link":null},{"localized_name":"unload_after","name":"unload_after","type":"BOOLEAN","widget":{"name":"unload_after"},"link":null},{"localized_name":"extra_instructions","name":"extra_instructions","type":"STRING","widget":{"name":"extra_instructions"},"link":null},{"localized_name":"idioma","name":"idioma","type":"COMBO","widget":{"name":"idioma"},"link":null},{"localized_name":"descarga_idle_min","name":"descarga_idle_min","type":"INT","widget":{"name":"descarga_idle_min"},"link":null}],"outputs":[{"localized_name":"config","name":"config","type":"LD_LMSTUDIO_CFG","links":[472]},{"localized_name":"positive","name":"positive","type":"STRING","links":[466,487]},{"localized_name":"negative","name":"negative","type":"STRING","links":[505]}],"properties":{"Node name for S&R":"LD_LMStudioConfig","ue_properties":{"widget_ue_connectable":{"url":true,"model":true,"mode":true,"temperature":true,"max_tokens":true,"seed":true,"unload_after":true,"extra_instructions":true,"idioma":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["http://127.0.0.1:1234","(auto: el cargado)","Krea2 (natural)",0.7,600,0,"fixed",true,"","Español",0],"widgets_values_named":{"url":"http://127.0.0.1:1234","model":"(auto: el cargado)","mode":"Krea2 (natural)","temperature":0.7,"max_tokens":600,"seed":0,"control_after_generate":"fixed","unload_after":true,"extra_instructions":"","idioma":"Español","descarga_idle_min":0},"color":"#203c40","bgcolor":"#1b222b"},{"id":182,"type":"LD_Tamano","pos":[3481.609458007814,101.67596954345703],"size":[300,230],"flags":{"pinned":true},"order":3,"mode":0,"inputs":[{"localized_name":"proporcion","name":"proporcion","type":"COMBO","widget":{"name":"proporcion"},"link":null},{"localized_name":"megapixeles","name":"megapixeles","type":"COMBO","widget":{"name":"megapixeles"},"link":null},{"localized_name":"intercambiar","name":"intercambiar","type":"BOOLEAN","widget":{"name":"intercambiar"},"link":null},{"localized_name":"batch","name":"batch","type":"INT","widget":{"name":"batch"},"link":null},{"localized_name":"resultado","name":"resultado","type":"STRING","widget":{"name":"resultado"},"link":null}],"outputs":[{"localized_name":"latent","name":"latent","type":"LATENT","links":[477]},{"localized_name":"width","name":"width","type":"INT","links":[]},{"localized_name":"height","name":"height","type":"INT","links":[]}],"properties":{"Node name for S&R":"LD_Tamano","ld_branch":"krea2","ue_properties":{"widget_ue_connectable":{"proporcion":true,"megapixeles":true,"intercambiar":true,"batch":true,"resultado":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["4:3","1.08 MP",true,1,"896 × 1200"],"widgets_values_named":{"proporcion":"4:3","megapixeles":"1.08 MP","intercambiar":true,"batch":1,"resultado":"896 × 1200"},"color":"#1e4a56","bgcolor":"#1b222b"},{"id":184,"type":"LD_ModeloGen","pos":[40,70],"size":[420,220],"flags":{"pinned":true},"order":8,"mode":0,"inputs":[{"localized_name":"model_krea2","name":"model_krea2","shape":7,"type":"MODEL","link":496},{"localized_name":"clip_krea2","name":"clip_krea2","shape":7,"type":"CLIP","link":497},{"localized_name":"model_illustrious","name":"model_illustrious","shape":7,"type":"MODEL","link":498},{"localized_name":"clip_illustrious","name":"clip_illustrious","shape":7,"type":"CLIP","link":499},{"localized_name":"modelo","name":"modelo","type":"COMBO","widget":{"name":"modelo"},"link":null},{"localized_name":"idioma","name":"idioma","type":"COMBO","widget":{"name":"idioma"},"link":null}],"outputs":[{"localized_name":"modelo","name":"modelo","type":"STRING","links":[510]},{"localized_name":"model","name":"model","type":"MODEL","links":[500]},{"localized_name":"clip","name":"clip","type":"CLIP","links":[501]}],"properties":{"Node name for S&R":"LD_ModeloGen","ue_properties":{"widget_ue_connectable":{"modelo":true,"idioma":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["Krea2","Español"],"widgets_values_named":{"modelo":"Krea2","idioma":"Español"},"color":"#473122","bgcolor":"#1b222b"},{"id":185,"type":"CheckpointLoaderSimple","pos":[36.64996337890625,474.7833251953125],"size":[420,98],"flags":{"pinned":true},"order":4,"mode":2,"inputs":[{"localized_name":"nombre_de_checkpoint","name":"ckpt_name","type":"COMBO","widget":{"name":"ckpt_name"},"link":null}],"outputs":[{"localized_name":"MODELO","name":"MODEL","type":"MODEL","links":[498]},{"localized_name":"CLIP","name":"CLIP","type":"CLIP","links":[499]},{"localized_name":"VAE","name":"VAE","type":"VAE","links":[483,512]}],"title":"Checkpoint Illustrious","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"CheckpointLoaderSimple","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"ckpt_name":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["waiIllustriousSDXL_v170.safetensors"],"widgets_values_named":{"ckpt_name":"waiIllustriousSDXL_v170.safetensors"},"color":"#432738","bgcolor":"#1b222b"},{"id":186,"type":"Note","pos":[30.87451676297799,1002.7373677403473],"size":[430,340],"flags":{"pinned":true},"order":5,"mode":0,"inputs":[],"outputs":[],"title":"Recomendaciones de modelos","properties":{"text":"Recomendaciones de modelos\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: qwen_qwen3-vl-8b-instruct\n  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá.","Node name for S&R":"Note","ue_properties":{"widget_ue_connectable":{},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["Recomendaciones de modelos\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: qwen_qwen3-vl-8b-instruct\n  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."],"widgets_values_named":{"text":"Recomendaciones de modelos\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: qwen_qwen3-vl-8b-instruct\n  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."},"color":"#344029","bgcolor":"#1b222b"},{"id":188,"type":"CLIPTextEncode","pos":[5640,70],"size":[360,150],"flags":{"collapsed":true,"pinned":true},"order":14,"mode":2,"inputs":[{"localized_name":"clip","name":"clip","type":"CLIP","link":503},{"localized_name":"texto","name":"text","type":"STRING","widget":{"name":"text"},"link":487}],"outputs":[{"localized_name":"ACONDICIONAMIENTO","name":"CONDITIONING","type":"CONDITIONING","links":[489]}],"title":"CLIP Encode + (Illustrious)","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"CLIPTextEncode","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"text":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[""],"widgets_values_named":{"text":""},"color":"#432738","bgcolor":"#1b222b"},{"id":189,"type":"CLIPTextEncode","pos":[5640,140],"size":[360,150],"flags":{"collapsed":true,"pinned":true},"order":15,"mode":2,"inputs":[{"localized_name":"clip","name":"clip","type":"CLIP","link":504},{"localized_name":"texto","name":"text","type":"STRING","widget":{"name":"text"},"link":505}],"outputs":[{"localized_name":"ACONDICIONAMIENTO","name":"CONDITIONING","type":"CONDITIONING","links":[490]}],"title":"CLIP Encode − (Illustrious)","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"CLIPTextEncode","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"text":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[""],"widgets_values_named":{"text":""},"color":"#432738","bgcolor":"#1b222b"},{"id":190,"type":"LD_Tamano","pos":[4295.937515869139,129.23653137207032],"size":[300,230],"flags":{"pinned":true},"order":6,"mode":2,"inputs":[{"localized_name":"proporcion","name":"proporcion","type":"COMBO","widget":{"name":"proporcion"},"link":null},{"localized_name":"megapixeles","name":"megapixeles","type":"COMBO","widget":{"name":"megapixeles"},"link":null},{"localized_name":"intercambiar","name":"intercambiar","type":"BOOLEAN","widget":{"name":"intercambiar"},"link":null},{"localized_name":"batch","name":"batch","type":"INT","widget":{"name":"batch"},"link":null},{"localized_name":"resultado","name":"resultado","type":"STRING","widget":{"name":"resultado"},"link":null}],"outputs":[{"localized_name":"latent","name":"latent","type":"LATENT","links":[491]},{"localized_name":"width","name":"width","type":"INT","links":[]},{"localized_name":"height","name":"height","type":"INT","links":[]}],"title":"Tamaño (Illustrious)","properties":{"Node name for S&R":"LD_Tamano","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"proporcion":true,"megapixeles":true,"intercambiar":true,"batch":true,"resultado":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["2:3","1.0 MP",false,1,"816 × 1232"],"widgets_values_named":{"proporcion":"2:3","megapixeles":"1.0 MP","intercambiar":false,"batch":1,"resultado":"816 × 1232"},"color":"#432738","bgcolor":"#1b222b"},{"id":191,"type":"KSampler","pos":[4302.402960205074,417.5090460205078],"size":[300,790],"flags":{"pinned":true},"order":17,"mode":2,"inputs":[{"localized_name":"modelo","name":"model","type":"MODEL","link":502},{"localized_name":"positivo","name":"positive","type":"CONDITIONING","link":489},{"localized_name":"negativo","name":"negative","type":"CONDITIONING","link":490},{"localized_name":"imagen_latente","name":"latent_image","type":"LATENT","link":507},{"localized_name":"semilla","name":"seed","type":"INT","widget":{"name":"seed"},"link":null},{"localized_name":"pasos","name":"steps","type":"INT","widget":{"name":"steps"},"link":null},{"localized_name":"cfg","name":"cfg","type":"FLOAT","widget":{"name":"cfg"},"link":null},{"localized_name":"nombre_del_muestreador","name":"sampler_name","type":"COMBO","widget":{"name":"sampler_name"},"link":null},{"localized_name":"programador","name":"scheduler","type":"COMBO","widget":{"name":"scheduler"},"link":null},{"localized_name":"reducción_de_ruido","name":"denoise","type":"FLOAT","widget":{"name":"denoise"},"link":508}],"outputs":[{"localized_name":"LATENTE","name":"LATENT","type":"LATENT","links":[492]}],"title":"KSampler (Illustrious)","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"KSampler","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"seed":true,"steps":true,"cfg":true,"sampler_name":true,"scheduler":true,"denoise":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[345989590171445,"randomize",28,5.5,"euler_ancestral","normal",1],"widgets_values_named":{"seed":345989590171445,"control_after_generate":"randomize","steps":28,"cfg":5.5,"sampler_name":"euler_ancestral","scheduler":"normal","denoise":1},"color":"#432738","bgcolor":"#1b222b"},{"id":192,"type":"VAEDecode","pos":[5640,210],"size":[210,50],"flags":{"collapsed":true,"pinned":true},"order":19,"mode":2,"inputs":[{"localized_name":"muestras","name":"samples","type":"LATENT","link":492},{"localized_name":"vae","name":"vae","type":"VAE","link":483}],"outputs":[{"localized_name":"IMAGEN","name":"IMAGE","type":"IMAGE","links":[493]}],"title":"VAEDecode (Illustrious)","properties":{"cnr_id":"comfy-core","ver":"0.45.4","Node name for S&R":"VAEDecode","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{},"version":"8.0.1","input_ue_unconnectable":{}}},"color":"#432738","bgcolor":"#1b222b"},{"id":193,"type":"LD_GuardarImagen","pos":[4627.753389892576,119.38100524902346],"size":[393,648],"flags":{"pinned":true},"order":21,"mode":2,"inputs":[{"localized_name":"images","name":"images","type":"IMAGE","link":493},{"localized_name":"filename_prefix","name":"filename_prefix","type":"STRING","widget":{"name":"filename_prefix"},"link":null},{"localized_name":"guardado_automatico","name":"guardado_automatico","type":"BOOLEAN","widget":{"name":"guardado_automatico"},"link":null}],"outputs":[{"localized_name":"images","name":"images","type":"IMAGE","links":null}],"title":"Guardar (Illustrious)","properties":{"Node name for S&R":"LD_GuardarImagen","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"filename_prefix":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["Illustrious",true],"widgets_values_named":{"filename_prefix":"Illustrious","guardado_automatico":true},"color":"#432738","bgcolor":"#1b222b"},{"id":194,"type":"LD_EmbeddingsNegativos","pos":[606.4101148873324,690.941696797521],"size":[411,220],"flags":{"pinned":true},"order":7,"mode":2,"inputs":[{"localized_name":"negativo_base","name":"negativo_base","shape":7,"type":"STRING","link":null},{"localized_name":"embedding","name":"embedding","type":"COMBO","widget":{"name":"embedding"},"link":null},{"localized_name":"peso","name":"peso","type":"FLOAT","widget":{"name":"peso"},"link":null},{"localized_name":"lista","name":"lista","type":"STRING","widget":{"name":"lista"},"link":null}],"outputs":[{"localized_name":"negative","name":"negative","type":"STRING","links":[495]}],"properties":{"Node name for S&R":"LD_EmbeddingsNegativos","ld_branch":"illustrious","ue_properties":{"widget_ue_connectable":{"embedding":true,"peso":true,"lista":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":["(ninguno)",1,""],"widgets_values_named":{"embedding":"(ninguno)","peso":1,"lista":""},"color":"#432738","bgcolor":"#1b222b"},{"id":195,"type":"LD_ImagenBaseI2I","pos":[1173.4567382812502,965.2749999999996],"size":[400,396],"flags":{"pinned":true},"order":9,"mode":0,"inputs":[{"localized_name":"modelo","name":"modelo","type":"STRING","link":510},{"localized_name":"latent_krea2","name":"latent_krea2","shape":7,"type":"LATENT","link":477},{"localized_name":"latent_illustrious","name":"latent_illustrious","shape":7,"type":"LATENT","link":491},{"localized_name":"vae_krea2","name":"vae_krea2","shape":7,"type":"VAE","link":511},{"localized_name":"vae_illustrious","name":"vae_illustrious","shape":7,"type":"VAE","link":512},{"localized_name":"image","name":"image","shape":7,"type":"IMAGE","link":null},{"localized_name":"denoise","name":"denoise","type":"FLOAT","widget":{"name":"denoise"},"link":null},{"localized_name":"steps_krea2","name":"steps_krea2","type":"INT","widget":{"name":"steps_krea2"},"link":null},{"localized_name":"archivo","name":"archivo","shape":7,"type":"STRING","widget":{"name":"archivo"},"link":null}],"outputs":[{"localized_name":"latent","name":"latent","type":"LATENT","links":[506,507]},{"localized_name":"denoise","name":"denoise","type":"FLOAT","links":[508]},{"localized_name":"start_at_step","name":"start_at_step","type":"INT","links":[509]}],"properties":{"Node name for S&R":"LD_ImagenBaseI2I","ue_properties":{"widget_ue_connectable":{"denoise":true,"steps_krea2":true,"archivo":true},"version":"8.0.1","input_ue_unconnectable":{}}},"widgets_values":[0.6,8,""],"widgets_values_named":{"denoise":0.6,"steps_krea2":8,"archivo":""},"color":"#203c40","bgcolor":"#1b222b"}],"links":[[197,63,0,30,0,"LATENT"],[313,100,0,30,1,"VAE"],[459,30,0,106,0,"IMAGE"],[461,106,0,152,0,"IMAGE"],[463,173,0,63,2,"CONDITIONING"],[464,168,0,63,0,"MODEL"],[466,178,1,176,1,"STRING"],[467,168,1,176,0,"CLIP"],[472,178,0,175,0,"LD_LMSTUDIO_CFG"],[479,176,0,63,1,"CONDITIONING"],[480,176,0,173,0,"CONDITIONING"],[483,185,2,192,1,"VAE"],[487,178,1,188,1,"STRING"],[489,188,0,191,1,"CONDITIONING"],[490,189,0,191,2,"CONDITIONING"],[492,191,0,192,0,"LATENT"],[493,192,0,193,0,"IMAGE"],[500,184,1,168,0,"MODEL"],[501,184,2,168,3,"CLIP"],[502,168,0,191,0,"MODEL"],[503,168,1,188,0,"CLIP"],[504,168,1,189,0,"CLIP"],[496,98,0,184,0,"MODEL"],[497,99,0,184,1,"CLIP"],[498,185,0,184,2,"MODEL"],[499,185,1,184,3,"CLIP"],[505,178,2,189,1,"STRING"],[506,195,0,63,3,"LATENT"],[507,195,0,191,3,"LATENT"],[508,195,1,191,9,"FLOAT"],[509,195,2,63,10,"INT"],[510,184,0,195,0,"STRING"],[474,168,2,178,8,"STRING"],[495,194,0,178,9,"STRING"],[477,182,0,195,1,"LATENT"],[491,190,0,195,2,"LATENT"],[511,100,0,195,3,"VAE"],[512,185,2,195,4,"VAE"]],"groups":[{"id":1,"title":"01 · Modelos","bounding":[0,0,500.87,1382.74],"color":"#473122","flags":{"pinned":true}},{"id":2,"title":"02 · LoRAs","bounding":[566.41,0,495.01,950.94],"color":"#26374b","flags":{"pinned":true}},{"id":4,"title":"03 · WRITER (LM Studio)","bounding":[1131,0,1830,1638],"color":"#203c40","flags":{"pinned":true}},{"id":5,"title":"Interno (no tocar)","bounding":[5200,0,840,366],"color":"#333840","flags":{"pinned":true}},{"id":6,"title":"04 · Salida Krea2","bounding":[3441.61,16.1,811.74,1274.56],"color":"#1e4a56","flags":{"pinned":true}},{"id":7,"title":"05 · Salida Illustrious","bounding":[4255.94,39.38,804.82,1208.13],"color":"#432738","flags":{"pinned":true}}],"config":{},"extra":{"ds":{"scale":1.1000000000000008,"offset":[-221.8716775147004,69.60263202740654]},"frontendVersion":"1.53.10","workflowRendererVersion":"LG","groupNodes":{},"controller_panel":{"controllers":{},"hidden":true,"highlight":true,"version":2,"default_order":[]},"node_versions":{"comfy-core":"0.3.14","comfyui-impact-subpack":"74db20c95eca152a6d686c914edc0ef4e4762cb8","comfyui-impact-pack":"1ae7cae2df8cca06027edfa3a24512671239d6c4"},"ue_links":[],"VHS_latentpreview":false,"VHS_latentpreviewrate":0,"VHS_MetadataImage":true,"VHS_KeepIntermediate":true,"links_added_by_ue":[]},"extensions":{"widget_idx_map":{"63":{"noise_seed":1,"sampler_name":5,"scheduler":6}},"seed_widgets":{"63":1}},"version":0.4}
+{
+  "id": "6aa22b9a-045a-471b-866c-f5ce8df390f2",
+  "revision": 0,
+  "last_node_id": 198,
+  "last_link_id": 513,
+  "nodes": [
+    {
+      "id": 152,
+      "type": "PlaySound|pysssss",
+      "pos": [
+        640.5536158700631,
+        1292.8634189633274
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "any",
+          "name": "any",
+          "type": "*",
+          "link": 461
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "volume",
+          "name": "volume",
+          "type": "FLOAT",
+          "widget": {
+            "name": "volume"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "file",
+          "name": "file",
+          "type": "STRING",
+          "widget": {
+            "name": "file"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "*",
+          "name": "*",
+          "shape": 6,
+          "type": "*",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-custom-scripts",
+        "ver": "1.2.5",
+        "Node name for S&R": "PlaySound|pysssss",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "mode": true,
+            "volume": true,
+            "file": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "always",
+        0.5,
+        "notify.mp3"
+      ],
+      "widgets_values_named": {
+        "mode": "always",
+        "volume": 0.5,
+        "file": "notify.mp3"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 30,
+      "type": "VAEDecode",
+      "pos": [
+        640.5536158700631,
+        1222.8634189633274
+      ],
+      "size": [
+        210,
+        50
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "muestras",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 197
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 313
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGEN",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            459
+          ]
+        }
+      ],
+      "title": "VAEDecode (Krea2)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.61",
+        "Node name for S&R": "VAEDecode",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 100,
+      "type": "VAELoader",
+      "pos": [
+        132.94015777587893,
+        783.6666564941406
+      ],
+      "size": [
+        270,
+        58
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "nombre_de_vae",
+          "name": "vae_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "vae_name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "VAE",
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            313,
+            511
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "VAELoader",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "vae_name": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "qwen_image_vae.safetensors"
+      ],
+      "widgets_values_named": {
+        "vae_name": "qwen_image_vae.safetensors"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 63,
+      "type": "KSamplerAdvanced",
+      "pos": [
+        3041.664957275393,
+        413.1677441053156
+      ],
+      "size": [
+        270,
+        840
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "modelo",
+          "name": "model",
+          "type": "MODEL",
+          "link": 464
+        },
+        {
+          "localized_name": "positivo",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 479
+        },
+        {
+          "localized_name": "negativo",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 463
+        },
+        {
+          "localized_name": "imagen_latente",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 506
+        },
+        {
+          "localized_name": "añadir_ruido",
+          "name": "add_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "add_noise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "semilla_de_ruido",
+          "name": "noise_seed",
+          "type": "INT",
+          "widget": {
+            "name": "noise_seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pasos",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "nombre_del_muestreador",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "programador",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "iniciar_en_paso",
+          "name": "start_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "start_at_step"
+          },
+          "link": 509
+        },
+        {
+          "localized_name": "terminar_en_paso",
+          "name": "end_at_step",
+          "type": "INT",
+          "widget": {
+            "name": "end_at_step"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "devolver_con_ruido_residual",
+          "name": "return_with_leftover_noise",
+          "type": "COMBO",
+          "widget": {
+            "name": "return_with_leftover_noise"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENTE",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            197
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.61",
+        "Node name for S&R": "KSamplerAdvanced",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "add_noise": true,
+            "noise_seed": true,
+            "steps": true,
+            "cfg": true,
+            "sampler_name": true,
+            "scheduler": true,
+            "start_at_step": true,
+            "end_at_step": true,
+            "return_with_leftover_noise": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "enable",
+        238712869449310,
+        "randomize",
+        8,
+        1,
+        "euler",
+        "simple",
+        0,
+        9999,
+        "disable"
+      ],
+      "widgets_values_named": {
+        "add_noise": "enable",
+        "noise_seed": 238712869449310,
+        "control_after_generate": "randomize",
+        "steps": 8,
+        "cfg": 1,
+        "sampler_name": "euler",
+        "scheduler": "simple",
+        "start_at_step": 0,
+        "end_at_step": 9999,
+        "return_with_leftover_noise": "disable"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 168,
+      "type": "Lora Loader (LoraManager)",
+      "pos": [
+        654.5884704589837,
+        69.99999999999999
+      ],
+      "size": [
+        411.4241027832031,
+        563.52978515625
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "link": 500
+        },
+        {
+          "localized_name": "text",
+          "name": "text",
+          "type": "AUTOCOMPLETE_TEXT_LORAS",
+          "widget": {
+            "name": "text"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "loras",
+          "name": "loras",
+          "type": "LORAS",
+          "widget": {
+            "name": "loras"
+          },
+          "link": null
+        },
+        {
+          "name": "clip",
+          "shape": 7,
+          "type": "CLIP",
+          "link": 501
+        },
+        {
+          "name": "lora_stack",
+          "shape": 7,
+          "type": "LORA_STACK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODELO",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            464,
+            502
+          ]
+        },
+        {
+          "localized_name": "CLIP",
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            467,
+            503,
+            504
+          ]
+        },
+        {
+          "localized_name": "trigger_words",
+          "name": "trigger_words",
+          "type": "STRING",
+          "links": [
+            474
+          ]
+        },
+        {
+          "localized_name": "loaded_loras",
+          "name": "loaded_loras",
+          "type": "STRING",
+          "links": null
+        }
+      ],
+      "title": "Lora Loader",
+      "properties": {
+        "cnr_id": "comfyui-lora-manager",
+        "ver": "392c157cb531805888d4d5054db58dd38ac721ee",
+        "Node name for S&R": "Lora Loader (LoraManager)",
+        "__lm_widget_ids": [
+          "__lm_autocomplete_meta_text",
+          "text",
+          "loras"
+        ],
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true,
+            "loras": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        {
+          "version": 1,
+          "textWidgetName": "text"
+        },
+        "",
+        []
+      ],
+      "widgets_values_named": {
+        "__lm_autocomplete_meta_text": {
+          "version": 1,
+          "textWidgetName": "text"
+        },
+        "text": "",
+        "loras": []
+      },
+      "color": "#26374b",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 106,
+      "type": "LD_GuardarImagen",
+      "pos": [
+        3364.6052722168,
+        79.99847167968758
+      ],
+      "size": [
+        393.3962083069025,
+        648
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 459
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "guardado_automatico",
+          "name": "guardado_automatico",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "guardado_automatico"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": [
+            461
+          ]
+        }
+      ],
+      "title": "Guardar (Krea2)",
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_GuardarImagen",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "filename_prefix": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Krea2",
+        true
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "pornmaster",
+        "guardado_automatico": true
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 98,
+      "type": "UNETLoader",
+      "pos": [
+        120.65683258056647,
+        343.5000000000001
+      ],
+      "size": [
+        420,
+        82
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "nombre_de_unet",
+          "name": "unet_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "unet_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tipo_dato_peso",
+          "name": "weight_dtype",
+          "type": "COMBO",
+          "widget": {
+            "name": "weight_dtype"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODELO",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            496
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "UNETLoader",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "unet_name": true,
+            "weight_dtype": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Krea2-Turbo-HD-V1-int8_convrot.safetensors",
+        "default"
+      ],
+      "widgets_values_named": {
+        "unet_name": "Krea2-Turbo-HD-V1-int8_convrot.safetensors",
+        "weight_dtype": "default"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 99,
+      "type": "CLIPLoader",
+      "pos": [
+        130.70688140869143,
+        624.1667175292969
+      ],
+      "size": [
+        306,
+        106
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "nombre_de_clip",
+          "name": "clip_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "clip_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "tipo",
+          "name": "type",
+          "type": "COMBO",
+          "widget": {
+            "name": "type"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "dispositivo",
+          "name": "device",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "device"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "CLIP",
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            497
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "CLIPLoader",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "clip_name": true,
+            "type": true,
+            "device": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "qwen3vl_4b_fp8_scaled.safetensors",
+        "krea2",
+        "default"
+      ],
+      "widgets_values_named": {
+        "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+        "type": "krea2",
+        "device": "default"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 173,
+      "type": "ConditioningZeroOut",
+      "pos": [
+        640.5536158700631,
+        1152.8634189633274
+      ],
+      "size": [
+        300,
+        46
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "acondicionamiento",
+          "name": "conditioning",
+          "type": "CONDITIONING",
+          "link": 480
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "ACONDICIONAMIENTO",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            463
+          ]
+        }
+      ],
+      "title": "Zero Out (Krea2)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "ConditioningZeroOut",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 175,
+      "type": "LD_LMStudioPromptWriterV2",
+      "pos": [
+        1598.4302088108548,
+        73.58966287912418
+      ],
+      "size": [
+        1320,
+        1465
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "config",
+          "name": "config",
+          "type": "LD_LMSTUDIO_CFG",
+          "link": 472
+        },
+        {
+          "localized_name": "idea",
+          "name": "idea",
+          "type": "STRING",
+          "widget": {
+            "name": "idea"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "usar_imagen_1",
+          "name": "usar_imagen_1",
+          "type": "COMBO",
+          "widget": {
+            "name": "usar_imagen_1"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "usar_imagen_2",
+          "name": "usar_imagen_2",
+          "type": "COMBO",
+          "widget": {
+            "name": "usar_imagen_2"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "usar_prompt_generado",
+          "name": "usar_prompt_generado",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "usar_prompt_generado"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "prompt_generado",
+          "name": "prompt_generado",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt_generado"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "negativo_generado",
+          "name": "negativo_generado",
+          "type": "STRING",
+          "widget": {
+            "name": "negativo_generado"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "estilo_salida",
+          "name": "estilo_salida",
+          "type": "COMBO",
+          "widget": {
+            "name": "estilo_salida"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_accion",
+          "name": "img1_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_persona",
+          "name": "img1_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_fondo",
+          "name": "img1_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_estilo",
+          "name": "img1_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_ropa",
+          "name": "img1_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_1",
+          "name": "desc_imagen_1",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_1"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_accion",
+          "name": "img2_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_persona",
+          "name": "img2_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_fondo",
+          "name": "img2_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_estilo",
+          "name": "img2_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_ropa",
+          "name": "img2_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_2",
+          "name": "desc_imagen_2",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_2"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_accion",
+          "name": "img3_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_persona",
+          "name": "img3_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_fondo",
+          "name": "img3_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_estilo",
+          "name": "img3_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_ropa",
+          "name": "img3_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_3",
+          "name": "desc_imagen_3",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_3"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_accion",
+          "name": "img4_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_persona",
+          "name": "img4_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_fondo",
+          "name": "img4_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_estilo",
+          "name": "img4_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_ropa",
+          "name": "img4_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_4",
+          "name": "desc_imagen_4",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_4"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_1",
+          "name": "archivo_imagen_1",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_1"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_2",
+          "name": "archivo_imagen_2",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_2"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_3",
+          "name": "archivo_imagen_3",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_3"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_4",
+          "name": "archivo_imagen_4",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_4"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "num_personas",
+          "name": "num_personas",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "num_personas"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "camara",
+          "name": "camara",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_camara",
+          "name": "img1_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_camara",
+          "name": "img2_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_camara",
+          "name": "img3_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_camara",
+          "name": "img4_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_pose",
+          "name": "img1_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_pose",
+          "name": "img2_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_pose",
+          "name": "img3_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_pose",
+          "name": "img4_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_5",
+          "name": "archivo_imagen_5",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_5"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_5",
+          "name": "desc_imagen_5",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_5"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_accion",
+          "name": "img5_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_pose",
+          "name": "img5_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_persona",
+          "name": "img5_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_ropa",
+          "name": "img5_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_fondo",
+          "name": "img5_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_estilo",
+          "name": "img5_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_camara",
+          "name": "img5_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_6",
+          "name": "archivo_imagen_6",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_6"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_6",
+          "name": "desc_imagen_6",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_6"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_accion",
+          "name": "img6_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_pose",
+          "name": "img6_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_persona",
+          "name": "img6_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_ropa",
+          "name": "img6_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_fondo",
+          "name": "img6_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_estilo",
+          "name": "img6_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_camara",
+          "name": "img6_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_7",
+          "name": "archivo_imagen_7",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_7"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_7",
+          "name": "desc_imagen_7",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_7"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_accion",
+          "name": "img7_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_pose",
+          "name": "img7_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_persona",
+          "name": "img7_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_ropa",
+          "name": "img7_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_fondo",
+          "name": "img7_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_estilo",
+          "name": "img7_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_camara",
+          "name": "img7_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo_imagen_8",
+          "name": "archivo_imagen_8",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo_imagen_8"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "desc_imagen_8",
+          "name": "desc_imagen_8",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "desc_imagen_8"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_accion",
+          "name": "img8_accion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_accion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_pose",
+          "name": "img8_pose",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_pose"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_persona",
+          "name": "img8_persona",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_persona"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_ropa",
+          "name": "img8_ropa",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_fondo",
+          "name": "img8_fondo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_fondo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_estilo",
+          "name": "img8_estilo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_estilo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_camara",
+          "name": "img8_camara",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_camara"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "num_personas_custom",
+          "name": "num_personas_custom",
+          "shape": 7,
+          "type": "INT",
+          "widget": {
+            "name": "num_personas_custom"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "ocultar_ajustes",
+          "name": "ocultar_ajustes",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "ocultar_ajustes"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "ocultar_imagenes",
+          "name": "ocultar_imagenes",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "ocultar_imagenes"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "modo_ropa",
+          "name": "modo_ropa",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "modo_ropa"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_accesorios",
+          "name": "img1_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_colores",
+          "name": "img1_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_expresion",
+          "name": "img1_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_iluminacion",
+          "name": "img1_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img1_pelo",
+          "name": "img1_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img1_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_accesorios",
+          "name": "img2_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_colores",
+          "name": "img2_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_expresion",
+          "name": "img2_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_iluminacion",
+          "name": "img2_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img2_pelo",
+          "name": "img2_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img2_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_accesorios",
+          "name": "img3_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_colores",
+          "name": "img3_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_expresion",
+          "name": "img3_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_iluminacion",
+          "name": "img3_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img3_pelo",
+          "name": "img3_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img3_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_accesorios",
+          "name": "img4_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_colores",
+          "name": "img4_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_expresion",
+          "name": "img4_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_iluminacion",
+          "name": "img4_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img4_pelo",
+          "name": "img4_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img4_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_accesorios",
+          "name": "img5_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_colores",
+          "name": "img5_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_expresion",
+          "name": "img5_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_iluminacion",
+          "name": "img5_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img5_pelo",
+          "name": "img5_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img5_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_accesorios",
+          "name": "img6_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_colores",
+          "name": "img6_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_expresion",
+          "name": "img6_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_iluminacion",
+          "name": "img6_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img6_pelo",
+          "name": "img6_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img6_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_accesorios",
+          "name": "img7_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_colores",
+          "name": "img7_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_expresion",
+          "name": "img7_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_iluminacion",
+          "name": "img7_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img7_pelo",
+          "name": "img7_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img7_pelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_accesorios",
+          "name": "img8_accesorios",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_accesorios"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_colores",
+          "name": "img8_colores",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_colores"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_expresion",
+          "name": "img8_expresion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_expresion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_iluminacion",
+          "name": "img8_iluminacion",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_iluminacion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "img8_pelo",
+          "name": "img8_pelo",
+          "shape": 7,
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "img8_pelo"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_LMStudioPromptWriterV2",
+        "ld_io_on_config": true,
+        "ld_accion_pose_split": true,
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "idea": true,
+            "usar_imagen_1": true,
+            "usar_imagen_2": true,
+            "usar_prompt_generado": true,
+            "prompt_generado": true,
+            "negativo_generado": true,
+            "estilo_salida": true,
+            "img1_accion": true,
+            "img1_persona": true,
+            "img1_fondo": true,
+            "img1_estilo": true,
+            "img1_ropa": true,
+            "desc_imagen_1": true,
+            "img2_accion": true,
+            "img2_persona": true,
+            "img2_fondo": true,
+            "img2_estilo": true,
+            "img2_ropa": true,
+            "desc_imagen_2": true,
+            "img3_accion": true,
+            "img3_persona": true,
+            "img3_fondo": true,
+            "img3_estilo": true,
+            "img3_ropa": true,
+            "desc_imagen_3": true,
+            "img4_accion": true,
+            "img4_persona": true,
+            "img4_fondo": true,
+            "img4_estilo": true,
+            "img4_ropa": true,
+            "desc_imagen_4": true,
+            "archivo_imagen_1": true,
+            "archivo_imagen_2": true,
+            "archivo_imagen_3": true,
+            "archivo_imagen_4": true,
+            "num_personas": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        },
+        "ld_vista_es": "",
+        "ld_vista_es_dirty": false,
+        "ld_pos_dirty": false,
+        "ld_desc_meta": {}
+      },
+      "widgets_values": [
+        "",
+        "todo",
+        "todo",
+        true,
+        "",
+        "",
+        "(como la referencia)",
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        "",
+        "",
+        "",
+        "",
+        "1",
+        "(Automático - decide el LLM)",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "",
+        "",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        1,
+        false,
+        false,
+        "LoRA",
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "1 pasada"
+      ],
+      "widgets_values_named": {
+        "idea": "",
+        "usar_imagen_1": "todo",
+        "usar_imagen_2": "todo",
+        "usar_prompt_generado": true,
+        "prompt_generado": "",
+        "negativo_generado": "",
+        "estilo_salida": "(como la referencia)",
+        "img1_accion": false,
+        "img1_persona": false,
+        "img1_fondo": false,
+        "img1_estilo": false,
+        "img1_ropa": false,
+        "desc_imagen_1": "",
+        "img2_accion": false,
+        "img2_persona": false,
+        "img2_fondo": false,
+        "img2_estilo": false,
+        "img2_ropa": false,
+        "desc_imagen_2": "",
+        "img3_accion": false,
+        "img3_persona": false,
+        "img3_fondo": false,
+        "img3_estilo": false,
+        "img3_ropa": false,
+        "desc_imagen_3": "",
+        "img4_accion": false,
+        "img4_persona": false,
+        "img4_fondo": false,
+        "img4_estilo": false,
+        "img4_ropa": false,
+        "desc_imagen_4": "",
+        "archivo_imagen_1": "",
+        "archivo_imagen_2": "",
+        "archivo_imagen_3": "",
+        "archivo_imagen_4": "",
+        "num_personas": "1",
+        "camara": "(Automático - decide el LLM)",
+        "img1_camara": false,
+        "img2_camara": false,
+        "img3_camara": false,
+        "img4_camara": false,
+        "img1_pose": false,
+        "img2_pose": false,
+        "img3_pose": false,
+        "img4_pose": false,
+        "archivo_imagen_5": "",
+        "desc_imagen_5": "",
+        "img5_accion": false,
+        "img5_pose": false,
+        "img5_persona": false,
+        "img5_ropa": false,
+        "img5_fondo": false,
+        "img5_estilo": false,
+        "img5_camara": false,
+        "archivo_imagen_6": "",
+        "desc_imagen_6": "",
+        "img6_accion": false,
+        "img6_pose": false,
+        "img6_persona": false,
+        "img6_ropa": false,
+        "img6_fondo": false,
+        "img6_estilo": false,
+        "img6_camara": false,
+        "archivo_imagen_7": "",
+        "desc_imagen_7": "",
+        "img7_accion": false,
+        "img7_pose": false,
+        "img7_persona": false,
+        "img7_ropa": false,
+        "img7_fondo": false,
+        "img7_estilo": false,
+        "img7_camara": false,
+        "archivo_imagen_8": "",
+        "desc_imagen_8": "",
+        "img8_accion": false,
+        "img8_pose": false,
+        "img8_persona": false,
+        "img8_ropa": false,
+        "img8_fondo": false,
+        "img8_estilo": false,
+        "img8_camara": false,
+        "num_personas_custom": 1,
+        "ocultar_ajustes": false,
+        "ocultar_imagenes": false,
+        "modo_ropa": "LoRA",
+        "img1_accesorios": false,
+        "img1_colores": false,
+        "img1_expresion": false,
+        "img1_iluminacion": false,
+        "img1_pelo": false,
+        "img2_accesorios": false,
+        "img2_colores": false,
+        "img2_expresion": false,
+        "img2_iluminacion": false,
+        "img2_pelo": false,
+        "img3_accesorios": false,
+        "img3_colores": false,
+        "img3_expresion": false,
+        "img3_iluminacion": false,
+        "img3_pelo": false,
+        "img4_accesorios": false,
+        "img4_colores": false,
+        "img4_expresion": false,
+        "img4_iluminacion": false,
+        "img4_pelo": false,
+        "img5_accesorios": false,
+        "img5_colores": false,
+        "img5_expresion": false,
+        "img5_iluminacion": false,
+        "img5_pelo": false,
+        "img6_accesorios": false,
+        "img6_colores": false,
+        "img6_expresion": false,
+        "img6_iluminacion": false,
+        "img6_pelo": false,
+        "img7_accesorios": false,
+        "img7_colores": false,
+        "img7_expresion": false,
+        "img7_iluminacion": false,
+        "img7_pelo": false,
+        "img8_accesorios": false,
+        "img8_colores": false,
+        "img8_expresion": false,
+        "img8_iluminacion": false,
+        "img8_pelo": false
+      },
+      "color": "#203c40",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 176,
+      "type": "CLIPTextEncode",
+      "pos": [
+        640.5536158700631,
+        1082.8634189633276
+      ],
+      "size": [
+        320,
+        150
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 467
+        },
+        {
+          "localized_name": "texto",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 466
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "ACONDICIONAMIENTO",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            479,
+            480
+          ]
+        }
+      ],
+      "title": "CLIP Encode (Writer)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.62",
+        "Node name for S&R": "CLIPTextEncode",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        ""
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 178,
+      "type": "LD_LMStudioConfig",
+      "pos": [
+        1171,
+        70
+      ],
+      "size": [
+        400,
+        820
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image_1",
+          "name": "image_1",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_2",
+          "name": "image_2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_3",
+          "name": "image_3",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_4",
+          "name": "image_4",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_5",
+          "name": "image_5",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_6",
+          "name": "image_6",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_7",
+          "name": "image_7",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "image_8",
+          "name": "image_8",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "lora_triggers",
+          "name": "lora_triggers",
+          "shape": 7,
+          "type": "STRING",
+          "link": 474
+        },
+        {
+          "localized_name": "neg_embeddings",
+          "name": "neg_embeddings",
+          "shape": 7,
+          "type": "STRING",
+          "link": 495
+        },
+        {
+          "localized_name": "url",
+          "name": "url",
+          "type": "STRING",
+          "widget": {
+            "name": "url"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "COMBO",
+          "widget": {
+            "name": "model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "temperature",
+          "name": "temperature",
+          "type": "FLOAT",
+          "widget": {
+            "name": "temperature"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "max_tokens",
+          "name": "max_tokens",
+          "type": "INT",
+          "widget": {
+            "name": "max_tokens"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "seed",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "unload_after",
+          "name": "unload_after",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "unload_after"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "extra_instructions",
+          "name": "extra_instructions",
+          "type": "STRING",
+          "widget": {
+            "name": "extra_instructions"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "idioma",
+          "name": "idioma",
+          "type": "COMBO",
+          "widget": {
+            "name": "idioma"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "descarga_idle_min",
+          "name": "descarga_idle_min",
+          "type": "INT",
+          "widget": {
+            "name": "descarga_idle_min"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "config",
+          "name": "config",
+          "type": "LD_LMSTUDIO_CFG",
+          "links": [
+            472
+          ]
+        },
+        {
+          "localized_name": "positive",
+          "name": "positive",
+          "type": "STRING",
+          "links": [
+            466,
+            487
+          ]
+        },
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "STRING",
+          "links": [
+            505
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_LMStudioConfig",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "url": true,
+            "model": true,
+            "mode": true,
+            "temperature": true,
+            "max_tokens": true,
+            "seed": true,
+            "unload_after": true,
+            "extra_instructions": true,
+            "idioma": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "http://127.0.0.1:1234",
+        "(auto: el cargado)",
+        "Krea2 (natural)",
+        0.7,
+        2048,
+        0,
+        "fixed",
+        true,
+        "",
+        "Español",
+        0,
+        "1 pasada"
+      ],
+      "widgets_values_named": {
+        "url": "http://127.0.0.1:1235",
+        "model": "(auto: el cargado)",
+        "mode": "Krea2 (natural)",
+        "temperature": 0.7,
+        "max_tokens": 1200,
+        "seed": 0,
+        "control_after_generate": "fixed",
+        "unload_after": true,
+        "extra_instructions": "",
+        "idioma": "Español",
+        "descarga_idle_min": 0
+      },
+      "color": "#203c40",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 182,
+      "type": "LD_Tamano",
+      "pos": [
+        3026.2661633300836,
+        85.57596954345712
+      ],
+      "size": [
+        300,
+        276
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "proporcion",
+          "name": "proporcion",
+          "type": "COMBO",
+          "widget": {
+            "name": "proporcion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "megapixeles",
+          "name": "megapixeles",
+          "type": "COMBO",
+          "widget": {
+            "name": "megapixeles"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "intercambiar",
+          "name": "intercambiar",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "intercambiar"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "batch",
+          "name": "batch",
+          "type": "INT",
+          "widget": {
+            "name": "batch"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "resultado",
+          "name": "resultado",
+          "type": "STRING",
+          "widget": {
+            "name": "resultado"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            477
+          ]
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_Tamano",
+        "ld_branch": "krea2",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "proporcion": true,
+            "megapixeles": true,
+            "intercambiar": true,
+            "batch": true,
+            "resultado": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "1:1",
+        "1.08 MP",
+        false,
+        1,
+        "1040 × 1040"
+      ],
+      "widgets_values_named": {
+        "proporcion": "1:1",
+        "megapixeles": "1.08 MP",
+        "intercambiar": false,
+        "batch": 1,
+        "resultado": "1040 × 1040"
+      },
+      "color": "#1e4a56",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 184,
+      "type": "LD_ModeloGen",
+      "pos": [
+        125.123507385254,
+        70.00000000000003
+      ],
+      "size": [
+        420,
+        220
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 9,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "model_krea2",
+          "name": "model_krea2",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 496
+        },
+        {
+          "localized_name": "clip_krea2",
+          "name": "clip_krea2",
+          "shape": 7,
+          "type": "CLIP",
+          "link": 497
+        },
+        {
+          "localized_name": "model_illustrious",
+          "name": "model_illustrious",
+          "shape": 7,
+          "type": "MODEL",
+          "link": 498
+        },
+        {
+          "localized_name": "clip_illustrious",
+          "name": "clip_illustrious",
+          "shape": 7,
+          "type": "CLIP",
+          "link": 499
+        },
+        {
+          "localized_name": "modelo",
+          "name": "modelo",
+          "type": "COMBO",
+          "widget": {
+            "name": "modelo"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "idioma",
+          "name": "idioma",
+          "type": "COMBO",
+          "widget": {
+            "name": "idioma"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "modelo",
+          "name": "modelo",
+          "type": "STRING",
+          "links": [
+            510
+          ]
+        },
+        {
+          "localized_name": "model",
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            500
+          ]
+        },
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "links": [
+            501
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_ModeloGen",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "modelo": true,
+            "idioma": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Krea2",
+        "Español"
+      ],
+      "widgets_values_named": {
+        "modelo": "Krea2",
+        "idioma": "Español"
+      },
+      "color": "#473122",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 185,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        121.77347076416021,
+        474.7833251953126
+      ],
+      "size": [
+        420,
+        98
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 4,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "nombre_de_checkpoint",
+          "name": "ckpt_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "ckpt_name"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "MODELO",
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            498
+          ]
+        },
+        {
+          "localized_name": "CLIP",
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            499
+          ]
+        },
+        {
+          "localized_name": "VAE",
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            483,
+            512
+          ]
+        }
+      ],
+      "title": "Checkpoint Illustrious",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "CheckpointLoaderSimple",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "ckpt_name": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "waiIllustriousSDXL_v170.safetensors"
+      ],
+      "widgets_values_named": {
+        "ckpt_name": "waiIllustriousSDXL_v170.safetensors"
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 186,
+      "type": "Note",
+      "pos": [
+        118.02830313438251,
+        946.9040436547645
+      ],
+      "size": [
+        430,
+        340
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 5,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Configuración",
+      "properties": {
+        "text": "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M\n  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).\n  Más rápido: la versión 4B del mismo modelo.\n• Descargá también su mmproj: sin mmproj el modelo no ve\n  las imágenes y no puede describirlas.\n• Usá Instruct, no Thinking. Evitá modelos de razonamiento o MTP:\n  suelen devolver prompts vacíos o cortados.\n• En el nodo Config elegí el modelo fijo (no \"auto: el cargado\").\n• max_tokens recomendado: 2048.\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá.",
+        "Node name for S&R": "Note",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        },
+        "ld_note": "config"
+      },
+      "widgets_values": [
+        "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M\n  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).\n  Más rápido: la versión 4B del mismo modelo.\n• Descargá también su mmproj: sin mmproj el modelo no ve\n  las imágenes y no puede describirlas.\n• Usá Instruct, no Thinking. Evitá modelos de razonamiento o MTP:\n  suelen devolver prompts vacíos o cortados.\n• En el nodo Config elegí el modelo fijo (no \"auto: el cargado\").\n• max_tokens recomendado: 2048.\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."
+      ],
+      "widgets_values_named": {
+        "text": "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: qwen_qwen3-vl-8b-instruct\n  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."
+      },
+      "color": "#344029",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 188,
+      "type": "CLIPTextEncode",
+      "pos": [
+        845.6445027663704,
+        1125.4998047942927
+      ],
+      "size": [
+        250,
+        150
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 15,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 503
+        },
+        {
+          "localized_name": "texto",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 487
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "ACONDICIONAMIENTO",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            489
+          ]
+        }
+      ],
+      "title": "CLIP Encode + (Illustrious)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "CLIPTextEncode",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        ""
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 189,
+      "type": "CLIPTextEncode",
+      "pos": [
+        849.7051162251773,
+        1290
+      ],
+      "size": [
+        250,
+        150
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 16,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "clip",
+          "name": "clip",
+          "type": "CLIP",
+          "link": 504
+        },
+        {
+          "localized_name": "texto",
+          "name": "text",
+          "type": "STRING",
+          "widget": {
+            "name": "text"
+          },
+          "link": 505
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "ACONDICIONAMIENTO",
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            490
+          ]
+        }
+      ],
+      "title": "CLIP Encode − (Illustrious)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "CLIPTextEncode",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "text": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        ""
+      ],
+      "widgets_values_named": {
+        "text": ""
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 190,
+      "type": "LD_Tamano",
+      "pos": [
+        3855.4571923828134,
+        89.85653137207032
+      ],
+      "size": [
+        300,
+        276
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 6,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "proporcion",
+          "name": "proporcion",
+          "type": "COMBO",
+          "widget": {
+            "name": "proporcion"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "megapixeles",
+          "name": "megapixeles",
+          "type": "COMBO",
+          "widget": {
+            "name": "megapixeles"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "intercambiar",
+          "name": "intercambiar",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "intercambiar"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "batch",
+          "name": "batch",
+          "type": "INT",
+          "widget": {
+            "name": "batch"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "resultado",
+          "name": "resultado",
+          "type": "STRING",
+          "widget": {
+            "name": "resultado"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            491
+          ]
+        },
+        {
+          "localized_name": "width",
+          "name": "width",
+          "type": "INT",
+          "links": []
+        },
+        {
+          "localized_name": "height",
+          "name": "height",
+          "type": "INT",
+          "links": []
+        }
+      ],
+      "title": "Tamaño (Illustrious)",
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_Tamano",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "proporcion": true,
+            "megapixeles": true,
+            "intercambiar": true,
+            "batch": true,
+            "resultado": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "2:3",
+        "1.0 MP",
+        false,
+        1,
+        "816 × 1232"
+      ],
+      "widgets_values_named": {
+        "proporcion": "2:3",
+        "megapixeles": "1.0 MP",
+        "intercambiar": false,
+        "batch": 1,
+        "resultado": "816 × 1232"
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 191,
+      "type": "KSampler",
+      "pos": [
+        3861.9226367187484,
+        378.1290460205078
+      ],
+      "size": [
+        300,
+        790
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 18,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "modelo",
+          "name": "model",
+          "type": "MODEL",
+          "link": 502
+        },
+        {
+          "localized_name": "positivo",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 489
+        },
+        {
+          "localized_name": "negativo",
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 490
+        },
+        {
+          "localized_name": "imagen_latente",
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 507
+        },
+        {
+          "localized_name": "semilla",
+          "name": "seed",
+          "type": "INT",
+          "widget": {
+            "name": "seed"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "pasos",
+          "name": "steps",
+          "type": "INT",
+          "widget": {
+            "name": "steps"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "cfg",
+          "name": "cfg",
+          "type": "FLOAT",
+          "widget": {
+            "name": "cfg"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "nombre_del_muestreador",
+          "name": "sampler_name",
+          "type": "COMBO",
+          "widget": {
+            "name": "sampler_name"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "programador",
+          "name": "scheduler",
+          "type": "COMBO",
+          "widget": {
+            "name": "scheduler"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "reducción_de_ruido",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": 508
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "LATENTE",
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            492
+          ]
+        }
+      ],
+      "title": "KSampler (Illustrious)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "KSampler",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "seed": true,
+            "steps": true,
+            "cfg": true,
+            "sampler_name": true,
+            "scheduler": true,
+            "denoise": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        345989590171445,
+        "randomize",
+        28,
+        5.5,
+        "euler_ancestral",
+        "normal",
+        1
+      ],
+      "widgets_values_named": {
+        "seed": 345989590171445,
+        "control_after_generate": "randomize",
+        "steps": 28,
+        "cfg": 5.5,
+        "sampler_name": "euler_ancestral",
+        "scheduler": "normal",
+        "denoise": 1
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 192,
+      "type": "VAEDecode",
+      "pos": [
+        844.6293771449214,
+        1256.3633967687242
+      ],
+      "size": [
+        210,
+        50
+      ],
+      "flags": {
+        "collapsed": true,
+        "pinned": true
+      },
+      "order": 20,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "muestras",
+          "name": "samples",
+          "type": "LATENT",
+          "link": 492
+        },
+        {
+          "localized_name": "vae",
+          "name": "vae",
+          "type": "VAE",
+          "link": 483
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "IMAGEN",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            493
+          ]
+        }
+      ],
+      "title": "VAEDecode (Illustrious)",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.45.4",
+        "Node name for S&R": "VAEDecode",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 193,
+      "type": "LD_GuardarImagen",
+      "pos": [
+        4187.27306640625,
+        80.00100524902345
+      ],
+      "size": [
+        393,
+        648
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 22,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 493
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "guardado_automatico",
+          "name": "guardado_automatico",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "guardado_automatico"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "title": "Guardar (Illustrious)",
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_GuardarImagen",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "filename_prefix": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Illustrious",
+        true
+      ],
+      "widgets_values_named": {
+        "filename_prefix": "Illustrious",
+        "guardado_automatico": true
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 194,
+      "type": "LD_EmbeddingsNegativos",
+      "pos": [
+        650.9985853463161,
+        690.9416967975209
+      ],
+      "size": [
+        411,
+        220
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 7,
+      "mode": 2,
+      "inputs": [
+        {
+          "localized_name": "negativo_base",
+          "name": "negativo_base",
+          "shape": 7,
+          "type": "STRING",
+          "link": null
+        },
+        {
+          "localized_name": "embedding",
+          "name": "embedding",
+          "type": "COMBO",
+          "widget": {
+            "name": "embedding"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "peso",
+          "name": "peso",
+          "type": "FLOAT",
+          "widget": {
+            "name": "peso"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "lista",
+          "name": "lista",
+          "type": "STRING",
+          "widget": {
+            "name": "lista"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "negative",
+          "name": "negative",
+          "type": "STRING",
+          "links": [
+            495
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_EmbeddingsNegativos",
+        "ld_branch": "illustrious",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "embedding": true,
+            "peso": true,
+            "lista": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "(ninguno)",
+        1,
+        ""
+      ],
+      "widgets_values_named": {
+        "embedding": "(ninguno)",
+        "peso": 1,
+        "lista": ""
+      },
+      "color": "#432738",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 195,
+      "type": "LD_ImagenBaseI2I",
+      "pos": [
+        1173.4567382812502,
+        965.2749999999996
+      ],
+      "size": [
+        400,
+        476
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "modelo",
+          "name": "modelo",
+          "type": "STRING",
+          "link": 510
+        },
+        {
+          "localized_name": "latent_krea2",
+          "name": "latent_krea2",
+          "shape": 7,
+          "type": "LATENT",
+          "link": 477
+        },
+        {
+          "localized_name": "latent_illustrious",
+          "name": "latent_illustrious",
+          "shape": 7,
+          "type": "LATENT",
+          "link": 491
+        },
+        {
+          "localized_name": "vae_krea2",
+          "name": "vae_krea2",
+          "shape": 7,
+          "type": "VAE",
+          "link": 511
+        },
+        {
+          "localized_name": "vae_illustrious",
+          "name": "vae_illustrious",
+          "shape": 7,
+          "type": "VAE",
+          "link": 512
+        },
+        {
+          "localized_name": "image",
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "widget": {
+            "name": "denoise"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "steps_krea2",
+          "name": "steps_krea2",
+          "type": "INT",
+          "widget": {
+            "name": "steps_krea2"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo",
+          "name": "archivo",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "latent",
+          "name": "latent",
+          "type": "LATENT",
+          "links": [
+            506,
+            507
+          ]
+        },
+        {
+          "localized_name": "denoise",
+          "name": "denoise",
+          "type": "FLOAT",
+          "links": [
+            508
+          ]
+        },
+        {
+          "localized_name": "start_at_step",
+          "name": "start_at_step",
+          "type": "INT",
+          "links": [
+            509
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_ImagenBaseI2I",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "denoise": true,
+            "steps_krea2": true,
+            "archivo": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        0.6,
+        8,
+        ""
+      ],
+      "widgets_values_named": {
+        "denoise": 0.6,
+        "steps_krea2": 8,
+        "archivo": ""
+      },
+      "color": "#203c40",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 198,
+      "type": "Note",
+      "pos": [
+        115.99802414823195,
+        1352.7373677403473
+      ],
+      "size": [
+        430,
+        340
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 8,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Especificaciones",
+      "properties": {
+        "text": "Especificaciones\n\nPasadas (en el nodo Config, debajo de Actividad del LLM)\n• Valen para todos los Writer conectados a ese Config.\n• 1 pasada: Generar describe las imágenes que hagan falta y\n  escribe el prompt.\n• 2 pasadas: en el mismo Generar, una segunda llamada revisa el\n  prompt con todas las especificaciones (imágenes, chips, ropa,\n  participantes, estilo, cámara, LoRA) y lo corrige o mejora.\n  Tarda más. La actividad muestra Pasada 1/2 y 2/2.\n• Si el modelo responde muy corto, se le pide el prompt completo\n  otra vez automáticamente.\n• max_tokens recomendado en Config: 2048.\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas a su valor inicial (Estilo como\n  la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas),\n  LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n• Cada descripción queda atada a su foto y a sus chips: si cambiás\n  o sacás la foto, o cambiás los chips, se borra y el próximo Generar\n  la vuelve a hacer. El ✖ de cada descripción la borra a mano.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión.\n\nSeed (nodo Config)\n• 🎲 Seed aleatoria pone una seed nueva una vez.\n• Con el interruptor \"Aleatoria en cada generación\" prendido,\n  Generar, Modificar y Encolar usan una seed nueva cada vez;\n  apagado, la seed queda fija.",
+        "Node name for S&R": "Note",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        },
+        "ld_note": "specs"
+      },
+      "widgets_values": [
+        "Especificaciones\n\nPasadas (en el nodo Config, debajo de Actividad del LLM)\n• Valen para todos los Writer conectados a ese Config.\n• 1 pasada: Generar describe las imágenes que hagan falta y\n  escribe el prompt.\n• 2 pasadas: en el mismo Generar, una segunda llamada revisa el\n  prompt con todas las especificaciones (imágenes, chips, ropa,\n  participantes, estilo, cámara, LoRA) y lo corrige o mejora.\n  Tarda más. La actividad muestra Pasada 1/2 y 2/2.\n• Si el modelo responde muy corto, se le pide el prompt completo\n  otra vez automáticamente.\n• max_tokens recomendado en Config: 2048.\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas a su valor inicial (Estilo como\n  la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas),\n  LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n• Cada descripción queda atada a su foto y a sus chips: si cambiás\n  o sacás la foto, o cambiás los chips, se borra y el próximo Generar\n  la vuelve a hacer. El ✖ de cada descripción la borra a mano.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión.\n\nSeed (nodo Config)\n• 🎲 Seed aleatoria pone una seed nueva una vez.\n• Con el interruptor \"Aleatoria en cada generación\" prendido,\n  Generar, Modificar y Encolar usan una seed nueva cada vez;\n  apagado, la seed queda fija."
+      ],
+      "widgets_values_named": {
+        "text": "Especificaciones\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas,\n  Ropa) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n\nVista en español\n• Primero se genera el prompt en inglés. Después, una llamada aparte\n  traduce al español el inglés FINAL (con los triggers de LoRA).\n• Podés editar el español: antes de generar o encolar se traduce\n  de vuelta al inglés.\n• Con Español es una llamada extra al LLM (un poco más lento).\n• Si agregás un LoRA después de generar, apretá Generar de nuevo\n  para que el español lo incluya.\n• En Illustrious se muestra una explicación de los tags.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión."
+      },
+      "color": "#344029",
+      "bgcolor": "#1b222b"
+    }
+  ],
+  "links": [
+    [
+      197,
+      63,
+      0,
+      30,
+      0,
+      "LATENT"
+    ],
+    [
+      313,
+      100,
+      0,
+      30,
+      1,
+      "VAE"
+    ],
+    [
+      459,
+      30,
+      0,
+      106,
+      0,
+      "IMAGE"
+    ],
+    [
+      461,
+      106,
+      0,
+      152,
+      0,
+      "IMAGE"
+    ],
+    [
+      463,
+      173,
+      0,
+      63,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      464,
+      168,
+      0,
+      63,
+      0,
+      "MODEL"
+    ],
+    [
+      466,
+      178,
+      1,
+      176,
+      1,
+      "STRING"
+    ],
+    [
+      467,
+      168,
+      1,
+      176,
+      0,
+      "CLIP"
+    ],
+    [
+      472,
+      178,
+      0,
+      175,
+      0,
+      "LD_LMSTUDIO_CFG"
+    ],
+    [
+      479,
+      176,
+      0,
+      63,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      480,
+      176,
+      0,
+      173,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      483,
+      185,
+      2,
+      192,
+      1,
+      "VAE"
+    ],
+    [
+      487,
+      178,
+      1,
+      188,
+      1,
+      "STRING"
+    ],
+    [
+      489,
+      188,
+      0,
+      191,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      490,
+      189,
+      0,
+      191,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      492,
+      191,
+      0,
+      192,
+      0,
+      "LATENT"
+    ],
+    [
+      493,
+      192,
+      0,
+      193,
+      0,
+      "IMAGE"
+    ],
+    [
+      500,
+      184,
+      1,
+      168,
+      0,
+      "MODEL"
+    ],
+    [
+      501,
+      184,
+      2,
+      168,
+      3,
+      "CLIP"
+    ],
+    [
+      502,
+      168,
+      0,
+      191,
+      0,
+      "MODEL"
+    ],
+    [
+      503,
+      168,
+      1,
+      188,
+      0,
+      "CLIP"
+    ],
+    [
+      504,
+      168,
+      1,
+      189,
+      0,
+      "CLIP"
+    ],
+    [
+      496,
+      98,
+      0,
+      184,
+      0,
+      "MODEL"
+    ],
+    [
+      497,
+      99,
+      0,
+      184,
+      1,
+      "CLIP"
+    ],
+    [
+      498,
+      185,
+      0,
+      184,
+      2,
+      "MODEL"
+    ],
+    [
+      499,
+      185,
+      1,
+      184,
+      3,
+      "CLIP"
+    ],
+    [
+      505,
+      178,
+      2,
+      189,
+      1,
+      "STRING"
+    ],
+    [
+      506,
+      195,
+      0,
+      63,
+      3,
+      "LATENT"
+    ],
+    [
+      507,
+      195,
+      0,
+      191,
+      3,
+      "LATENT"
+    ],
+    [
+      508,
+      195,
+      1,
+      191,
+      9,
+      "FLOAT"
+    ],
+    [
+      509,
+      195,
+      2,
+      63,
+      10,
+      "INT"
+    ],
+    [
+      510,
+      184,
+      0,
+      195,
+      0,
+      "STRING"
+    ],
+    [
+      474,
+      168,
+      2,
+      178,
+      8,
+      "STRING"
+    ],
+    [
+      495,
+      194,
+      0,
+      178,
+      9,
+      "STRING"
+    ],
+    [
+      477,
+      182,
+      0,
+      195,
+      1,
+      "LATENT"
+    ],
+    [
+      491,
+      190,
+      0,
+      195,
+      2,
+      "LATENT"
+    ],
+    [
+      511,
+      100,
+      0,
+      195,
+      3,
+      "VAE"
+    ],
+    [
+      512,
+      185,
+      2,
+      195,
+      4,
+      "VAE"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "01 · Modelos",
+      "bounding": [
+        85.12350738525394,
+        0,
+        500.87,
+        1712.7373677403473
+      ],
+      "color": "#473122",
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 2,
+      "title": "02 · LoRAs",
+      "bounding": [
+        610.9984704589837,
+        0,
+        495.01,
+        950.94
+      ],
+      "color": "#26374b",
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "03 · WRITER (LM Studio)",
+      "bounding": [
+        1131,
+        0,
+        1830,
+        1638
+      ],
+      "color": "#203c40",
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 5,
+      "title": "Interno (no tocar)",
+      "bounding": [
+        613.7505818679323,
+        976.3179810638244,
+        489.7728382457386,
+        470
+      ],
+      "color": "#333840",
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 6,
+      "title": "04 · Salida Krea2",
+      "bounding": [
+        2986.26670532227,
+        0,
+        811.74,
+        1274.56
+      ],
+      "color": "#1e4a56",
+      "flags": {
+        "pinned": true
+      }
+    },
+    {
+      "id": 7,
+      "title": "05 · Salida Illustrious",
+      "bounding": [
+        3815.4596765136744,
+        0,
+        800.7663818359374,
+        1263.5278234863283
+      ],
+      "color": "#432738",
+      "flags": {
+        "pinned": true
+      }
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6830134553650705,
+      "offset": [
+        16.21505088460079,
+        293.495842616231
+      ]
+    },
+    "frontendVersion": "1.53.10",
+    "workflowRendererVersion": "LG",
+    "groupNodes": {},
+    "controller_panel": {
+      "controllers": {},
+      "hidden": true,
+      "highlight": true,
+      "version": 2,
+      "default_order": []
+    },
+    "node_versions": {
+      "comfy-core": "0.3.14",
+      "comfyui-impact-subpack": "74db20c95eca152a6d686c914edc0ef4e4762cb8",
+      "comfyui-impact-pack": "1ae7cae2df8cca06027edfa3a24512671239d6c4"
+    },
+    "ue_links": [],
+    "VHS_latentpreview": false,
+    "VHS_latentpreviewrate": 0,
+    "VHS_MetadataImage": true,
+    "VHS_KeepIntermediate": true,
+    "links_added_by_ue": []
+  },
+  "extensions": {
+    "widget_idx_map": {
+      "63": {
+        "noise_seed": 1,
+        "sampler_name": 5,
+        "scheduler": 6
+      }
+    },
+    "seed_widgets": {
+      "63": 1
+    }
+  },
+  "version": 0.4
+}
