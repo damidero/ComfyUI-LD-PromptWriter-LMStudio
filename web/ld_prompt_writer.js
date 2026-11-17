@@ -415,6 +415,9 @@ function ensureThemeStyles() {
 .ld-people-custom { width: 72px; flex: 0 0 72px; }
 .ld-pasadas-row { display: flex; gap: 6px; width: 100%; margin-top: 2px; }
 .ld-pasadas-config { gap: 3px; }
+.ld-seed-row { display: flex; flex-direction: row; gap: 6px; align-items: stretch; width: 100%; height: 100%; padding: 0 8px; box-sizing: border-box; }
+.ld-seed-row .ld-seed-auto { flex: 1 1 60%; padding: 4px 8px; font-size: 12px; border-radius: 8px; }
+.ld-seed-row .ld-seed-btn { flex: 1 1 40%; padding: 4px 8px; font-size: 12px; white-space: nowrap; }
 .ld-pasadas-row .ld-switch { padding: 5px 8px; font-size: 12px; border-radius: 8px; }
 .ld-pair-row.ld-pair-low { margin-top: 2px; }
 .ld-tamano-box { display: flex; flex-direction: column; gap: 4px; width: 100%; box-sizing: border-box; padding: 2px 2px 0; font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eef2; }
@@ -950,6 +953,8 @@ const I18N = {
         btnTest: "🔌 Probar conexión",
         btnRefresh: "🔄 Actualizar modelos",
         btnSeed: "🎲 Seed aleatoria",
+        seedAuto: "Aleatoria en cada generación",
+        seedAutoTitle: "Prendido: Generar, Modificar y Encolar ponen una seed nueva al azar cada vez. Apagado: la seed queda fija.",
         seedSet: "🎲 Seed: {n}",
         noteEstilo: "Si no hay interruptores activos en una imagen, se usan todos los aspectos (Todo). Si elegís un estilo de salida (p. ej. Realista), ese estilo gana sobre el interruptor «Estilo» de las imágenes.",
         uploadItem: "⬆ Subir archivo…",
@@ -1046,6 +1051,8 @@ const I18N = {
         btnTest: "🔌 Test connection",
         btnRefresh: "🔄 Refresh models",
         btnSeed: "🎲 Random seed",
+        seedAuto: "Random on every run",
+        seedAutoTitle: "On: Generate, Modify and Queue pick a new random seed every time. Off: the seed stays fixed.",
         seedSet: "🎲 Seed: {n}",
         noteEstilo: "If no toggles are on for an image, every aspect is used (All). If you pick an output style (e.g. Realistic), it overrides the image «Style» toggle.",
         uploadItem: "⬆ Upload file…",
@@ -2142,6 +2149,73 @@ function setStatusBadge(el, msg) {
     else if (/⚠️/.test(s)) el.classList.add("warn");
 }
 
+function randomizeSeed(node) {
+    const w = widgetByName(node, "seed");
+    if (!w) return null;
+    const min = Number(w.options?.min ?? 0) || 0;
+    let max = Number(w.options?.max ?? Number.MAX_SAFE_INTEGER);
+    if (!Number.isFinite(max) || max > Number.MAX_SAFE_INTEGER) max = Number.MAX_SAFE_INTEGER;
+    const val = min + Math.floor(Math.random() * (max - min + 1));
+    w.value = val;
+    w.callback?.(val);
+    node.setDirtyCanvas?.(true, true);
+    node.graph?.setDirtyCanvas?.(true, true);
+    return val;
+}
+
+// Called before Generar / Modificar / queue: with the switch on, every run
+// gets a new seed. Stored in node.properties (no Python widget, saved with
+// the workflow; old workflows = off).
+function maybeAutoSeed(cfgNode) {
+    if (!cfgNode || !cfgNode.properties?.ld_seed_auto) return null;
+    return randomizeSeed(cfgNode);
+}
+
+function attachSeedControls(node, setStatus) {
+    const typ = String(node?.type || node?.comfyClass || "");
+    if (typ !== CONFIG_NODE || node._ldSeedDom || !widgetByName(node, "seed")) return;
+    node.properties = node.properties || {};
+    // One row below seed: [switch "random on every run"] [🎲 Random seed]
+    const row = styleEl("div", {});
+    row.className = "ld-panel ld-config ld-seed-row";
+    const sw = styleEl("button", {}, t(node, "seedAuto"));
+    sw.type = "button";
+    sw.className = "ld-switch ld-seed-auto";
+    sw.title = t(node, "seedAutoTitle");
+    const btn = styleEl("button", {}, t(node, "btnSeed"));
+    btn.type = "button";
+    btn.className = "ld-btn ld-btn-blue ld-seed-btn";
+    const refresh = () => sw.classList.toggle("on", !!node.properties?.ld_seed_auto);
+    sw.addEventListener("click", () => {
+        node.properties = node.properties || {};
+        node.properties.ld_seed_auto = !node.properties.ld_seed_auto;
+        refresh();
+        node.graph?.setDirtyCanvas?.(true);
+    });
+    btn.addEventListener("click", () => {
+        const val = randomizeSeed(node);
+        if (val != null) setStatus?.(t(node, "seedSet", { n: val }));
+    });
+    row.append(sw, btn);
+    const dom = node.addDOMWidget("ld_seed_row", "div", row, { hideOnZoom: false, serialize: false });
+    dom.serialize = false;
+    dom.computeSize = (width) => [width || 200, 34];
+    node._ldSeedDom = dom;
+    node._ldSeedRefresh = refresh;
+    node._ldSeedI18n = () => {
+        sw.textContent = t(node, "seedAuto");
+        sw.title = t(node, "seedAutoTitle");
+        btn.textContent = t(node, "btnSeed");
+    };
+    const afterName = widgetByName(node, "control_after_generate") ? "control_after_generate" : "seed";
+    moveWidgetAfter(node, dom, afterName);
+    refresh();
+}
+
+function syncSeedAutoToggle(node) {
+    node?._ldSeedRefresh?.();
+}
+
 async function attachModelRefresh(node, setStatus) {
     node._ldRefreshModels = async (fromButton = false) => {
         const combo = widgetByName(node, "model");
@@ -2210,31 +2284,11 @@ async function attachModelRefresh(node, setStatus) {
     testBtn.serialize = false;
     node._ldTestBtn = testBtn;
 
-    // 🎲 Random seed, right below seed (and its control_after_generate).
-    const seedW = widgetByName(node, "seed");
-    if (seedW && !node._ldSeedBtn) {
-        const seedBtn = node.addWidget("button", t(node, "btnSeed"), null, () => {
-            const w = widgetByName(node, "seed");
-            if (!w) return;
-            const min = Number(w.options?.min ?? 0) || 0;
-            let max = Number(w.options?.max ?? Number.MAX_SAFE_INTEGER);
-            if (!Number.isFinite(max) || max > Number.MAX_SAFE_INTEGER) max = Number.MAX_SAFE_INTEGER;
-            const val = min + Math.floor(Math.random() * (max - min + 1));
-            w.value = val;
-            w.callback?.(val);
-            node.setDirtyCanvas?.(true, true);
-            node.graph?.setDirtyCanvas?.(true, true);
-            setStatus?.(t(node, "seedSet", { n: val }));
-        });
-        seedBtn.serialize = false;
-        node._ldSeedBtn = seedBtn;
-        const afterName = widgetByName(node, "control_after_generate") ? "control_after_generate" : "seed";
-        moveWidgetAfter(node, seedBtn, afterName);
-    }
+    attachSeedControls(node, setStatus);
     node._ldRefreshI18n = () => {
         if (node._ldRefreshBtn) node._ldRefreshBtn.name = t(node, "btnRefresh");
         if (node._ldTestBtn) node._ldTestBtn.name = t(node, "btnTest");
-        if (node._ldSeedBtn) node._ldSeedBtn.name = t(node, "btnSeed");
+        node._ldSeedI18n?.();
         node.graph?.setDirtyCanvas?.(true);
     };
 
@@ -2415,6 +2469,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             return;
         }
         const cfgNode = findUpstreamConfig(node);
+        maybeAutoSeed(cfgNode);
         const cfg = readConfigValues(cfgNode);
         if (!cfg) {
             setStatus(t(node, "missingCfg"));
@@ -3249,6 +3304,7 @@ function setupConfigNode(nodeType) {
         repairNodeWidgets(this);
         applyNodeTheme(this, THEME.config);
         attachConfigPasadas(this);
+        syncSeedAutoToggle(this);
         const combo = widgetByName(this, "model");
         if (combo && isAuto(combo.value)) combo.value = AUTO_MODEL;
         shrinkExtraInstructions(this);
@@ -3740,6 +3796,7 @@ function setupWriterV2(nodeType) {
             tone: "writer",
             onGenerate: async ({ setStatus, pos, neg, syncToWidgets }) => {
                 const cfgNode = findUpstreamConfig(this);
+                maybeAutoSeed(cfgNode);
                 const cfg = readConfigValues(cfgNode);
                 if (!cfg) {
                     setStatus(t(this, "missingCfg"));
@@ -4522,6 +4579,9 @@ function injectWriterPromptsIntoGraphPrompt(result) {
 
 async function prepareAllWritersForQueue() {
     const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        if (String(n?.type || n?.comfyClass || "") === CONFIG_NODE) maybeAutoSeed(n);
+    }
     for (const n of nodes) {
         if (!isWriterNode(n)) continue;
         const setStatus = n._ldPanel?.setStatus || n._ldSetStatus;
