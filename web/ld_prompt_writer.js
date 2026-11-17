@@ -3364,6 +3364,76 @@ function growConfigToFit(node) {
     } catch (_e) {}
 }
 
+// Config inputs (image_1..8, lora_triggers, neg_embeddings) laid out in 2
+// rows instead of one per row, connected ones first (left). Canvas mode only:
+// LiteGraph honours input.pos for drawing, links, hit-testing and widget
+// placement. In Vue-nodes mode the DOM lays slots out itself, so we skip.
+const LD_SLOT_SHORT = { lora_triggers: "triggers", neg_embeddings: "emb neg" };
+
+function ldSlotLabel(input, short) {
+    if (!short) return String(input.label || input.localized_name || input.name || "");
+    const m = /^image_(\d+)$/.exec(String(input.name || ""));
+    if (m) return `img ${m[1]}`;
+    return LD_SLOT_SHORT[input.name] || String(input.label || input.localized_name || input.name || "");
+}
+
+function layoutConfigInputs(node) {
+    try {
+        if (!node || !Array.isArray(node.inputs)) return;
+        const LG = typeof LiteGraph !== "undefined" ? LiteGraph : {};
+        if (LG.vueNodesMode) return;
+        const SH = LG.NODE_SLOT_HEIGHT || 20;
+        const slots = node.inputs.filter((i) => i && !i.widget);
+        if (slots.length < 3) return;
+        const connected = slots.filter((i) => i.link != null);
+        const order = [...connected, ...slots.filter((i) => i.link == null)];
+        const outW = Math.max(0, ...(node.outputs || []).map((o) => String(o.label || o.localized_name || o.name || "").length * 7 + 30));
+        const avail = Math.max(120, (node.size?.[0] || 400) - outW - 8);
+        const colWidths = (rows, short) => {
+            const cols = Math.ceil(order.length / rows);
+            const ws = [];
+            for (let c = 0; c < cols; c++) {
+                let w = 0;
+                for (let r = 0; r < rows; r++) {
+                    const inp = order[c * rows + r];
+                    if (inp) w = Math.max(w, ldSlotLabel(inp, short).length * 7 + 24);
+                }
+                ws.push(w);
+            }
+            return ws;
+        };
+        let plan = null;
+        for (const [rows, short] of [[2, false], [2, true], [3, true], [4, true]]) {
+            const ws = colWidths(rows, short);
+            if (ws.reduce((a, b) => a + b, 0) <= avail || rows === 4) {
+                plan = { rows, short, ws };
+                break;
+            }
+        }
+        let x = SH * 0.5;
+        const cols = plan.ws.length;
+        for (let c = 0; c < cols; c++) {
+            for (let r = 0; r < plan.rows; r++) {
+                const inp = order[c * plan.rows + r];
+                if (!inp) continue;
+                const pos = [x, (r + 0.7) * SH];
+                if (!inp.pos || inp.pos[0] !== pos[0] || inp.pos[1] !== pos[1]) inp.pos = pos;
+                const want = plan.short ? ldSlotLabel(inp, true) : undefined;
+                if (plan.short) {
+                    if (inp.label !== want) inp.label = want;
+                } else if (inp._ldShortLabel && inp.label === inp._ldShortLabel) {
+                    delete inp.label;
+                }
+                inp._ldShortLabel = want;
+            }
+            x += plan.ws[c];
+        }
+        node.setDirtyCanvas?.(true, true);
+    } catch (err) {
+        console.warn("[LD-PromptWriter] layoutConfigInputs:", err);
+    }
+}
+
 function setupConfigNode(nodeType) {
     installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
@@ -3372,6 +3442,7 @@ function setupConfigNode(nodeType) {
         attachModelRefresh(this, setStatus);
         attachConfigActivityLog(this);
         attachConfigPasadas(this);
+        layoutConfigInputs(this);
         shrinkExtraInstructions(this);
         hookIdiomaWidget(this);
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
@@ -3385,6 +3456,7 @@ function setupConfigNode(nodeType) {
         applyNodeTheme(this, THEME.config);
         attachConfigPasadas(this);
         syncSeedAutoToggle(this);
+        layoutConfigInputs(this);
         const combo = widgetByName(this, "model");
         if (combo && isAuto(combo.value)) combo.value = AUTO_MODEL;
         shrinkExtraInstructions(this);
@@ -3395,6 +3467,15 @@ function setupConfigNode(nodeType) {
         // Saved workflows keep their size; grow only the height if the new
         // activity box below "Probar conexión" doesn't fit.
         setTimeout(() => growConfigToFit(this), 0);
+    });
+    installSafeHook(nodeType, "onConnectionsChange", function () {
+        layoutConfigInputs(this);
+    });
+    installSafeHook(nodeType, "onResize", function () {
+        layoutConfigInputs(this);
+    });
+    installSafeHook(nodeType, "onAdded", function () {
+        layoutConfigInputs(this);
     });
 }
 
