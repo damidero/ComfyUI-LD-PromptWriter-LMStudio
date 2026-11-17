@@ -1033,8 +1033,8 @@ const I18N = {
 };
 
 
-const NOTES_RECOMENDACIONES = {
-    es: `Recomendaciones de modelos
+const NOTES_CONFIG = {
+    es: `Configuración
 
 Krea2
 • UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors
@@ -1065,23 +1065,6 @@ LLM (LM Studio)
 • Activá el servidor local de LM Studio (pestaña Developer / Local Server)
   y usá esa URL en el nodo Config.
 
-Vista en español
-• Primero se genera el prompt en inglés. Después, una llamada aparte
-  traduce al español el inglés FINAL (con los triggers de LoRA).
-• Podés editar el español: antes de generar o encolar se traduce
-  de vuelta al inglés.
-• Con Español es una llamada extra al LLM (un poco más lento).
-• Si agregás un LoRA después de generar, apretá Generar de nuevo
-  para que el español lo incluya.
-• En Illustrious se muestra una explicación de los tags.
-
-Ropa (selector del Writer)
-• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).
-• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al
-  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).
-• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.
-  Nunca se cambia solo.
-
 Nodos necesarios
 
 • LD PromptWriter (LM Studio) — este pack
@@ -1091,7 +1074,7 @@ El resto de los nodos son de ComfyUI (core).
 
 Instalación: ComfyUI Manager → Install via Git URL
 (o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá.`,
-    en: `Model recommendations
+    en: `Setup
 
 Krea2
 • UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors
@@ -1122,6 +1105,83 @@ LLM (LM Studio)
 • Enable the LM Studio local server (Developer / Local Server tab)
   and use that URL in the Config node.
 
+Required nodes
+
+• LD PromptWriter (LM Studio) — this pack
+• ComfyUI-Lora-Manager (Lora Loader)
+• ComfyUI-Custom-Scripts (PlaySound, optional)
+All other nodes are ComfyUI core.
+
+Install: ComfyUI Manager → Install via Git URL
+(or git clone the repo into ComfyUI/custom_nodes), then restart.`,
+};
+const NOTES_SPECS = {
+    es: `Especificaciones
+
+Prompt positivo
+• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual
+  (no llama al LLM). Si está vacío, se genera.
+• Los trigger words de LoRA se agregan si faltan.
+• Generar describe antes las imágenes sin descripción al día
+  (solo con los chips activos).
+• Modificar: aplica un cambio puntual al prompt actual.
+• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips
+  y descripciones (no toca la imagen de i2i).
+
+Imágenes del Writer (chips)
+• Cada imagen aporta solo los aspectos con el chip prendido;
+  sin ningún chip se usa todo.
+• Las imágenes con Persona se asignan en orden a las personas.
+• El chip Cámara / POV gana sobre el selector Cámara.
+
+Vista en español
+• Primero se genera el prompt en inglés. Después, una llamada aparte
+  traduce al español el inglés FINAL (con los triggers de LoRA).
+• Podés editar el español: antes de generar o encolar se traduce
+  de vuelta al inglés.
+• Con Español es una llamada extra al LLM (un poco más lento).
+• Si agregás un LoRA después de generar, apretá Generar de nuevo
+  para que el español lo incluya.
+• En Illustrious se muestra una explicación de los tags.
+
+Ropa (selector del Writer)
+• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).
+• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al
+  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).
+• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.
+  Nunca se cambia solo.
+
+Imagen de referencia (i2i)
+• La IA no ve esta imagen: solo es el punto de partida del render.
+• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta
+  al Tamaño y se usa con el denoise (0.6 por defecto).
+• Con denoise bajo se conservan su ropa, pose y colores aunque el
+  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9
+  para que gane el prompt (se parece menos a la foto).
+• Para copiar ropa o pose, cargá la misma foto en una imagen
+  del Writer con los chips Ropa / Pose.
+• Limpiar no la borra: usá su ✖.
+
+Actividad del LLM
+• Está en el nodo Config, debajo de Probar conexión.`,
+    en: `How it works
+
+Positive prompt
+• If the positive box has text, execution uses it as-is
+  (no LLM call). If it is empty, a prompt is generated.
+• LoRA trigger words are added if missing.
+• Generate first describes images whose description is out of date
+  (only with the active chips).
+• Modify: applies a precise change to the current prompt.
+• Clear: clears idea, prompts, the Writer images, their chips
+  and descriptions (does not touch the i2i image).
+
+Writer images (chips)
+• Each image contributes only the aspects whose chip is on;
+  with no chip on, everything is used.
+• Images with Person are assigned to the people in order.
+• The Camera / POV chip wins over the Camera selector.
+
 Spanish view
 • The English prompt is generated first. Then a separate call
   translates the FINAL English (with the LoRA triggers) into Spanish.
@@ -1140,16 +1200,26 @@ Clothing (Writer selector)
 • Nude: no clothing; ignores clothing from images and LoRAs.
   Never changed automatically.
 
-Required nodes
+Reference image (i2i)
+• The AI does not see this image: it is only the render's starting point.
+• No image: text-to-image (denoise 1). With an image: it is cropped
+  to the Tamaño size and used with the denoise (0.6 by default).
+• At low denoise its clothing, pose and colors stay even if the
+  prompt says otherwise (Nude too). Raise it to 0.75–0.9
+  so the prompt wins (it looks less like the photo).
+• To copy clothing or pose, load the same photo into a Writer
+  image with the Clothing / Pose chips.
+• Clear does not remove it: use its ✖.
 
-• LD PromptWriter (LM Studio) — this pack
-• ComfyUI-Lora-Manager (Lora Loader)
-• ComfyUI-Custom-Scripts (PlaySound, optional)
-All other nodes are ComfyUI core.
-
-Install: ComfyUI Manager → Install via Git URL
-(or git clone the repo into ComfyUI/custom_nodes), then restart.`,
+LLM activity
+• It is in the Config node, below Test connection.`,
 };
+const NOTE_TITLES = {
+    config: { es: "Configuración", en: "Setup" },
+    specs: { es: "Especificaciones", en: "How it works" },
+};
+// Back-compat alias (older code paths / forks).
+const NOTES_RECOMENDACIONES = NOTES_CONFIG;
 
 function findModeloGen() {
     const nodes = app.graph?._nodes || app.graph?.nodes || [];
@@ -1178,21 +1248,38 @@ function syncIdiomaToConfig(idioma) {
     }
 }
 
+// Pack-managed notes: the "config" note (legacy title "Recomendaciones de
+// modelos" / node 186) and the "specs" note. A note is recognised by its
+// properties.ld_note flag first, then by its title. Text and title follow
+// the workflow language.
+function ldNoteKind(n) {
+    const typ = String(n?.type || "");
+    if (typ !== "Note" && typ !== "MarkdownNote") return null;
+    const flag = n.properties?.ld_note;
+    if (flag === "config" || flag === "specs") return flag;
+    const title = String(n.title || "");
+    if (/especificaciones|how it works/i.test(title)) return null; // only with flag
+    if (/recomendaciones de modelos|model recommendations/i.test(title)) return "config";
+    if (n.id === 186 && !flag) return "config";
+    return null;
+}
+
 function applyNotesI18n() {
     const lang = currentLangFrom();
-    const text = NOTES_RECOMENDACIONES[lang] || NOTES_RECOMENDACIONES.es;
     const nodes = app.graph?._nodes || app.graph?.nodes || [];
     for (const n of nodes) {
-        const title = String(n.title || n.properties?.["Node name for S&R"] || "");
-        const typ = String(n.type || "");
-        if (typ !== "Note" && typ !== "MarkdownNote") continue;
-        if (!/recomendaciones de modelos|model recommendations/i.test(title) && n.id !== 186) {
-            continue;
-        }
+        const kind = ldNoteKind(n);
+        if (!kind) continue;
+        const src = kind === "specs" ? NOTES_SPECS : NOTES_CONFIG;
+        const text = src[lang] || src.es;
+        n.properties = n.properties || {};
+        n.properties.ld_note = kind;
+        const title = NOTE_TITLES[kind][lang] || NOTE_TITLES[kind].es;
+        if (n.title !== title) n.title = title;
         if (Array.isArray(n.widgets_values) && n.widgets_values.length) n.widgets_values[0] = text;
         const w = (n.widgets || [])[0];
         if (w && w.value !== undefined) w.value = text;
-        if (n.properties) n.properties.text = text;
+        n.properties.text = text;
         if (typeof n.setDirtyCanvas === "function") n.setDirtyCanvas(true, true);
     }
     app.graph?.setDirtyCanvas?.(true, true);
