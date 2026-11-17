@@ -321,6 +321,8 @@ function ensureThemeStyles() {
     overflow-y: auto;
 }
 .ld-vista-es.ld-vista-hidden { display: none !important; }
+.ld-vista-es textarea.ld-vista-ro { opacity: 0.85; cursor: default; background: rgba(0,0,0,0.18) !important; }
+.ld-vista-es textarea.ld-vista-stale::placeholder { color: #e0b050; opacity: 1; }
 .ld-modify-row {
     display: flex;
     flex-direction: row;
@@ -892,8 +894,11 @@ const I18N = {
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
         vistaEs: "Vista en español ⓘ",
-        vistaEsTitle: "Cómo funciona: primero se genera el prompt en inglés; después una llamada aparte traduce al español el inglés FINAL (con los triggers de LoRA). Podés editar el español: antes de generar o encolar se traduce de vuelta al inglés. Con Español es una llamada extra al LLM. Si agregás un LoRA después de generar, apretá Generar de nuevo para que el español lo incluya. En Illustrious se muestra una explicación de los tags.",
-        vistaPh: "Editable. Si la cambiás, se traduce al inglés antes de generar.",
+        vistaEsTitle: "Cómo funciona: primero se genera el prompt en inglés; después una llamada aparte traduce al español el inglés FINAL (con los triggers de LoRA). Es SOLO LECTURA y nunca se usa para generar: siempre se usa el inglés. Si el inglés cambia, el español se borra y se vuelve a traducir solo. Con Español es una llamada extra al LLM. En Illustrious se muestra una explicación de los tags.",
+        vistaPh: "Solo lectura: traducción del prompt en inglés. Siempre se usa el inglés.",
+        vistaUpdating: "⏳ El inglés cambió: actualizando la traducción…",
+        vistaStale: "El inglés cambió: la traducción se actualiza al generar o al editar el inglés.",
+        vistaFail: "No pude actualizar la traducción (se usa igual el inglés).",
         usedEditedPos: "Usando el prompt en inglés (editado a mano).",
         usedTranslatedEs: "Traduje la vista en español y actualicé el positivo.",
         translatingEs: "⏳ Traduciendo la vista en español…",
@@ -981,8 +986,11 @@ const I18N = {
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
         vistaEs: "Spanish view ⓘ",
-        vistaEsTitle: "How it works: the English prompt is generated first; then a separate call translates the FINAL English (with the LoRA triggers) into Spanish. You can edit the Spanish: before generating or queueing it is translated back to English. With Español this is one extra LLM call. If you add a LoRA after generating, press Generate again so the Spanish includes it. Illustrious shows an explanation of the tags.",
-        vistaPh: "Editable. If you change it, it is translated to English before generating.",
+        vistaEsTitle: "How it works: the English prompt is generated first; then a separate call translates the FINAL English (with the LoRA triggers) into Spanish. It is READ-ONLY and never used to generate: the English is always used. If the English changes, the Spanish is cleared and re-translated automatically. With Español this is one extra LLM call. Illustrious shows an explanation of the tags.",
+        vistaPh: "Read-only: translation of the English prompt. The English is always what is used.",
+        vistaUpdating: "⏳ The English changed: updating the translation…",
+        vistaStale: "The English changed: the translation updates when you generate or edit the English.",
+        vistaFail: "Couldn't update the translation (the English is used anyway).",
         usedEditedPos: "Using the English prompt (edited by hand).",
         usedTranslatedEs: "Translated the Spanish view and updated the positive prompt.",
         translatingEs: "⏳ Translating the Spanish view…",
@@ -1185,11 +1193,11 @@ Imágenes del Writer (chips)
 Vista en español
 • Primero se genera el prompt en inglés. Después, una llamada aparte
   traduce al español el inglés FINAL (con los triggers de LoRA).
-• Podés editar el español: antes de generar o encolar se traduce
-  de vuelta al inglés.
+• El español es SOLO LECTURA: nunca se usa para generar. La imagen
+  siempre usa el prompt en inglés.
+• Si el inglés cambia (lo editás, o al encolar se suman triggers),
+  el español viejo se borra y se vuelve a traducir solo.
 • Con Español es una llamada extra al LLM (un poco más lento).
-• Si agregás un LoRA después de generar, apretá Generar de nuevo
-  para que el español lo incluya.
 • En Illustrious se muestra una explicación de los tags.
 
 Ropa (selector del Writer)
@@ -1253,11 +1261,11 @@ Writer images (chips)
 Spanish view
 • The English prompt is generated first. Then a separate call
   translates the FINAL English (with the LoRA triggers) into Spanish.
-• You can edit the Spanish: before generating or queueing it is
-  translated back to English.
+• The Spanish is READ-ONLY: it is never used to generate. The image
+  always uses the English prompt.
+• If the English changes (you edit it, or triggers are merged on
+  queue), the old Spanish is cleared and re-translated automatically.
 • With Español this is one extra LLM call (a bit slower).
-• If you add a LoRA after generating, press Generate again
-  so the Spanish includes it.
 • Illustrious shows an explanation of the tags.
 
 Clothing (Writer selector)
@@ -1424,14 +1432,30 @@ function hookVistaEsEvents() {
     });
 }
 
-function setVistaEs(node, text, { clearDirty = true } = {}) {
+function englishNow(node) {
+    const panel = node?._ldPanel;
+    return String(panel?.pos?.value ?? widgetValue(node, "prompt_generado", "") ?? "");
+}
+
+function normEn(text) {
+    return String(text ?? "").replace(/\s+/g, " ").trim();
+}
+
+// The Spanish view is READ-ONLY and never feeds generation: the pipeline always
+// uses the English prompt. It remembers which English it was translated from
+// (ld_vista_src) so a stale translation is never shown next to a newer English.
+function setVistaEs(node, text, { clearDirty = true, src } = {}) {
     if (!node) return;
     const val = String(text ?? "");
     node.properties = node.properties || {};
     node.properties.ld_vista_es = val;
+    node.properties.ld_vista_src = val ? normEn(src != null ? src : englishNow(node)) : "";
+    node.properties.ld_vista_es_dirty = false;
     const panel = node._ldPanel;
-    if (panel?.vistaEsArea && panel.vistaEsArea.value !== val) {
-        panel.vistaEsArea.value = val;
+    if (panel?.vistaEsArea) {
+        if (panel.vistaEsArea.value !== val) panel.vistaEsArea.value = val;
+        panel.vistaEsArea.placeholder = t(node, "vistaPh");
+        panel.vistaEsArea.classList.remove("ld-vista-stale");
     }
     if (clearDirty) {
         node.properties.ld_vista_es_dirty = false;
@@ -1451,6 +1475,82 @@ function applyVistaVisibility(node) {
 function markPosDirty(node, dirty) {
     node.properties = node.properties || {};
     node.properties.ld_pos_dirty = !!dirty;
+}
+
+async function postViewEs(body) {
+    const res = await api.fetchApi("/ld_promptwriter/view_es", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    let data = null;
+    try {
+        data = await res.json();
+    } catch (_e) {
+        throw new Error(`Error de red (${res.status || "sin estado"}).`);
+    }
+    return data;
+}
+
+// Compare the Spanish view with the CURRENT English. If they don't belong
+// together, hide the old Spanish at once and (when auto) re-translate the
+// current English after a short pause.
+function checkVistaFresh(node, { auto = true } = {}) {
+    if (!node || currentLangFrom(node) === "en") return;
+    const panel = node._ldPanel;
+    const area = panel?.vistaEsArea;
+    const props = node.properties = node.properties || {};
+    const en = normEn(englishNow(node));
+    const es = String(props.ld_vista_es || "");
+    if (!en) {
+        if (es || (area && area.value)) setVistaEs(node, "", { src: "" });
+        return;
+    }
+    if (es && normEn(props.ld_vista_src) === en) return;
+    // Stale or missing: never show a translation of another English text.
+    props.ld_vista_es = "";
+    props.ld_vista_src = "";
+    if (area) {
+        area.value = "";
+        area.placeholder = t(node, auto ? "vistaUpdating" : "vistaStale");
+        area.classList.add("ld-vista-stale");
+    }
+    if (!auto) return;
+    clearTimeout(node._ldVistaTimer);
+    node._ldVistaTimer = setTimeout(() => refreshVistaNow(node), 1500);
+}
+
+async function refreshVistaNow(node) {
+    const en = normEn(englishNow(node));
+    if (!en || currentLangFrom(node) === "en") return;
+    const cfg = readConfigValues(findUpstreamConfig(node));
+    const area = node._ldPanel?.vistaEsArea;
+    if (!cfg) {
+        if (area) area.placeholder = t(node, "vistaStale");
+        return;
+    }
+    const seq = (node._ldVistaSeq = (node._ldVistaSeq || 0) + 1);
+    try {
+        const data = await postViewEs({
+            ...cfg,
+            text: englishNow(node),
+            idioma: cfg.idioma || "Español",
+            unload_after: false,
+            descarga_idle_min: cfg.descarga_idle_min || 0,
+        });
+        if (seq !== node._ldVistaSeq) return;
+        if (normEn(englishNow(node)) !== normEn(data?.source)) {
+            checkVistaFresh(node);
+            return;
+        }
+        if (data?.ok && data.vista_es) {
+            setVistaEs(node, data.vista_es, { src: data.source, clearDirty: false });
+        } else if (area) {
+            area.placeholder = t(node, "vistaFail");
+        }
+    } catch (_e) {
+        if (area && seq === node._ldVistaSeq) area.placeholder = t(node, "vistaFail");
+    }
 }
 
 function markVistaDirty(node, dirty) {
@@ -1522,6 +1622,11 @@ async function postTranslateEs(body) {
 }
 
 async function ensureEnglishFromSpanish(node, { setStatus } = {}) {
+    // The Spanish view is read-only now: it is NEVER translated back nor used
+    // for generation. Clear any old "edited" flag saved in older workflows.
+    if (node?.properties) node.properties.ld_vista_es_dirty = false;
+    return false;
+    // eslint-disable-next-line no-unreachable
     if (!node) return false;
     if (currentLangFrom(node) === "en") return false;
     const props = node.properties = node.properties || {};
@@ -2300,7 +2405,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             }
             if (pos) pos.value = data.positive || "";
             if (neg && data.negative != null) neg.value = data.negative;
-            setVistaEs(node, data.vista_es || "");
+            setVistaEs(node, data.vista_es || "", { src: data.positive || "" });
             syncToWidgets();
             setStatus(t(node, "modifyOk"));
         } catch (err) {
@@ -2369,6 +2474,9 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         resize: "none",
         flex: "0 0 140px",
     });
+    vistaEsArea.readOnly = true;
+    vistaEsArea.tabIndex = -1;
+    vistaEsArea.classList.add("ld-vista-ro");
     vistaWrap.append(vistaLabel, vistaEsArea);
     posRow.append(midL, vistaWrap);
     const negLabel = styleEl("div", {}, t(node, "negLabel")); negLabel.dataset.i18n = "negLabel";
@@ -2740,6 +2848,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (vistaEsArea) {
             const savedVista = String(node.properties?.ld_vista_es ?? "");
             if (vistaEsArea.value !== savedVista) vistaEsArea.value = savedVista;
+            checkVistaFresh(node, { auto: false });
         }
         applyVistaVisibility(node);
         for (const col of cols) {
@@ -2783,9 +2892,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     pos.addEventListener("input", () => {
         syncToWidgets();
         markPosDirty(node, true);
-    });
-    vistaEsArea.addEventListener("input", () => {
-        markVistaDirty(node, true);
+        checkVistaFresh(node);
     });
     neg.addEventListener("input", syncToWidgets);
     ideaArea?.addEventListener("input", syncToWidgets);
@@ -3055,9 +3162,12 @@ function hookExecuted(nodeType) {
         }
         if (message && Object.prototype.hasOwnProperty.call(message, "vista_es")) {
             const v = Array.isArray(message.vista_es) ? message.vista_es[0] : message.vista_es;
-            setVistaEs(this, v ?? "");
+            setVistaEs(this, v ?? "", { src: posW?.value ?? "" });
         }
         this._ldPanel?.syncFromWidgets();
+        // Execution may have changed the English (e.g. trigger words merged):
+        // re-translate so the Spanish matches what was really used.
+        checkVistaFresh(this);
     };
 }
 
@@ -3622,7 +3732,7 @@ function setupWriterV2(nodeType) {
                 }
                 pos.value = data.positive || "";
                 neg.value = data.negative || "";
-                setVistaEs(this, data.vista_es || "");
+                setVistaEs(this, data.vista_es || "", { src: data.positive || "" });
                 syncToWidgets();
                 if (!triggerInfo.text && (triggerInfo.source === "unknown" || triggerInfo.source === "loader-no-words")) {
                     setStatus(t(this, "genOkTriggers"));
@@ -3899,7 +4009,7 @@ function setupOldWriter(nodeType) {
                 }
                 pos.value = data.positive || "";
                 neg.value = data.negative || "";
-                setVistaEs(this, data.vista_es || "");
+                setVistaEs(this, data.vista_es || "", { src: data.positive || "" });
                 syncToWidgets();
                 setStatus(t(this, "genOk"));
             },

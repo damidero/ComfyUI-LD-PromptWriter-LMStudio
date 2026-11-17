@@ -6,6 +6,7 @@ Lists/unloads models the same way H3 Studio does (/api/v0/models and
 """
 from __future__ import annotations
 
+import asyncio
 import base64
 import hashlib
 import io
@@ -1139,26 +1140,93 @@ def normalize_triggers(text) -> list:
     return out
 
 
+_TRIGGER_TAG_MAX_WORDS = 3
+_TRIGGER_NOT_TAG_RE = re.compile(r"^(?:no|not|with|and|without)\b", re.IGNORECASE)
+# Short fragments made of ordinary visual words are pieces of a description
+# ("blonde hair", "lower angle"), not trigger tokens.
+_TRIGGER_DESC_WORD_RE = re.compile(
+    r"\b(?:hair|haired|eyes?|eyebrows?|brows?|lashes|eyelashes|skin|smile|smiling|lips?|mouth|face|facial|"
+    r"nose|cheeks?|teeth|tongue|chin|jaw|ears?|neck|shoulders?|arms?|hands?|legs?|thighs?|feet|body|figure|"
+    r"breasts?|chest|waist|hips?|belly|tattoos?|freckles|moles?|scars?|piercings?|makeup|expression|"
+    r"blonde?|brunette|redhead|ginger|tan|tanned|pale|curvy|slim|petite|athletic|"
+    r"angle|shot|view|close-?up|portrait|framing|focus|lighting|light|lit|background|pose|posing|"
+    r"photorealistic|realistic|detailed|quality)\b",
+    re.IGNORECASE,
+)
+
+
+def split_trigger_kinds(triggers) -> tuple:
+    """Split LoRA trigger fragments into (tags, description).
+
+    Real trigger words are short tokens ("anahi", "ohwx woman") and must be
+    pasted verbatim. Many LoRAs (Forge activation text / civitai trainedWords)
+    instead carry a whole character DESCRIPTION; forcing that verbatim at the
+    start made some models just echo it and stop, so the "prompt" came out as
+    a description of the person only. Those long fragments are returned apart
+    so the LLM integrates them into the subject instead of copying them.
+    """
+    tags, desc = [], []
+    for t in triggers or []:
+        tok = " ".join(str(t).split()).strip()
+        if not tok:
+            continue
+        words = tok.split()
+        looks_desc = len(words) > 1 and bool(_TRIGGER_DESC_WORD_RE.search(tok))
+        if (len(words) <= _TRIGGER_TAG_MAX_WORDS and "." not in tok.rstrip(".")
+                and not _TRIGGER_NOT_TAG_RE.match(tok) and not looks_desc):
+            tags.append(tok)
+        else:
+            desc.append(tok)
+    return tags, desc
+
+
 def triggers_instruction(is_illustrious: bool, triggers: list) -> str:
     if not triggers:
         return ""
-    joined = ", ".join(triggers)
-    if is_illustrious:
-        return (
-            "You MUST include these LoRA trigger words verbatim as Danbooru-style tags "
-            "(keep their exact spelling) near the start of the tag list, right after the "
-            f"quality tags: {joined}"
-        )
-    return (
-        "You MUST include these LoRA trigger words verbatim at the very start of the prompt, "
-        f"in this exact form, then continue with the rest of the description: {joined}"
-    )
+    tags, desc = split_trigger_kinds(triggers)
+    parts = []
+    if tags:
+        joined = ", ".join(tags)
+        if is_illustrious:
+            parts.append(
+                "You MUST include these LoRA trigger words verbatim as Danbooru-style tags "
+                "(keep their exact spelling) near the start of the tag list, right after the "
+                f"quality tags: {joined}"
+            )
+        else:
+            parts.append(
+                "You MUST include these LoRA trigger words verbatim at the very start of the prompt, "
+                f"in this exact form, then continue with the rest of the description: {joined}"
+            )
+    if desc:
+        text = ", ".join(desc)
+        if is_illustrious:
+            parts.append(
+                "The LoRA also describes the main character's appearance. Convert these traits into "
+                "Danbooru-style tags for the main subject (do not copy the sentences), and still write "
+                f"the full tag line for the whole scene: {text}"
+            )
+        else:
+            parts.append(
+                "The LoRA also describes the main character's appearance (face, hair, skin, body, "
+                "marks). Use these traits for the main subject, woven into your own description; do "
+                "NOT copy this text as the whole answer and do not stop after it. The prompt must "
+                "still describe the full scene: every participant, the action and pose, camera and "
+                "framing, setting, lighting and style, following all other instructions. "
+                f"Character traits: {text}"
+            )
+    return "\n".join(parts)
 
 
 def ensure_triggers(positive: str, triggers: list, is_illustrious: bool) -> str:
-    """If the LLM omitted any trigger, put the missing ones in verbatim."""
+    """If the LLM omitted any short trigger word, put the missing ones in verbatim.
+
+    Long descriptive LoRA fragments are not forced (they are traits the LLM
+    already merged into the subject description).
+    """
     text = str(positive or "")
-    missing = [t for t in triggers if t.lower() not in text.lower()]
+    tags, _desc = split_trigger_kinds(triggers)
+    missing = [t for t in tags if t.lower() not in text.lower()]
     if not missing:
         return text
     prefix = ", ".join(missing)
@@ -1765,8 +1833,10 @@ def _generate_prompt_impl(
 
     # Too-short answer (some models stop after a sentence or only echo the
     # LoRA text): ask once more for the complete prompt.
-    if _prompt_too_short(positive, is_illustrious):
-        print(f"[LD-PromptWriter] respuesta corta ({len(positive.split())} palabras): se pide el prompt completo otra vez", flush=True)
+    _own = len(_scene_text(positive, triggers).split())
+    print(f"[LD-PromptWriter] prompt pasada 1: {len(positive.split())} palabras ({_own} propias, sin texto del LoRA)", flush=True)
+    if _prompt_too_short(positive, is_illustrious, triggers):
+        print(f"[LD-PromptWriter] respuesta corta ({_own} palabras propias): se pide el prompt completo otra vez", flush=True)
         emit_activity(idioma, "retry_short")
         try:
             retry_msgs = list(messages) + [
@@ -1775,8 +1845,9 @@ def _generate_prompt_impl(
             ]
             raw2 = chat_complete(url, model_id, retry_msgs, temperature, max(int(max_tokens or 0), 1500), seed)
             p2, n2 = _parse_final_prompt(raw2, is_illustrious)
-            if len(p2.split()) > len(positive.split()):
+            if len(_scene_text(p2, triggers).split()) > _own:
                 positive, negative = p2, (n2 or negative)
+            print(f"[LD-PromptWriter] reintento: {len(_scene_text(p2, triggers).split())} palabras propias", flush=True)
         except Exception as e:
             print(f"[LD-PromptWriter] reintento falló: {e}", flush=True)
 
@@ -1811,7 +1882,8 @@ def normalize_pasadas(value) -> str:
 
 
 RETRY_SHORT_KREA2 = (
-    "Your answer is incomplete. Write the COMPLETE final image prompt now, following every instruction above: "
+    "Your answer is incomplete (describing only the character, or only copying the LoRA text, is not a prompt). "
+    "Write the COMPLETE final image prompt now, following every instruction above: "
     "all participants, their appearance, action and pose, camera and framing, setting, lighting and style. "
     "Output only the prompt."
 )
@@ -1829,8 +1901,16 @@ def _parse_final_prompt(raw, is_illustrious):
     return clean_output(body), ""
 
 
-def _prompt_too_short(positive, is_illustrious) -> bool:
-    text = str(positive or "").strip()
+def _scene_text(positive, triggers=None) -> str:
+    """The prompt without any LoRA text copied into it (to judge real content)."""
+    text = str(positive or "")
+    for frag in sorted((str(t) for t in (triggers or []) if str(t).strip()), key=len, reverse=True):
+        text = re.sub(re.escape(frag.strip()), " ", text, flags=re.IGNORECASE)
+    return " ".join(text.replace(" ,", ",").split()).strip(" ,.")
+
+
+def _prompt_too_short(positive, is_illustrious, triggers=None) -> bool:
+    text = _scene_text(positive, triggers)
     if not text:
         return True
     if is_illustrious:
@@ -1885,7 +1965,7 @@ def refine_prompt_pass(url, model_id, system, messages, positive, negative, is_i
         )
         p2, n2 = _parse_final_prompt(raw, is_illustrious)
         print(f"[LD-PromptWriter] pasada 2: {len(p2.split())} palabras ({time.perf_counter() - t0:.1f} s)", flush=True)
-        if _prompt_too_short(p2, is_illustrious) or len(p2.split()) < 0.5 * len(positive.split()):
+        if _prompt_too_short(p2, is_illustrious, triggers) or len(p2.split()) < 0.5 * len(positive.split()):
             print("[LD-PromptWriter] pasada 2 descartada (respuesta corta); se usa la pasada 1", flush=True)
             return positive, negative
         return p2, (n2 or negative)
@@ -2594,7 +2674,7 @@ def translate_english_to_spanish(url, model_id, text, is_illustrious, seed=0, ma
         )
     else:
         system = (
-            "You translate an English image prompt into natural Spanish for the user to read and edit. "
+            "You translate an English image prompt into natural Spanish for the user to read. "
             "Translate ALL of it, sentence by sentence, keeping every detail, the order and the meaning. "
             "Do not summarize, add, drop or soften anything. Keep LoRA trigger words, names and technical "
             "terms that have no Spanish equivalent verbatim. Output only the Spanish translation, no preamble "
@@ -2628,6 +2708,41 @@ def spanish_view_of(url, model_id, positive, is_illustrious, seed, idioma, max_t
         print(f"[LD-PromptWriter] no pude traducir la vista en español: {e}", flush=True)
         emit_activity(idioma, "error", msg=f"vista en español: {e}", level="err")
         return ""
+
+
+def refresh_spanish_view(text, mode, url, model, seed=0, max_tokens=0, idioma="Español",
+                         unload_after=False, descarga_idle_min=0) -> str:
+    """Re-translate the CURRENT English prompt for the read-only Spanish view.
+
+    Used when the English box changed after the last translation (edited by
+    hand, triggers merged on execution, etc.). Never touches the English.
+    """
+    text = str(text or "").strip()
+    if not text:
+        return ""
+    url = _norm_url(url)
+    is_illustrious = str(mode).lower().startswith("illustrious")
+    cancel_idle_unload()
+    set_chat_ttl(descarga_idle_min)
+    try:
+        model_id = pick_model(url, model)
+        model_id = announce_model_use(url, model_id, idioma) or model_id
+        emit_activity(idioma, "translating_view")
+        t0 = time.perf_counter()
+        es = translate_english_to_spanish(url, model_id, text, is_illustrious, seed, max_tokens)
+        emit_activity(idioma, "translated_view", secs=f"{time.perf_counter() - t0:.1f}")
+        return es
+    except Exception as e:
+        emit_activity(idioma, "error", msg=f"vista en español: {e}", level="err")
+        raise
+    finally:
+        if unload_after:
+            try:
+                unload_models(url, model)
+            except Exception as e:
+                print(f"[LD-PromptWriter] aviso al descargar el modelo: {e}", flush=True)
+        else:
+            schedule_idle_unload(url, model, idioma, descarga_idle_min)
 
 
 def translate_spanish_to_english(
@@ -3132,6 +3247,31 @@ def register_routes() -> None:
         except Exception as e:
             return web.json_response({"ok": False, "message": str(e)})
 
+    async def ld_promptwriter_view_es(request):
+        try:
+            body = await request.json()
+        except Exception:
+            body = {}
+        if not isinstance(body, dict):
+            body = {}
+        text = str(body.get("text") or body.get("positive") or "")
+        try:
+            es = await asyncio.to_thread(
+                refresh_spanish_view,
+                text,
+                body.get("mode", "Krea2 (natural)"),
+                body.get("url", DEFAULT_URL),
+                body.get("model", AUTO_MODEL),
+                body.get("seed", 0),
+                body.get("max_tokens", 0),
+                body.get("idioma", "Español"),
+                bool(body.get("unload_after", False)),
+                body.get("descarga_idle_min", 0),
+            )
+            return web.json_response({"ok": True, "vista_es": es or "", "source": text})
+        except Exception as e:
+            return web.json_response({"ok": False, "message": str(e), "source": text})
+
     inst.routes.get("/ld_promptwriter/test")(ld_promptwriter_test)
     inst.routes.get("/ld_promptwriter/models")(ld_promptwriter_models)
     inst.routes.get("/ld_promptwriter/input_images")(ld_promptwriter_input_images)
@@ -3139,6 +3279,7 @@ def register_routes() -> None:
     inst.routes.post("/ld_promptwriter/describe")(ld_promptwriter_describe)
     inst.routes.post("/ld_promptwriter/modify")(ld_promptwriter_modify)
     inst.routes.post("/ld_promptwriter/translate_es")(ld_promptwriter_translate_es)
+    inst.routes.post("/ld_promptwriter/view_es")(ld_promptwriter_view_es)
 
     async def ld_promptwriter_save(request):
         try:
