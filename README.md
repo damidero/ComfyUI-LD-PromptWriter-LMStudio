@@ -1,111 +1,94 @@
 # LM Studio Prompt Writer (LD)
 
-ComfyUI nodes that connect to a local **LM Studio** server and turn an idea (or up to eight reference images) into a ready-to-use image prompt.
+[Español](README.es.md)
+
+ComfyUI nodes that connect to a local **LM Studio** server and turn an idea (or up to eight reference images) into a ready-to-use image prompt for **Krea2** (natural language) or **Illustrious** (Danbooru-style tags).
 
 Two nodes work together:
 
-1. **LM Studio Config (LD):** URL, model (dropdown), Krea2 / Illustrious mode, temperature, tokens, seed, `unload_after` (on by default) and extra instructions. Includes **🔄 Refresh models** and **Test connection**. The references (`image_1`…`image_8`), `lora_triggers` and, in Illustrious, `neg_embeddings` connect here. Outputs are `config` (a single wire to the Writer), **positive** and **negative**.
-2. **LM Studio Prompt Writer (LD):** the idea, the **✍️ Generate prompt** button, **✏️ Modify** and the editable boxes (English positive and, when the language is Spanish, a Spanish view on the right). It has a single visible input: `config`. **Output style**, **Number of people** and **Camera** are stacked under the idea. Each image has toggles: *Action*, *Pose*, *Person*, *Clothing*, *Background*, *Style* and *Camera / POV*. If none is on, everything except the camera is used (the Camera dropdown or the LLM decides that). If you enable only some (for example only Camera / POV), the Writer describes and composes **only** those aspects and ignores the rest (background, clothing, identity, action, etc.). The **output style** combo (for example *Realistic / photo*) ignores the art style of the references and writes the prompt in that style. If the positive box has text, running the workflow uses that text (whatever is in the box at that moment) and the LLM is not called. Old workflows that still connect images or outputs to the Writer keep working.
+1. **LM Studio Config (LD):** URL, model, Krea2 / Illustrious mode, temperature, `max_tokens`, seed, `unload_after` (on by default), extra instructions and **LLM passes**. Buttons: **🔄 Refresh models**, **Test connection**, **🎲 Random seed** and a **Random on every run** switch. Below Test connection there is the **LLM activity** log (live step-by-step: connection, model load/reuse, each image description, passes, timings, unload, errors). The references (`image_1`…`image_8`), `lora_triggers` and, in Illustrious, `neg_embeddings` connect here; the inputs are laid out in 2–3 rows, connected ones first. Outputs: `config` (a single wire to the Writer), **positive** and **negative**.
+2. **LM Studio Prompt Writer (LD):** the idea, **✍️ Generate prompt**, **✏️ Modify** with its **Changes** box, **🧹 Clear**, the editable positive (English) and negative boxes, and the 8 reference images. Its only visible input is `config`.
 
 ## How to use
 
-1. Open **LM Studio**, start the local server and, if you are going to use images, load a **vision** model.
-2. Connect the `config` output of **Config** to the Writer's only input.
-3. Write an idea and/or load up to 8 references (thumbnails in the Writer, or *LoadImage* into `image_1`…`image_8` on **Config**). In each column choose Action, Pose, Person, Clothing, Background, Style and/or Camera.
-4. If you use **Lora Loader (LoraManager)**, connect its `trigger_words` output to `lora_triggers` on **Config**. The Writer asks the LLM to include them verbatim (at the start in Krea2, as tags in Illustrious) and adds them on run if they are missing.
-5. Press **✍️ Generate prompt**, review the text and then run the workflow. For a small change (for example hair color) type the request in **Changes** and press **✏️ Modify**: the LLM applies only that and leaves the rest as is. **Modify** unloads the model when done if `unload_after` is on (same as Generate).
-6. Connect the **positive** and **negative** outputs of **Config** to *CLIP Text Encode* (in Illustrious, **negative** can already include the embeddings if `neg_embeddings` is connected).
+1. Open **LM Studio**, start the local server (Developer / Local Server tab) and load a **vision** model with its **mmproj** (see *Recommended LLM*).
+2. Set the server URL in **Config**, pick the model (a fixed model, not *auto*) and Krea2 or Illustrious.
+3. Write an idea and/or load reference images, and turn on the chips for what to take from each one.
+4. Press **✍️ Generate prompt**, check the text and queue the workflow.
+5. For a small change (e.g. "make the hair red"), type it in **Changes** and press **✏️ Modify**: only that is changed.
 
-If the idea is empty but there are images, the Writer asks the model to describe the references (respecting what to take from each one) and builds the prompt. With both an idea and images, it uses both. With neither, it warns you to write an idea or connect an image.
+If the **positive** box has text, running the workflow uses the current text as is and the LLM is not called. Clear it to generate a new one. LoRA trigger words are added if missing.
 
-If the model has no vision and you send an image, it warns you to pick a model marked (vision) in LM Studio.
+## Writer controls
 
-`(auto: loaded)` uses the model already in memory. If you pick one that is not loaded, LM Studio loads it when generating. `unload_after` is **on by default** and unloads the model after **Generate** or after running the workflow; **Describe does not unload**, so the same instance is reused. In Config, `descarga_idle_min` (0 = off) can unload it after N idle minutes. Requests reuse the loaded model (`ttl: -1`, no expiry).
+- **Dropdowns** (2×2 grid under the idea): **Output style** | **Camera**, and **Clothing** | **Participants**.
+  - *Output style*: e.g. *Realistic / photo*; overrides the art style of the references.
+  - *Camera*: framing; the Camera chip of an image wins over it; on Automatic the LLM decides.
+  - *Clothing*: **LoRA** (clothing from the LoRA triggers; without triggers the LLM decides), **Photo** (clothing from the image with the Clothing chip wins; picked automatically when you turn a Clothing chip on and back to LoRA when they are all off) or **Nude** (no clothing; ignores clothing from images and LoRAs; never changed automatically).
+  - *Participants*: 1–8, **Auto (LLM decides)** or Custom. You don't need one image per person.
+- **🧹 Clear** empties the idea, prompts, Writer images, chips and descriptions, and resets the dropdowns (Style as the reference, Camera and Participants automatic, Clothing LoRA). It does not touch Config, the LoRAs or the i2i image.
 
-The old all-in-one **LM Studio Prompt Writer (LD) (old)** node is kept for compatibility with earlier workflows.
+## Reference images and chips
 
-## Requirements
+The 8 references are shown in two rows of 4. Click or drag a file to upload, 📂 to pick one from `input`, ✖ to remove it. A *LoadImage* connected to `image_N` on **Config** wins over the column's file.
 
-- LM Studio with the local server running.
-- This pack installs no extra Python packages.
+Each image has chips (alphabetical in Spanish): **Accessories, Action, Camera, Colors, Style, Expression, Background, Lighting, Hair, Person, Pose, Clothing**. Each image contributes **only** the aspects whose chip is on; with no chip on, everything except Camera is used.
 
-## Troubleshooting
+- Images with Person are assigned to the people in order.
+- Hair, Expression or Accessories from another image are applied to the chosen person without changing their identity.
+- Lighting: only the light. Colors: only the palette. Accessories: jewelry, glasses, held objects (kept with Nude).
 
-- *LM Studio does not respond at …*: start the local server in LM Studio.
-- *No chat model loaded*: load a model and try again.
-- If the model "thinks" and never returns the prompt, turn off Reasoning / Thinking in LM Studio.
+Before **Generate** (and before queueing if the positive box is empty) the Writer describes the images that have no up-to-date description, limited to their active chips. Each description is **tied to its photo and chips**: if you change or remove the photo, or change the chips, it is cleared and redone on the next Generate; if nothing changed it is reused. The ✖ next to each description clears it by hand. **🔄 Describe** describes a single image on demand (without unloading the model). The composition call is text only (the photos are not re-sent).
 
-## Images in the Writer
+If the model has no vision (no mmproj) and you send an image, the Writer warns you.
 
-The 8 references are shown in the Writer in two rows of 4, with a thumbnail under each column's toggles. Click or drag a file to upload, 📂 to pick one from the `input` folder, and ✖ to remove it. The *LoadImage* inputs are on the **Config** node (`image_1`…`image_8`); a connected input wins over the column's file. **Describe**, **Generate** and **Modify** read those images even when they are connected to Config.
+## LLM passes (Config)
 
-**🔄 Describe** asks for a description **limited to that image's active toggles** (if none, everything except the camera). The description stays in the compact box (~60 px, scrollable) and is reused when generating if it is still current (if you changed the toggles, it is described again). **Describe does not unload** the model, so it is reused in the next step.
+- **1 pass**: describes the images that need it and writes the prompt.
+- **2 passes**: in the same Generate, a second call reviews the prompt against all the settings (images, chips, clothing, participants, style, camera, LoRA) and fixes or improves it. Slower. The activity shows Pass 1/2 and 2/2.
+- If the model answers too briefly, it is automatically asked once for the complete prompt.
 
-Before **✍️ Generate** (and before queueing the workflow if the positive box is empty), the Writer **auto-describes** loaded images that have no up-to-date description. The model is not unloaded between those descriptions and the final composition. The composition is text only: the photos are never re-sent to the LLM in that call; it is told *From Image N use ONLY: …* with the active aspects.
+The setting applies to every Writer connected to that Config.
 
-If an image has no active toggles, all aspects are used (*all*, without camera). If **output style** is not *(as the reference)*, that style wins over the "style" toggle.
+## Seed (Config)
 
-## How the prompt is chosen
+**🎲 Random seed** sets a new seed once. With **Random on every run** on, Generate, Modify and Queue use a new seed every time (saved in the node properties, off by default).
 
-There is no separate "manual prompt" path anymore. If the **positive** box has text (typed or generated earlier), running the workflow uses **the current text in the box** (not a cached older version) and the LLM is not called. If it is empty, missing references are auto-described and a prompt is generated. LoRA trigger words are prepended if missing.
+## Recommended LLM
 
-## Spanish view
+- **Qwen3-VL-8B-Instruct abliterated**, GGUF **Q4_K_M**, plus its **mmproj** file: [noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF](https://huggingface.co/noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF). Faster alternative: [the 4B version](https://huggingface.co/noctrex/Huihui-Qwen3-VL-4B-Instruct-abliterated-GGUF).
+- Without the **mmproj** the model cannot see images.
+- Use **Instruct**, not Thinking. Avoid reasoning / MTP models: they often return empty or cut-off prompts.
+- Pick a **fixed model** in Config instead of `(auto: el cargado)`.
+- `max_tokens`: **2048** (default for new Config nodes).
 
-With the language selector on **Español**, a Spanish box of the same height appears to the right of the positive box (always English, which is what is used to generate). The **negative** box sits below at full width. In **English** the Spanish view is hidden and the positive box takes the full width.
-
-The Spanish box is **editable**. If you edit it after the last sync, pressing Generate or Modify, or queueing the workflow, translates it to English and uses that translation. If you edit the English box by hand, English wins and the translator is not called. **🧹 Clear** also empties the Spanish view.
-
-## Size (LD)
-
-The node shows, in this order: (1) the aspect ratio dropdown, (2) the megapixel (quality) selector and (3) below it, centered, the approximate pixel size (for example `≈ 864 × 1248 px`), updated live. Values are rounded to multiples of 16. The default 2:3 at 1.08 MP is 864×1248. More ratios are available (9:21, 1:2, 2:1, 3:5, 5:3, etc.) plus a switch to flip portrait/landscape.
+`unload_after` (on by default) unloads the model after Generate / Modify / running the workflow, freeing VRAM for the image model; Describe does not unload. `descarga_idle_min` (0 = off) unloads after N idle minutes.
 
 ## Krea2 and Illustrious
 
-The **Model: Krea2 / Illustrious (LD)** node switches the LLM mode and mutes the nodes of the branch that is not in use.
+The **Model: Krea2 / Illustrious (LD)** node has two mutually exclusive switches; it changes the LLM mode and mutes the branch not in use. Above them is the **language** (Español / English) for the interface, image descriptions and notes; the final prompt is always English. A single **Lora Loader** serves both branches. Krea2 LoRAs do not work in Illustrious and vice versa (and LoRAs for other bases, e.g. Flux, Qwen-Image, Z-Image, SDXL, fail on Krea2 with a shape error).
 
-For **Illustrious**, the checkpoint (`waiIllustriousSDXL_v170.safetensors`, or the more realistic alternative `illustriousRealism_ilXL10V40.safetensors`) must be in `ComfyUI/models/checkpoints` and selected in the Load Checkpoint node. CLIP and VAE are included in the checkpoint; there is no need to load them separately.
+For Illustrious, put the checkpoint in `ComfyUI/models/checkpoints` and select it in Load Checkpoint. **Negative embeddings (LD)** lists `ComfyUI/models/embeddings`; its output goes to `neg_embeddings` on Config and is appended to the negative.
 
-In the Writer, **Number of people** (1 to 8, Auto or Custom) sets how many distinct people the prompt should describe. The **language** selector (Español / English) sits above the model selector and changes the interface and the language of the image descriptions; the final prompt is always English.
+## Other nodes
 
-The **Camera** dropdown (under the idea, below Style and People) chooses the framing. If an image has the Camera / POV toggle on, that reference wins; otherwise the dropdown is used; on Automatic, the LLM decides.
+- **Size (LD):** aspect ratio, megapixels and a live pixel preview (multiples of 16), with a portrait/landscape flip.
+- **Save Image (LD):** filename prefix and **auto save** (on by default). Off: preview only; **💾 Save** copies the preview to `output`.
+- **Base Image i2i (LD):** thumbnail (✖ to remove), **denoise** (0.6 by default) and Krea2 steps. No image: text to image (denoise 1). With an image: cropped to the Size, encoded with the active branch's VAE. The LLM does **not** see this image; at low denoise its clothing, pose and colors stay. Raise denoise to 0.75–0.9 so the prompt wins, or load the same photo in a Writer image with the Clothing / Pose chips. In Krea2 the denoise becomes `start_at_step = round(steps × (1 − denoise))`.
 
-Under **Generate** there is a read-only **LLM activity** box with a live step-by-step log (connection, model load or reuse, each image description, timings, composition, unload and errors). **🧹 Clear** also empties that log.
-
-Recommended LLM in LM Studio: **qwen_qwen3-vl-8b-instruct** (Qwen3-VL 8B Instruct, with vision, needed to describe images). Start LM Studio's local server (Developer / Local Server tab) and use that URL in the Config node.
-
-Krea2 models used in the example workflow: UNET `Krea2-Turbo-HD-V1-int8_convrot`, CLIP `qwen3vl_4b_fp8_scaled` (krea2 type) and VAE `qwen_image_vae`.
-
-The **Negative embeddings (LD)** node (Illustrious branch, below the Lora Loader) lists the files in `ComfyUI/models/embeddings`. Pick one, an optional weight and press ➕ Add; its output connects to `neg_embeddings` on Config and is appended to the **negative**. The **Model: Krea2 / Illustrious** selector mutes it along with the rest of that branch.
-
-The **Model: Krea2 / Illustrious (LD)** selector uses two mutually exclusive switches (turning one on turns the other off). Above them is the **language** for the interface, descriptions and notes. A single **Lora Loader** serves both branches (the selector passes on the active MODEL/CLIP). Krea2 LoRAs do not work in Illustrious and vice versa: change them when you switch engines.
-
-In the Writer, the **Settings** and **Images** sections can be collapsed (▸/▾) and the node shrinks to fit its content, with no empty space below the last row. **Number of people** goes from 1 to 8, plus **Auto (LLM decides)** and **Custom** (any number). You do not need one image per person: the LLM invents any missing participants.
-
-## Save Image (LD)
-
-Replaces Comfy's *SaveImage* on the Krea2 and Illustrious outputs. Inputs: the image, a filename prefix and **auto save** (on by default). When on, running the workflow saves the image to `output` with that prefix. When off, only a preview is kept in `temp` (nothing goes to `output`). **💾 Save** copies the current preview to `output` with the same prefix, even when auto save is off. The `images` output is kept for nodes that listen to it (for example PlaySound).
-
-## Base Image i2i (LD)
-
-Sits below Config. It has a thumbnail (click or drag to upload, ✖ to remove) and a **denoise** value (0.6 by default).
-
-- No image: uses the empty latent from **Size (LD)** for the active branch and outputs denoise 1.0 (text to image, as before).
-- With an image: crops and rescales the photo to the Size dimensions, encodes it with the active branch's VAE (the Krea2 VAE or the Illustrious checkpoint's) and outputs that latent plus the denoise.
-
-The denoise goes to the Illustrious *KSampler*. In Krea2 (*KSamplerAdvanced*, which has no denoise) it is converted to `start_at_step = round(steps × (1 − denoise))`. The **Krea2 steps** field must match the Krea2 sampler's steps (8 in the example workflow). The unused branch's VAE is not evaluated (lazy inputs).
+The old all-in-one **LM Studio Prompt Writer (LD) (old)** node is kept for older workflows.
 
 ## Example workflow
 
-`example_workflows/LLM Writer Krea2 and Illustrious.json` builds a Krea2 / Illustrious flow with this pack.
+`example_workflows/LLM Writer Krea2 and Illustrious.json`. It includes two pack-managed notes, **Setup** and **How it works**, whose text follows the workflow language.
 
 ### Required nodes
 
 - This pack: [ComfyUI-LD-PromptWriter-LMStudio](https://github.com/damidero/ComfyUI-LD-PromptWriter-LMStudio)
-- [ComfyUI-Lora-Manager](https://github.com/willmiao/ComfyUI-Lora-Manager) (Lora Loader)
+- [ComfyUI-Lora-Manager](https://github.com/willmiao/ComfyUI-Lora-Manager) (Lora Loader; connect its `trigger_words` to `lora_triggers` on Config)
 - [ComfyUI-Custom-Scripts](https://github.com/pythongosssss/ComfyUI-Custom-Scripts) (PlaySound, optional)
-- The rest of the nodes in the example are ComfyUI core: UNETLoader, CLIPLoader, VAELoader, CheckpointLoader, CLIPTextEncode, KSampler, VAEDecode, etc.
 
-Installation: search for **LD PromptWriter** in **ComfyUI Manager**, use *Install via Git URL* with this repo's link, or:
+Install: search **LD PromptWriter** in ComfyUI Manager, or:
 
 ```
 cd ComfyUI/custom_nodes
@@ -116,10 +99,16 @@ git clone https://github.com/pythongosssss/ComfyUI-Custom-Scripts
 
 Then restart ComfyUI.
 
-### Models (download)
+### Models
 
-- Krea2 UNET HD int8 (`Krea2-Turbo-HD-V1-int8_convrot.safetensors`): [wikeeyang/Krea2-Turbo-HD-V1](https://huggingface.co/wikeeyang/Krea2-Turbo-HD-V1)
-- Krea2 CLIP (`qwen3vl_4b_fp8_scaled.safetensors`) and VAE (`qwen_image_vae.safetensors`): [Comfy-Org/Krea-2](https://huggingface.co/Comfy-Org/Krea-2)
-- Illustrious WAI v17 (`waiIllustriousSDXL_v170.safetensors`): [Civitai](https://civitai.com/models/827184/wai-illustrious-sdxl) · [Hugging Face mirror](https://huggingface.co/LyliaEngine/waiIllustriousSDXL_v170)
-- Realistic alternative (`illustriousRealism_ilXL10V40.safetensors`): [Civitai — Illustrious Realism](https://civitai.com/models/2354628/illustrious-realism)
-- [LM Studio](https://lmstudio.ai) and the vision LLM [Qwen3-VL 8B Instruct](https://lmstudio.ai/models/qwen/qwen3-vl-8b)
+- Krea2 UNET (`Krea2-Turbo-HD-V1-int8_convrot.safetensors`): [wikeeyang/Krea2-Turbo-HD-V1](https://huggingface.co/wikeeyang/Krea2-Turbo-HD-V1)
+- Krea2 CLIP (`qwen3vl_4b_fp8_scaled.safetensors`, type krea2) and VAE (`qwen_image_vae.safetensors`): [Comfy-Org/Krea-2](https://huggingface.co/Comfy-Org/Krea-2)
+- Illustrious WAI v17 (`waiIllustriousSDXL_v170.safetensors`): [Civitai](https://civitai.com/models/827184/wai-illustrious-sdxl) — or [Illustrious Realism](https://civitai.com/models/2354628/illustrious-realism)
+- [LM Studio](https://lmstudio.ai) + the LLM above.
+
+## Troubleshooting
+
+- *LM Studio does not respond*: start the local server and check the URL in Config.
+- *No chat model loaded*: load a model (or pick a fixed one in Config).
+- Empty or very short prompts: use an Instruct (non-thinking) model, turn off Reasoning in LM Studio, raise `max_tokens` to 2048, or try 2 passes.
+- Images ignored: the model needs its mmproj (vision).

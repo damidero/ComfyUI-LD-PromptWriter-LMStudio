@@ -1113,8 +1113,15 @@ Illustrious
   (se agregan al prompt negativo de Illustrious).
 
 LLM (LM Studio)
-• Recomendado: qwen_qwen3-vl-8b-instruct
-  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).
+• Recomendado: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M
+  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).
+  Más rápido: la versión 4B del mismo modelo.
+• Descargá también su mmproj: sin mmproj el modelo no ve
+  las imágenes y no puede describirlas.
+• Usá Instruct, no Thinking. Evitá modelos de razonamiento o MTP:
+  suelen devolver prompts vacíos o cortados.
+• En el nodo Config elegí el modelo fijo (no "auto: el cargado").
+• max_tokens recomendado: 2048.
 • Activá el servidor local de LM Studio (pestaña Developer / Local Server)
   y usá esa URL en el nodo Config.
 
@@ -1153,8 +1160,15 @@ Illustrious
   (they are appended to the Illustrious negative prompt).
 
 LLM (LM Studio)
-• Recommended: qwen_qwen3-vl-8b-instruct
-  (Qwen3-VL 8B Instruct, vision-capable; required for image description).
+• Recommended: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M
+  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).
+  Faster: the 4B version of the same model.
+• Also download its mmproj: without it the model cannot see
+  the images and cannot describe them.
+• Use Instruct, not Thinking. Avoid reasoning or MTP models:
+  they often return empty or cut-off prompts.
+• In the Config node pick a fixed model (not "auto: el cargado").
+• Recommended max_tokens: 2048.
 • Enable the LM Studio local server (Developer / Local Server tab)
   and use that URL in the Config node.
 
@@ -1207,6 +1221,9 @@ Imágenes del Writer (chips)
   Colores: solo la paleta. Accesorios: joyas, anteojos, objetos
   en la mano (aparte de la ropa; con Desnudo se mantienen).
 • El chip Cámara gana sobre el selector Cámara.
+• Cada descripción queda atada a su foto y a sus chips: si cambiás
+  o sacás la foto, o cambiás los chips, se borra y el próximo Generar
+  la vuelve a hacer. El ✖ de cada descripción la borra a mano.
 
 Ropa (selector del Writer)
 • LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).
@@ -1227,7 +1244,13 @@ Imagen de referencia (i2i)
 • Limpiar no la borra: usá su ✖.
 
 Actividad del LLM
-• Está en el nodo Config, debajo de Probar conexión.`,
+• Está en el nodo Config, debajo de Probar conexión.
+
+Seed (nodo Config)
+• 🎲 Seed aleatoria pone una seed nueva una vez.
+• Con el interruptor "Aleatoria en cada generación" prendido,
+  Generar, Modificar y Encolar usan una seed nueva cada vez;
+  apagado, la seed queda fija.`,
     en: `How it works
 
 Passes (in the Config node, below LLM activity)
@@ -1267,6 +1290,9 @@ Writer images (chips)
   Colors: only the palette. Accessories: jewelry, glasses, held
   objects (separate from clothing; kept with Nude).
 • The Camera chip wins over the Camera selector.
+• Each description is tied to its photo and chips: if you change or
+  remove the photo, or change the chips, it is cleared and the next
+  Generate redoes it. The ✖ on each description clears it by hand.
 
 Clothing (Writer selector)
 • LoRA: clothing from the LoRA triggers (the LLM decides if there are none).
@@ -1288,7 +1314,12 @@ Reference image (i2i)
 • Clear does not remove it: use its ✖.
 
 LLM activity
-• It is in the Config node, below Test connection.`,
+• It is in the Config node, below Test connection.
+
+Seed (Config node)
+• 🎲 Random seed sets a new seed once.
+• With the "Random on every run" switch on, Generate, Modify
+  and Queue use a new seed every time; off, the seed stays fixed.`,
 };
 const NOTE_TITLES = {
     config: { es: "Configuración", en: "Setup" },
