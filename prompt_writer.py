@@ -2538,7 +2538,9 @@ def is_english(idioma) -> bool:
 
 
 def want_spanish_view(idioma) -> bool:
-    return not is_english(idioma)
+    # The Spanish view was removed (it kept diverging from the English).
+    # No translation call is made; vista_es is always "".
+    return False
 
 
 def bilingual_instruction(is_illustrious: bool, modify: bool = False) -> str:

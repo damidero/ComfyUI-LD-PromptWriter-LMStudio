@@ -1208,16 +1208,6 @@ Imágenes del Writer (chips)
   en la mano (aparte de la ropa; con Desnudo se mantienen).
 • El chip Cámara gana sobre el selector Cámara.
 
-Vista en español
-• Primero se genera el prompt en inglés. Después, una llamada aparte
-  traduce al español el inglés FINAL (con los triggers de LoRA).
-• El español es SOLO LECTURA: nunca se usa para generar. La imagen
-  siempre usa el prompt en inglés.
-• Si el inglés cambia (lo editás, o al encolar se suman triggers),
-  el español viejo se borra y se vuelve a traducir solo.
-• Con Español es una llamada extra al LLM (un poco más lento).
-• En Illustrious se muestra una explicación de los tags.
-
 Ropa (selector del Writer)
 • LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).
 • Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al
@@ -1277,16 +1267,6 @@ Writer images (chips)
   Colors: only the palette. Accessories: jewelry, glasses, held
   objects (separate from clothing; kept with Nude).
 • The Camera chip wins over the Camera selector.
-
-Spanish view
-• The English prompt is generated first. Then a separate call
-  translates the FINAL English (with the LoRA triggers) into Spanish.
-• The Spanish is READ-ONLY: it is never used to generate. The image
-  always uses the English prompt.
-• If the English changes (you edit it, or triggers are merged on
-  queue), the old Spanish is cleared and re-translated automatically.
-• With Español this is one extra LLM call (a bit slower).
-• Illustrious shows an explanation of the tags.
 
 Clothing (Writer selector)
 • LoRA: clothing from the LoRA triggers (the LLM decides if there are none).
@@ -1487,7 +1467,8 @@ function setVistaEs(node, text, { clearDirty = true, src } = {}) {
 function applyVistaVisibility(node) {
     const panel = node?._ldPanel;
     if (!panel?.vistaWrap) return;
-    const hide = currentLangFrom(node) === "en";
+    // Spanish view removed: always hidden; the positive box takes the full width.
+    const hide = true;
     panel.vistaWrap.classList.toggle("ld-vista-hidden", hide);
     panel.vistaWrap.style.display = hide ? "none" : "";
 }
@@ -1516,6 +1497,9 @@ async function postViewEs(body) {
 // together, hide the old Spanish at once and (when auto) re-translate the
 // current English after a short pause.
 function checkVistaFresh(node, { auto = true } = {}) {
+    // Spanish view removed: nothing to refresh (no translation calls).
+    return;
+    // eslint-disable-next-line no-unreachable
     if (!node || currentLangFrom(node) === "en") return;
     const panel = node._ldPanel;
     const area = panel?.vistaEsArea;
