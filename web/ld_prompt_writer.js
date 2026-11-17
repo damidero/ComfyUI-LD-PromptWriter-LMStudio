@@ -282,6 +282,7 @@ function ensureThemeStyles() {
 .ld-picker button:hover { background: rgba(115, 215, 224, 0.16); }
 .ld-img-grid { min-height: 0; flex: 0 0 auto; align-items: stretch; }
 .ld-panel.ld-writer-root { overflow-y: auto !important; }
+.ld-writer-slot-gap { flex: 0 0 12px; height: 12px; pointer-events: none; }
 .ld-log-wrap { flex: 0 0 auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
 .ld-log {
     height: 88px;
@@ -405,6 +406,7 @@ function ensureThemeStyles() {
     box-sizing: border-box;
 }
 .ld-people-custom { width: 72px; flex: 0 0 72px; }
+.ld-tamano-box { display: flex; flex-direction: column; gap: 4px; width: 100%; box-sizing: border-box; padding: 2px 2px 0; font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eef2; }
 .ld-tamano-size {
     text-align: center;
     font-weight: 700;
@@ -2350,7 +2352,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     }
 
     let writerHead = null;
-    if (String(node.type || node.comfyClass || "") === "LD_LMStudioPromptWriterV2") {
+    if (false) {
         writerHead = styleEl("div", {}, "");
         writerHead.className = "ld-writer-head";
         const titleEl = styleEl("div", {}, t(node, "writerTitle"));
@@ -2391,7 +2393,12 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     });
     if (includeIdea) {
         top.append(left, right);
-        if (writerHead) root.append(writerHead, foldAjustes, top, mid, foldImagenes, grid);
+        if (writerHead) {
+            // Transparent band under the title where LiteGraph draws the config connector.
+            const slotGap = styleEl("div", {}, "");
+            slotGap.className = "ld-writer-slot-gap";
+            root.append(writerHead, slotGap, foldAjustes, top, mid, foldImagenes, grid);
+        }
         else root.append(foldAjustes, top, mid, foldImagenes, grid);
         refreshFolds();
     } else {
@@ -2619,10 +2626,36 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
 
 const WRITER_HEAD_H = 28;
 const WRITER_SLOT_Y = 14;
+// Title strip (28) + its bottom margin (2) + flex gap (8) + half of the 12px slot gap.
+const WRITER_SLOT_IN_PANEL = 28 + 2 + 8 + 6;
+
+function writerSlotY(node) {
+    let top = NaN;
+    try {
+        const w = widgetByName(node, "ld_writer_panel");
+        top = Number(w?.last_y ?? w?.y);
+    } catch (_e) {}
+    if (!Number.isFinite(top)) top = Number(node?.widgets_start_y ?? 2) || 2;
+    return top + WRITER_SLOT_IN_PANEL;
+}
+
+function setWriterWidgetsStart(node) {
+    // Native layout (same as the Config node): LiteGraph title, config slot
+    // under it, panel right after the slot row.
+    try {
+        if (node && node.widgets_start_y === 2) delete node.widgets_start_y;
+    } catch (_e) {}
+}
 
 function visibleHeaderHeight(node) {
     const typ = String(node?.type || node?.comfyClass || "");
-    if (typ === "LD_LMStudioPromptWriterV2") return 0;
+    if (typ === "LD_LMStudioPromptWriterV2") {
+        let sh = 20;
+        try {
+            if (typeof LiteGraph !== "undefined" && LiteGraph.NODE_SLOT_HEIGHT) sh = LiteGraph.NODE_SLOT_HEIGHT;
+        } catch (_e) {}
+        return sh + 8;
+    }
     let y = 30;
     try {
         if (typeof LiteGraph !== "undefined" && LiteGraph.NODE_TITLE_HEIGHT) {
@@ -2888,6 +2921,8 @@ const WRITER_NODE_H = 800;
 const WRITER_NODE_H_MAX = 2000;
 const WRITER_PANEL_H_MIN = 260;
 
+const WRITER_BG_EXTRA = 18;
+
 function scheduleWriterResize(node) {
     if (!node) return;
     if (node._ldResizeTok) cancelAnimationFrame(node._ldResizeTok);
@@ -2897,6 +2932,8 @@ function scheduleWriterResize(node) {
         if (!el) return;
         el.style.height = "auto";
         const panelH = Math.max(WRITER_PANEL_H_MIN, Math.ceil(el.scrollHeight || 0));
+        // Stretch the background down to the node's bottom edge.
+        el.style.height = `${panelH + WRITER_BG_EXTRA}px`;
         if (node._ldPanelH && Math.abs(node._ldPanelH - panelH) < 2) return;
         node._ldPanelH = panelH;
         const nodeH = panelH + visibleHeaderHeight(node) + 4;
@@ -2967,7 +3004,7 @@ function cleanupWriterGraphSlots(node) {
         if (!inp || inp.widget) continue;
         if (inp.name === "config") {
             inp.hidden = false;
-            inp.pos = [0, WRITER_SLOT_Y];
+            try { delete inp.pos; } catch (_e) {}
         } else {
             inp.hidden = inp.link == null;
         }
@@ -3049,7 +3086,10 @@ function applyWriterChrome(node) {
     // Never assign instance.title_mode: in current ComfyUI it can be a
     // getter-only property and throws TypeError, aborting workflow load.
     try {
-        hideWriterTitleBarFallback(node);
+        if (node._ldTitleBarNoop) {
+            delete node.onDrawTitleBar;
+            node._ldTitleBarNoop = false;
+        }
     } catch (_e) {}
     try {
         cleanupWriterGraphSlots(node);
@@ -3103,9 +3143,6 @@ function repairI2IWidgets(node) {
 }
 
 function setupWriterV2(nodeType) {
-    try {
-        applyWriterTypeChrome(nodeType);
-    } catch (_e) {}
     const origComputeSize = nodeType.prototype.computeSize;
     nodeType.prototype.computeSize = function () {
         const panelH = this._ldPanelH || WRITER_NODE_H;
@@ -3126,6 +3163,7 @@ function setupWriterV2(nodeType) {
     installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
         applyNodeTheme(this, THEME.writer);
+        setWriterWidgetsStart(this);
         hideWriterWidgets(this);
         hideWriterGraphSlots(this);
         migrateAccionPoseSplit(this);
@@ -3229,9 +3267,6 @@ function setupWriterV2(nodeType) {
         dom.computeSize = (width) => [width || 0, panelH()];
         dom.getMinHeight = () => panelH();
         dom.getMaxHeight = () => panelH();
-        dom.draw = function () {
-            placeDom(this.element || panel.root, self, { header: 0, left: 0, margin: 0 });
-        };
 
         panel.syncFromWidgets();
         clampWriterSize(this);
@@ -3240,6 +3275,7 @@ function setupWriterV2(nodeType) {
     installSafeHook(nodeType, "onConfigure", function (info) {
         repairNodeWidgets(this);
         applyNodeTheme(this, THEME.writer);
+        setWriterWidgetsStart(this);
         hideWriterWidgets(this);
         hideWriterGraphSlots(this);
         migrateAccionPoseSplit(this);
@@ -3251,23 +3287,6 @@ function setupWriterV2(nodeType) {
     nodeType.prototype.onResize = function (size) {
         onResize?.apply(this, arguments);
         if (size && size[1] > WRITER_NODE_H_MAX) size[1] = WRITER_NODE_H_MAX;
-    };
-    const origGetConnectionPos = nodeType.prototype.getConnectionPos;
-    nodeType.prototype.getConnectionPos = function (is_input, slot, out) {
-        if (is_input) {
-            const inp = this.inputs?.[slot];
-            if (inp && inp.name === "config") {
-                out = out || [0, 0];
-                const pos = this.pos || [0, 0];
-                out[0] = (pos[0] || 0);
-                out[1] = (pos[1] || 0) + WRITER_SLOT_Y;
-                return out;
-            }
-        }
-        if (typeof origGetConnectionPos === "function") {
-            return origGetConnectionPos.apply(this, arguments);
-        }
-        return out || [0, 0];
     };
     hookExecuted(nodeType);
 }
@@ -3306,6 +3325,13 @@ function setupTamano(nodeType) {
         const res = widgetByName(node, "resultado");
         if (res) res.value = `${w} × ${h}`;
         if (node._ldTamanoEl) node._ldTamanoEl.textContent = pretty;
+        const sels = node._ldTamanoSels;
+        if (sels) {
+            for (const name of ["proporcion", "megapixeles"]) {
+                const w = widgetByName(node, name);
+                if (sels[name] && w && sels[name].value !== String(w.value)) sels[name].value = String(w.value);
+            }
+        }
         node._ldTamanoLabel = pretty;
         node.graph?.setDirtyCanvas?.(true);
     };
@@ -3314,15 +3340,47 @@ function setupTamano(nodeType) {
             refresh(node);
             return;
         }
+        ensureThemeStyles();
+        const box = document.createElement("div");
+        box.className = "ld-tamano-box";
+        const makeSel = (name, labelEs, labelEn) => {
+            const w = widgetByName(node, name);
+            const lab = document.createElement("div");
+            lab.className = "ld-label";
+            lab.textContent = currentLangFrom(node) === "en" ? labelEn : labelEs;
+            const sel = document.createElement("select");
+            sel.className = "ld-select";
+            for (const v of comboOptions(w)) {
+                const o = document.createElement("option");
+                o.value = String(v);
+                o.textContent = String(v);
+                sel.appendChild(o);
+            }
+            sel.value = String(w?.value ?? "");
+            sel.addEventListener("change", () => {
+                const ww = widgetByName(node, name);
+                if (!ww) return;
+                ww.value = sel.value;
+                try { ww.callback?.(ww.value, app?.canvas, node); } catch (_e) {}
+                refresh(node);
+            });
+            for (const ev of ["pointerdown", "mousedown", "wheel"]) sel.addEventListener(ev, (e) => e.stopPropagation());
+            box.append(lab, sel);
+            return sel;
+        };
+        const propSel = makeSel("proporcion", "Proporción", "Aspect ratio");
+        const mpSel = makeSel("megapixeles", "Megapíxeles", "Megapixels");
         const el = document.createElement("div");
         el.className = "ld-tamano-size";
         el.textContent = sizeLabel(node)[2];
-        const dom = node.addDOMWidget("ld_tamano_size", "div", el, { serialize: false });
+        box.appendChild(el);
+        const dom = node.addDOMWidget("ld_tamano_size", "div", box, { serialize: false });
         if (dom) {
             dom.serialize = false;
-            dom.computeSize = (width) => [width || 200, 32];
+            dom.computeSize = (width) => [width || 200, 150];
         }
         node._ldTamanoEl = el;
+        node._ldTamanoSels = { proporcion: propSel, megapixeles: mpSel };
         moveWidgetAfter(node, dom, "megapixeles");
         refresh(node);
     };
@@ -3344,6 +3402,11 @@ function setupTamano(nodeType) {
             hideWidget(res);
         }
         ensureSizeLabel(node);
+        // The DOM dropdowns replace the canvas combos (values still serialize).
+        for (const name of ["proporcion", "megapixeles"]) {
+            const w = widgetByName(node, name);
+            if (w) { hideWidget(w); w._ldHidden = true; }
+        }
         refresh(node);
     };
     installSafeHook(nodeType, "onNodeCreated", function () {
