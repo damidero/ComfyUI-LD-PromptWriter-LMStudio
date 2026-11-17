@@ -2444,6 +2444,8 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     let camSel = null;
     let camWrap = null;
     let useNote = null;
+    let estiloNote = null;
+    let dropRow1 = null;
     if (includeIdea) {
         const ideaLabel = styleEl("div", {}, t(node, "idea")); ideaLabel.dataset.i18n = "idea";
         ideaLabel.className = "ld-label";
@@ -2468,8 +2470,14 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         const note = styleEl("div", {}, t(node, "noteEstilo"));
         note.className = "ld-note";
         note.dataset.i18n = "noteEstilo";
-        estiloStack.append(estiloLabel, estiloSel, note);
-        left.appendChild(estiloStack);
+        estiloStack.append(estiloLabel, estiloSel);
+        estiloNote = note;
+        // 2x2 dropdown grid inside the left column (same total width Estilo had):
+        // row 1 Estilo | Cámara, row 2 Ropa | Participantes (added below).
+        dropRow1 = styleEl("div", {});
+        dropRow1.className = "ld-pair-row";
+        dropRow1.append(estiloStack);
+        left.appendChild(dropRow1);
 
         const camLabel = styleEl("div", {}, t(node, "camara"));
         camLabel.className = "ld-label";
@@ -2486,7 +2494,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         camWrap = styleEl("div", {});
         camWrap.className = "ld-field-stack";
         camWrap.append(camLabel, camSel);
-        left.appendChild(camWrap);
+        dropRow1.appendChild(camWrap);
     }
 
     const actions = styleEl("div", {
@@ -2711,17 +2719,19 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         peopleStack.className = "ld-field-stack";
         peopleStack.append(peopleLabel, peopleRow);
         const pairRow = styleEl("div", {});
-        pairRow.className = "ld-pair-row ld-pair-low";
+        pairRow.className = "ld-pair-row";
         pairRow.append(ropaStack, peopleStack);
         const pairWrap = styleEl("div", { display: "flex", flexDirection: "column", gap: "6px", width: "100%" });
         pairWrap.append(pairRow);
         pairRowEl = pairWrap;
-        // Right column: Generar -> explanatory note -> Ropa + Participantes ->
-        // (pushed down to the Cámara level) the "Cambios" box with Modificar.
+        // Left column: Ropa + Participantes under Estilo | Cámara.
+        left.appendChild(pairWrap);
+        // Right column: Generar -> positive note -> toggles/chips note ->
+        // (pushed down to the bottom) the "Cambios" box with Modificar.
         right.innerHTML = "";
         right.append(actions);
         if (useNote) right.append(useNote);
-        right.append(pairWrap);
+        if (estiloNote) right.append(estiloNote);
         modifyRow.style.marginTop = "auto";
         right.append(modifyRow);
     } else {
@@ -2918,6 +2928,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         foldImagenes.textContent = (hideI ? "▸ " : "▾ ") + t(node, "seccionImagenes");
         left.style.display = hideA ? "none" : "";
         if (typeof useNote !== "undefined" && useNote) useNote.style.display = hideA ? "none" : "";
+        if (estiloNote) estiloNote.style.display = hideA ? "none" : "";
         if (pairRowEl) pairRowEl.style.display = hideA ? "none" : "";
         grid.style.display = hideI ? "none" : "";
         left.style.flex = hideA ? "0 0 0" : "1 1 42%";

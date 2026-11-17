@@ -17,7 +17,7 @@
 - "N° de personas" pasa a llamarse **Participantes**.
 - Config: debajo de seed, en una sola línea, el interruptor **Aleatoria en cada generación** (prendido: Generar, Modificar y Encolar ponen una seed nueva cada vez; se guarda en las propiedades del nodo, apagado por defecto) y el botón **🎲 Seed aleatoria**. Solo interfaz, sin widgets nuevos. Se dibujan con el mismo estilo nativo que el resto del Config (como Probar conexión), igual que la fila de Pasadas.
 - **Pasadas pasa al nodo Config**: sección "Pasadas del LLM" (con explicación) debajo de Actividad del LLM, mismo estilo. Vale para todos los Writer conectados; viaja por el cable config. Widget nuevo `pasadas` al final del Config (los workflows viejos quedan en 1 pasada). El widget `pasadas` del Writer queda oculto e ignorado solo por compatibilidad. Limpiar ya no toca las pasadas (no toca Config).
-- Writer, columna derecha: Generar → nota explicativa del positivo → Ropa + Participantes; el recuadro **Cambios** con su botón **Modificar** baja al nivel de Cámara.
+- Writer: listas en grilla 2×2 en el ancho que tenía Estilo (Estilo | Cámara, abajo Ropa | Participantes). Columna derecha: Generar → nota del positivo → nota de los interruptores → recuadro **Cambios** con **Modificar** abajo.
 - Config: `max_tokens` por defecto 2048 (antes 600; máximo 8192). La traducción español→inglés también usa tokens suficientes.
 
 ## 1.1.2 — 2026-11-17
