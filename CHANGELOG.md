@@ -8,6 +8,7 @@
   - **Desnudo** y **Foto** (con imagen con Ropa): los fragmentos de ropa de los triggers del LoRA se quitan antes de mandarlos (ya no se fuerzan textuales ni se vuelven a agregar al encolar) y la regla de ropa tiene prioridad máxima.
 - Writer: el título **Vista en español ⓘ** explica (al pasar el mouse) cómo se genera y se edita la vista en español.
 - Notas: la nota *Recomendaciones de modelos* pasa a llamarse **Configuración** (modelos, LoRAs, nodos necesarios) y hay una segunda nota **Especificaciones** (prompt positivo, chips, vista en español, Ropa, imagen i2i, actividad del LLM). El pack mantiene el texto y el título de ambas en español/inglés; la segunda se reconoce por `properties.ld_note = "specs"`.
+- **Limpiar** también vuelve las listas del Writer a sus valores por defecto: Estilo `(como la referencia)`, Cámara `(Automático - decide el LLM)`, N° de personas `1` (personalizado 1), Ropa `LoRA`, usar_imagen_1/2 `todo`.
 - Config: `max_tokens` por defecto 1200 (antes 600). La traducción español→inglés también usa tokens suficientes.
 
 ## 1.1.2 — 2026-11-17

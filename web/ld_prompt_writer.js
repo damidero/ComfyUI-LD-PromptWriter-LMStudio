@@ -867,7 +867,7 @@ const I18N = {
         ideaPh: "La idea (o dejala vacía y usá una imagen de referencia).",
         generar: "✍️ Generar prompt",
         limpiar: "🧹 Limpiar",
-        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones (no toca interruptores, estilo ni LoRA).",
+        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas, Ropa) a sus valores por defecto. No toca Config, LoRA, interruptores ni la imagen i2i.",
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
         vistaEs: "Vista en español ⓘ",
@@ -904,7 +904,7 @@ const I18N = {
         genOk: "✅ Prompt generado. Revisalo y después ejecutá el workflow.",
         genOkTriggers: "✅ Prompt generado. Los trigger words de los LoRA se completan al ejecutar el workflow.",
         genFail: "❌ No pude generar el prompt.",
-        cleared: "🧹 Listo: idea, prompts, imágenes, selecciones y descripciones borrados.",
+        cleared: "🧹 Listo: idea, prompts, imágenes, selecciones y descripciones borrados; listas en sus valores por defecto.",
         uploadFail: "❌ No pude subir la imagen.",
         connectedWarn: "⚠️ Esta columna usa la entrada IMAGE conectada.",
         testing: "Probando conexión…",
@@ -952,7 +952,7 @@ const I18N = {
         ideaPh: "The idea (or leave it empty and use a reference image).",
         generar: "✍️ Generate prompt",
         limpiar: "🧹 Clear",
-        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions (does not touch toggles, style or LoRA).",
+        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions, and resets the dropdowns (Style, Camera, N° of people, Clothing) to their defaults. Does not touch Config, LoRA, switches or the i2i image.",
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
         vistaEs: "Spanish view ⓘ",
@@ -989,7 +989,7 @@ const I18N = {
         genOk: "✅ Prompt generated. Review it, then run the workflow.",
         genOkTriggers: "✅ Prompt generated. LoRA trigger words are completed when you run the workflow.",
         genFail: "❌ I couldn't generate the prompt.",
-        cleared: "🧹 Done: idea, prompts, images, selections and descriptions were cleared.",
+        cleared: "🧹 Done: idea, prompts, images, selections and descriptions cleared; dropdowns reset to defaults.",
         uploadFail: "❌ I couldn't upload the image.",
         connectedWarn: "⚠️ This column uses the connected IMAGE input.",
         testing: "Testing connection…",
@@ -1126,7 +1126,8 @@ Prompt positivo
   (solo con los chips activos).
 • Modificar: aplica un cambio puntual al prompt actual.
 • Limpiar: borra idea, prompts, las imágenes del Writer, sus chips
-  y descripciones (no toca la imagen de i2i).
+  y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas,
+  Ropa) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.
 
 Imágenes del Writer (chips)
 • Cada imagen aporta solo los aspectos con el chip prendido;
@@ -1174,7 +1175,8 @@ Positive prompt
   (only with the active chips).
 • Modify: applies a precise change to the current prompt.
 • Clear: clears idea, prompts, the Writer images, their chips
-  and descriptions (does not touch the i2i image).
+  and descriptions, and resets the dropdowns (Style, Camera, N° of people,
+  Clothing) to their defaults. Does not touch Config, LoRA or the i2i image.
 
 Writer images (chips)
 • Each image contributes only the aspects whose chip is on;
@@ -2763,7 +2765,27 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             }
             col.refreshThumb?.();
         }
-        autoRopaFromChips();
+        // Dropdowns back to their Python defaults (not Config, LoRA, switches or i2i).
+        if (estiloSel) estiloSel.value = ESTILO_SALIDA_DEFAULT;
+        if (camSel) camSel.value = CAMARA_AUTO;
+        if (peopleSel) peopleSel.value = "1";
+        if (peopleCustom) {
+            peopleCustom.value = "1";
+            peopleCustom.style.display = "none";
+        }
+        if (ropaSel) ropaSel.value = ROPA_AUTO;
+        for (const [name, val] of [
+            ["estilo_salida", ESTILO_SALIDA_DEFAULT],
+            ["camara", CAMARA_AUTO],
+            ["num_personas", "1"],
+            ["num_personas_custom", 1],
+            ["modo_ropa", ROPA_AUTO],
+            ["usar_imagen_1", "todo"],
+            ["usar_imagen_2", "todo"],
+        ]) {
+            const w = widgetByName(node, name);
+            if (w) w.value = val;
+        }
         syncToWidgets();
         if (cambiosInput) cambiosInput.value = "";
         status.textContent = "";
