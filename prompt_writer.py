@@ -97,10 +97,19 @@ ESTILO_SALIDA_OPTIONS = (
 )
 
 N_IMAGES = 8
-ASPECT_KEYS = ("accion", "pose", "persona", "ropa", "fondo", "estilo", "camara")
+# Widget order matters for saved workflows: LEGACY keys keep their original
+# positions; NEW keys (1.1.3) are appended after every other widget.
+LEGACY_ASPECT_KEYS = ("accion", "pose", "persona", "ropa", "fondo", "estilo", "camara")
+NEW_ASPECT_KEYS = ("accesorios", "colores", "expresion", "iluminacion", "pelo")
+ASPECT_KEYS = LEGACY_ASPECT_KEYS + NEW_ASPECT_KEYS
 # Implicit "todo" (no toggles) does not include cámara: that has its own dropdown.
-TODO_ASPECTS = ("accion", "pose", "persona", "ropa", "fondo", "estilo")
+TODO_ASPECTS = ("accion", "pose", "persona", "ropa", "fondo", "estilo") + NEW_ASPECT_KEYS
 ASPECT_LABELS = {
+    "accesorios": "Accesorios",
+    "colores": "Colores",
+    "expresion": "Expresión",
+    "iluminacion": "Iluminación",
+    "pelo": "Pelo",
     "accion": "Acción",
     "pose": "Pose",
     "persona": "Persona",
@@ -126,7 +135,34 @@ ASPECT_PROMPTS = {
         "(moles, scars, freckles, tattoos). "
         "IGNORE pose, action, composition, background, clothing, and art style. "
         "The FINAL prompt MUST use THIS person as the only subject identity if this is the chosen persona source. "
-        "Do NOT use the face, body, hair or identity from any other image."
+        "Do NOT use the face, body or identity from any other image "
+        "(only hair, facial expression or accessories may come from another image whose aspect is enabled)."
+    ),
+    "pelo": (
+        "take ONLY the hair: hairstyle (cut, length, parting, texture, updo, bangs) and hair color "
+        "(including highlights, roots, dye). "
+        "Do NOT describe the face, identity, expression, clothing, pose, background, lighting or art style."
+    ),
+    "expresion": (
+        "take ONLY the facial expression and emotion: mouth, eyes, eyebrows, gaze intensity and the mood they convey "
+        "(e.g. smiling, serious, surprised, playful, tired). It is independent from identity: "
+        "do NOT describe who the person is, face shape, hair, clothing, pose, background or art style."
+    ),
+    "accesorios": (
+        "take ONLY the accessories, separate from clothing: jewelry (earrings, necklaces, rings, bracelets, piercings), "
+        "glasses or sunglasses, watches, hair accessories, bags, and objects held in the hands. "
+        "Describe each item's type, material and color. "
+        "Do NOT describe garments, footwear, identity, pose, background or art style."
+    ),
+    "colores": (
+        "take ONLY the color palette: dominant and accent colors, saturation, contrast between colors, "
+        "warm or cool overall tone and color harmony. "
+        "Do NOT describe objects, people, clothing items, lighting setup, pose, background content or art medium."
+    ),
+    "iluminacion": (
+        "take ONLY the lighting: time of day, light sources, direction (front, side, back, top, rim), "
+        "quality (hard or soft), intensity, shadows and color temperature (warm, cool, neutral, mixed). "
+        "Do NOT describe people, clothing, pose, background content, color palette of objects or art medium."
     ),
     "fondo": (
         "take ONLY the background, setting, environment, architecture, weather and atmosphere. "
@@ -136,14 +172,15 @@ ASPECT_PROMPTS = {
         "take ONLY the artistic style and photographic/pictorial treatment. "
         "Cover: medium (photograph, oil paint, anime, 3D render, watercolor, comic ink, etc.), "
         "rendering or technique, lighting quality and direction, color palette, contrast, "
-        "grain or surface texture, and camera/lens look if it is a photo. "
+        "grain or surface texture, and camera/lens look if it is a photo "
+        "(if Iluminación or Colores are also requested, leave lighting or palette details to those sections). "
         "Do NOT mention specific clothing items, garments or accessories. "
         "Do NOT describe the person's identity, pose, action, or what objects/places appear in the scene."
     ),
     "ropa": (
-        "take ONLY the clothing and wearable accessories. "
-        "Cover each garment, its colors, materials or fabrics, fit (tight, loose, oversized, tailored), "
-        "patterns, layers, shoes, bags, jewelry and other accessories. "
+        "take ONLY the clothing: each garment, its colors, materials or fabrics, fit (tight, loose, oversized, tailored), "
+        "patterns, layers, footwear, belts, hats and gloves. "
+        "Jewelry, glasses, watches, bags and held objects belong to Accesorios, not here. "
         "Do NOT describe art style, medium, lighting, color grading or camera. "
         "Do NOT describe the person's face, body, identity, pose, or the background."
     ),
@@ -955,6 +992,24 @@ def normalize_aspect_key(value: str) -> str:
         "style": "estilo",
         "ropa": "ropa",
         "clothing": "ropa",
+        "accesorios": "accesorios",
+        "accessories": "accesorios",
+        "colores": "colores",
+        "colors": "colores",
+        "colours": "colores",
+        "color palette": "colores",
+        "expresion": "expresion",
+        "expresión": "expresion",
+        "expression": "expresion",
+        "iluminacion": "iluminacion",
+        "iluminación": "iluminacion",
+        "lighting": "iluminacion",
+        "pelo": "pelo",
+        "hair": "pelo",
+        "camara": "camara",
+        "cámara": "camara",
+        "cámara / pov": "camara",
+        "camera": "camara",
         "estilo / ropa": "estilo",  # handled as two keys elsewhere
     }
     return aliases.get(raw, raw if raw in ASPECT_PROMPTS else "todo")
@@ -1348,14 +1403,26 @@ def _roles_rule(refs: list) -> str:
     ]
     uses = {idx: normalize_aspect_list(use) for idx, _t, use in refs}
     persona_idx = [i for i, u in uses.items() if "persona" in u]
+    feature_src = {}
+    for key, label in (("pelo", "hair (style and color)"), ("expresion", "facial expression"), ("accesorios", "accessories")):
+        src = [i for i, u in uses.items() if key in u and i not in persona_idx]
+        if src:
+            feature_src[key] = (label, src)
     if persona_idx:
         others = [str(i) for i in uses if i not in persona_idx]
         who = " and ".join(f"IMAGE {i}" for i in persona_idx)
         if others:
+            banned = "the person, face, body or identity" if "pelo" in feature_src else "the person, face, hair, body or identity"
             lines.append(
                 f"The person/identity MUST come from {who} only. "
-                f"Do NOT use the person, face, hair, body or identity visible in IMAGE {', IMAGE '.join(others)}."
+                f"Do NOT use {banned} visible in IMAGE {', IMAGE '.join(others)}."
             )
+    for key, (label, src) in feature_src.items():
+        where = " and ".join(f"IMAGE {i}" for i in src)
+        target = "the person from " + " and ".join(f"IMAGE {i}" for i in persona_idx) if persona_idx else "the subject"
+        lines.append(
+            f"Apply the {label} from {where} to {target}; it replaces that feature but keeps the identity."
+        )
     return " ".join(lines)
 
 
@@ -2362,7 +2429,7 @@ def ropa_instruction(modo, refs, has_triggers=False, removed=None) -> str:
         return (
             "CLOTHING RULE — HIGHEST PRIORITY, overrides the idea, the reference image notes and the LoRA trigger words: "
             "the subject(s) are fully unclothed. Do not mention or describe any garment, underwear, swimwear, footwear, "
-            "fabric, outfit or accessory worn on the body, and do not write phrases such as 'no clothing except', "
+            "fabric or outfit worn on the body (jewelry, glasses and held objects are allowed), and do not write phrases such as 'no clothing except', "
             "'as specified' or 'where garments end'. Keep identity and physical appearance traits from the LoRA trigger "
             "words (face, hair, eyes, skin, body, tattoos) and every other aspect (pose, action, background, camera, "
             "lighting, style) as instructed." + omit
@@ -3715,7 +3782,7 @@ class LD_LMStudioPromptWriterV2:
                 "STRING",
                 {"multiline": True, "default": "", "tooltip": f"Descripción informativa de la imagen {idx} (no se usa al generar)."},
             )
-            for key in ASPECT_KEYS:
+            for key in LEGACY_ASPECT_KEYS:
                 label = ASPECT_LABELS.get(key, key)
                 opt[f"img{idx}_{key}"] = (
                     "BOOLEAN",
@@ -3747,6 +3814,14 @@ class LD_LMStudioPromptWriterV2:
                 "tooltip": "Ropa: LoRA (la ropa que indican los triggers del LoRA; sin triggers decide el LLM), Foto (gana la ropa de la imagen con Ropa activado), Desnudo (sin ropa). 'Automático' de 1.1.2 se lee como LoRA.",
             },
         )
+        # 1.1.3 chips, appended after everything so saved widgets_values don't shift.
+        for idx in range(1, N_IMAGES + 1):
+            for key in NEW_ASPECT_KEYS:
+                label = ASPECT_LABELS.get(key, key)
+                opt[f"img{idx}_{key}"] = (
+                    "BOOLEAN",
+                    {"default": False, "tooltip": f"Tomar {label} de la imagen {idx}."},
+                )
         return types
 
     RETURN_TYPES = ()

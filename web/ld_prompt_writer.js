@@ -142,17 +142,18 @@ function ensureThemeStyles() {
     border-radius: 8px;
     padding: 6px 8px;
 }
-.ld-chip-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.ld-chip-row { display: flex; flex-wrap: wrap; gap: 3px; }
 .ld-chip {
     cursor: pointer;
     border-radius: 999px;
     border: 1px solid rgba(115, 215, 224, 0.28);
     background: #12181f;
     color: #c5d0d4;
-    font-size: 10px;
+    font-size: 9.5px;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    padding: 3px 8px;
+    letter-spacing: 0.01em;
+    line-height: 1.25;
+    padding: 2px 6px;
     font-family: inherit;
 }
 .ld-chip.on {
@@ -796,24 +797,35 @@ function normalizeRopa(v) {
 }
 const MODELO_GEN = "LD_ModeloGen";
 
-const ASPECT_KEYS = ["accion", "pose", "persona", "ropa", "fondo", "estilo", "camara"];
+// Chip display order: alphabetical by the Spanish label (same order in English).
+const ASPECT_KEYS = ["accesorios", "accion", "camara", "colores", "estilo", "expresion", "fondo", "iluminacion", "pelo", "persona", "pose", "ropa"];
 const ASPECT_LABELS = {
+    accesorios: "Accesorios",
+    colores: "Colores",
+    expresion: "Expresión",
+    iluminacion: "Iluminación",
+    pelo: "Pelo",
     accion: "Acción",
     pose: "Pose",
     persona: "Persona",
     ropa: "Ropa",
-    fondo: "Fondo / Escena",
+    fondo: "Fondo",
     estilo: "Estilo",
-    camara: "Cámara / POV",
+    camara: "Cámara",
 };
 const ASPECT_LABELS_EN = {
+    accesorios: "Accessories",
+    colores: "Colors",
+    expresion: "Expression",
+    iluminacion: "Lighting",
+    pelo: "Hair",
     accion: "Action",
     pose: "Pose",
     persona: "Person",
     ropa: "Clothing",
-    fondo: "Background / Scene",
+    fondo: "Background",
     estilo: "Style",
-    camara: "Camera / POV",
+    camara: "Camera",
 };
 const CAMARA_AUTO = "(Automático - decide el LLM)";
 const CAMARA_OPTIONS = [
@@ -1130,10 +1142,17 @@ Prompt positivo
   Ropa) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.
 
 Imágenes del Writer (chips)
+• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,
+  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.
 • Cada imagen aporta solo los aspectos con el chip prendido;
-  sin ningún chip se usa todo.
+  sin ningún chip se usa todo (menos Cámara).
 • Las imágenes con Persona se asignan en orden a las personas.
-• El chip Cámara / POV gana sobre el selector Cámara.
+• Pelo, Expresión o Accesorios de otra imagen se aplican a la
+  persona elegida sin cambiar su identidad.
+• Iluminación: solo la luz (hora, dirección, calidad, temperatura).
+  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos
+  en la mano (aparte de la ropa; con Desnudo se mantienen).
+• El chip Cámara gana sobre el selector Cámara.
 
 Vista en español
 • Primero se genera el prompt en inglés. Después, una llamada aparte
@@ -1179,10 +1198,18 @@ Positive prompt
   Clothing) to their defaults. Does not touch Config, LoRA or the i2i image.
 
 Writer images (chips)
+• Chips (Spanish alphabetical order): Accessories, Action, Camera,
+  Colors, Style, Expression, Background, Lighting, Hair, Person,
+  Pose, Clothing.
 • Each image contributes only the aspects whose chip is on;
-  with no chip on, everything is used.
+  with no chip on, everything is used (except Camera).
 • Images with Person are assigned to the people in order.
-• The Camera / POV chip wins over the Camera selector.
+• Hair, Expression or Accessories from another image are applied
+  to the chosen person without changing their identity.
+• Lighting: only the light (time, direction, quality, temperature).
+  Colors: only the palette. Accessories: jewelry, glasses, held
+  objects (separate from clothing; kept with Nude).
+• The Camera chip wins over the Camera selector.
 
 Spanish view
 • The English prompt is generated first. Then a separate call
@@ -1395,7 +1422,7 @@ function markVistaDirty(node, dirty) {
     }
 }
 
-const TODO_ASPECTS = ["accion", "pose", "persona", "ropa", "fondo", "estilo"];
+const TODO_ASPECTS = ["accion", "pose", "persona", "ropa", "fondo", "estilo", "accesorios", "colores", "expresion", "iluminacion", "pelo"];
 
 function aspectListForImage(node, index) {
     let active = readImageAspects(node, index);
