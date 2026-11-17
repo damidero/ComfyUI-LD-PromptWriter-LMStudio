@@ -949,6 +949,8 @@ const I18N = {
         netErr: "❌ Error de red ({status}).",
         btnTest: "🔌 Probar conexión",
         btnRefresh: "🔄 Actualizar modelos",
+        btnSeed: "🎲 Seed aleatoria",
+        seedSet: "🎲 Seed: {n}",
         noteEstilo: "Si no hay interruptores activos en una imagen, se usan todos los aspectos (Todo). Si elegís un estilo de salida (p. ej. Realista), ese estilo gana sobre el interruptor «Estilo» de las imágenes.",
         uploadItem: "⬆ Subir archivo…",
         noInputImgs: "(no hay imágenes en input)",
@@ -1043,6 +1045,8 @@ const I18N = {
         netErr: "❌ Network error ({status}).",
         btnTest: "🔌 Test connection",
         btnRefresh: "🔄 Refresh models",
+        btnSeed: "🎲 Random seed",
+        seedSet: "🎲 Seed: {n}",
         noteEstilo: "If no toggles are on for an image, every aspect is used (All). If you pick an output style (e.g. Realistic), it overrides the image «Style» toggle.",
         uploadItem: "⬆ Upload file…",
         noInputImgs: "(no images in input)",
@@ -2205,9 +2209,32 @@ async function attachModelRefresh(node, setStatus) {
     });
     testBtn.serialize = false;
     node._ldTestBtn = testBtn;
+
+    // 🎲 Random seed, right below seed (and its control_after_generate).
+    const seedW = widgetByName(node, "seed");
+    if (seedW && !node._ldSeedBtn) {
+        const seedBtn = node.addWidget("button", t(node, "btnSeed"), null, () => {
+            const w = widgetByName(node, "seed");
+            if (!w) return;
+            const min = Number(w.options?.min ?? 0) || 0;
+            let max = Number(w.options?.max ?? Number.MAX_SAFE_INTEGER);
+            if (!Number.isFinite(max) || max > Number.MAX_SAFE_INTEGER) max = Number.MAX_SAFE_INTEGER;
+            const val = min + Math.floor(Math.random() * (max - min + 1));
+            w.value = val;
+            w.callback?.(val);
+            node.setDirtyCanvas?.(true, true);
+            node.graph?.setDirtyCanvas?.(true, true);
+            setStatus?.(t(node, "seedSet", { n: val }));
+        });
+        seedBtn.serialize = false;
+        node._ldSeedBtn = seedBtn;
+        const afterName = widgetByName(node, "control_after_generate") ? "control_after_generate" : "seed";
+        moveWidgetAfter(node, seedBtn, afterName);
+    }
     node._ldRefreshI18n = () => {
         if (node._ldRefreshBtn) node._ldRefreshBtn.name = t(node, "btnRefresh");
         if (node._ldTestBtn) node._ldTestBtn.name = t(node, "btnTest");
+        if (node._ldSeedBtn) node._ldSeedBtn.name = t(node, "btnSeed");
         node.graph?.setDirtyCanvas?.(true);
     };
 
