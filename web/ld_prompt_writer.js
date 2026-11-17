@@ -284,6 +284,10 @@ function ensureThemeStyles() {
 .ld-panel.ld-writer-root { overflow-y: auto !important; }
 .ld-writer-slot-gap { flex: 0 0 12px; height: 12px; pointer-events: none; }
 .ld-log-wrap { flex: 0 0 auto; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+.ld-log-wrap.ld-log-config { margin-top: 0; padding: 2px 8px 6px 8px; box-sizing: border-box; width: 100%; height: 100%; }
+.ld-log-config .ld-log { height: auto; flex: 1 1 auto; min-height: 60px; }
+.ld-pair-row { display: flex; flex-direction: row; gap: 8px; align-items: flex-end; width: 100%; flex: 0 0 auto; }
+.ld-pair-row > .ld-field-stack { flex: 1 1 50%; min-width: 0; width: auto; }
 .ld-log {
     height: 88px;
     overflow: auto;
@@ -778,6 +782,9 @@ const N_IMAGES = 8;
 const PERSONAS_AUTO = "Auto (decide el LLM)";
 const PERSONAS_CUSTOM = "Personalizado";
 const PERSONAS_OPTIONS = [PERSONAS_AUTO, "1", "2", "3", "4", "5", "6", "7", "8", PERSONAS_CUSTOM];
+const ROPA_AUTO = "Automático";
+const ROPA_OPTIONS = [ROPA_AUTO, "Foto", "Desnudo"];
+const ROPA_I18N = { "Automático": "ropaAuto", "Foto": "ropaFoto", "Desnudo": "ropaDesnudo" };
 const MODELO_GEN = "LD_ModeloGen";
 
 const ASPECT_KEYS = ["accion", "pose", "persona", "ropa", "fondo", "estilo", "camara"];
@@ -864,6 +871,11 @@ const I18N = {
         posPh: "Prompt positivo. Editable antes de correr el workflow.",
         negPh: "Prompt negativo (Illustrious). En Krea2 suele quedar vacío.",
         numPersonas: "N° de personas",
+        ropa: "Ropa",
+        ropaAuto: "Automático",
+        ropaFoto: "Foto",
+        ropaDesnudo: "Desnudo",
+        ropaTitle: "Automático: decide el LLM (si hay LoRA, usa su ropa). Foto: gana la ropa de la imagen con Ropa activado. Desnudo: sin ropa.",
         imagen: "Imagen {n}",
         descPh: "Descripción informativa. Pulsá 🔄 Describir.",
         describir: "🔄 Describir",
@@ -942,6 +954,11 @@ const I18N = {
         posPh: "Positive prompt. Editable before you run the workflow.",
         negPh: "Negative prompt (Illustrious). Usually empty for Krea2.",
         numPersonas: "N° of people",
+        ropa: "Clothing",
+        ropaAuto: "Auto",
+        ropaFoto: "Photo",
+        ropaDesnudo: "Nude",
+        ropaTitle: "Auto: the LLM decides (uses the LoRA's clothing if any). Photo: clothing from the image with Clothing on wins. Nude: no clothing.",
         imagen: "Image {n}",
         descPh: "Informational description. Click 🔄 Describe.",
         describir: "🔄 Describe",
@@ -2038,17 +2055,6 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     modifyBtn.dataset.i18n = "modificar";
     modifyRow.append(cambiosLabel, cambiosInput, modifyBtn);
     right.appendChild(modifyRow);
-    const logWrap = styleEl("div", {});
-    logWrap.className = "ld-log-wrap";
-    const logLabel = styleEl("div", {}, t(node, "actividad"));
-    logLabel.className = "ld-label";
-    logLabel.dataset.i18n = "actividad";
-    const logBox = styleEl("div", {});
-    logBox.className = "ld-log";
-    logBox.setAttribute("aria-readonly", "true");
-    logWrap.append(logLabel, logBox);
-    right.appendChild(logWrap);
-    hookActivityLog();
     const setStatus = (msg) => setStatusBadge(status, msg);
 
     modifyBtn.addEventListener("click", async () => {
@@ -2196,11 +2202,38 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         peopleCustom.style.display = peopleSel.value === PERSONAS_CUSTOM ? "" : "none";
     });
     peopleRow.append(peopleSel, peopleCustom);
-    if (includeIdea && camWrap) {
+    let ropaSel = null;
+    let pairRowEl = null;
+    if (includeIdea) {
+        // Ropa + N° de personas side by side in the right column (where the
+        // LLM activity box used to be; that box now lives in the Config node).
+        const ropaLabel = styleEl("div", {}, t(node, "ropa"));
+        ropaLabel.className = "ld-label";
+        ropaLabel.dataset.i18n = "ropa";
+        ropaSel = document.createElement("select");
+        ropaSel.className = "ld-select";
+        ropaSel.title = t(node, "ropaTitle");
+        ropaSel.dataset.i18nTitle = "ropaTitle";
+        for (const val of ROPA_OPTIONS) {
+            const o = document.createElement("option");
+            o.value = val;
+            o.textContent = t(node, ROPA_I18N[val]);
+            ropaSel.appendChild(o);
+        }
+        const savedR = String(widgetValue(node, "modo_ropa", ROPA_AUTO) || ROPA_AUTO);
+        ropaSel.value = ROPA_OPTIONS.includes(savedR) ? savedR : ROPA_AUTO;
+        const ropaStack = styleEl("div", {});
+        ropaStack.className = "ld-field-stack";
+        ropaStack.append(ropaLabel, ropaSel);
         const peopleStack = styleEl("div", {});
         peopleStack.className = "ld-field-stack";
         peopleStack.append(peopleLabel, peopleRow);
-        left.insertBefore(peopleStack, camWrap);
+        const pairRow = styleEl("div", {});
+        pairRow.className = "ld-pair-row";
+        pairRow.append(ropaStack, peopleStack);
+        pairRowEl = pairRow;
+        if (useNote && useNote.parentNode === right) right.insertBefore(pairRow, useNote);
+        else right.appendChild(pairRow);
     } else {
         midR.append(peopleLabel, peopleRow);
     }
@@ -2373,6 +2406,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         foldImagenes.textContent = (hideI ? "▸ " : "▾ ") + t(node, "seccionImagenes");
         left.style.display = hideA ? "none" : "";
         if (typeof useNote !== "undefined" && useNote) useNote.style.display = hideA ? "none" : "";
+        if (pairRowEl) pairRowEl.style.display = hideA ? "none" : "";
         grid.style.display = hideI ? "none" : "";
         left.style.flex = hideA ? "0 0 0" : "1 1 42%";
         right.style.flex = hideA ? "1 1 auto" : "1 1 58%";
@@ -2430,6 +2464,12 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (peopleCustom && nwC && String(peopleCustom.value) !== String(nwC.value ?? 1)) {
             peopleCustom.value = String(nwC.value ?? 1);
         }
+        const rw = widgetByName(node, "modo_ropa");
+        if (ropaSel) {
+            const rv = String(rw?.value ?? ROPA_AUTO);
+            const want = ROPA_OPTIONS.includes(rv) ? rv : ROPA_AUTO;
+            if (ropaSel.value !== want) ropaSel.value = want;
+        }
         const cw = widgetByName(node, "camara");
         if (includeIdea && camSel && cw) {
             const cv = String(cw.value ?? CAMARA_AUTO);
@@ -2471,6 +2511,8 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         }
         const cw = widgetByName(node, "camara");
         if (includeIdea && camSel && cw) cw.value = camSel.value;
+        const rw = widgetByName(node, "modo_ropa");
+        if (ropaSel && rw) rw.value = ropaSel.value;
         for (const col of cols) {
             const dw = widgetByName(node, `desc_imagen_${col.index}`);
             if (dw) dw.value = col.desc.value;
@@ -2491,6 +2533,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     peopleSel?.addEventListener("change", syncToWidgets);
     peopleCustom?.addEventListener("input", syncToWidgets);
     camSel?.addEventListener("change", syncToWidgets);
+    ropaSel?.addEventListener("change", syncToWidgets);
 
     for (const col of cols) {
         col.button.addEventListener("click", async () => {
@@ -2557,7 +2600,6 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             col.refreshThumb?.();
         }
         syncToWidgets();
-        if (logBox) logBox.innerHTML = "";
         if (cambiosInput) cambiosInput.value = "";
         status.textContent = "";
         status.className = "ld-status";
@@ -2610,6 +2652,9 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (camSel) {
             for (const o of camSel.options) o.textContent = camaraLabel(node, o.value);
         }
+        if (ropaSel) {
+            for (const o of ropaSel.options) o.textContent = t(node, ROPA_I18N[o.value] || "ropaAuto");
+        }
         if (peopleSel) {
             for (const o of peopleSel.options) {
                 o.textContent = o.value === PERSONAS_AUTO ? t(node, "personasAuto") : o.value === PERSONAS_CUSTOM ? t(node, "personasCustom") : o.value;
@@ -2626,7 +2671,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (savedVista) vistaEsArea.value = savedVista;
     }
 
-    return { root, pos, neg, ideaArea, estiloSel, peopleSel, camSel, logBox, setStatus, syncFromWidgets, syncToWidgets, btn, applyI18n, vistaEsArea, vistaWrap, cols };
+    return { root, pos, neg, ideaArea, estiloSel, peopleSel, ropaSel, camSel, setStatus, syncFromWidgets, syncToWidgets, btn, applyI18n, vistaEsArea, vistaWrap, cols };
 }
 
 const WRITER_HEAD_H = 28;
@@ -2732,18 +2777,58 @@ function hookExecuted(nodeType) {
     };
 }
 
+function attachConfigActivityLog(node) {
+    if (node._ldLogDom) return;
+    const wrap = styleEl("div", {});
+    wrap.className = "ld-panel ld-config ld-log-wrap ld-log-config";
+    const logLabel = styleEl("div", {}, t(node, "actividad"));
+    logLabel.className = "ld-label";
+    const logBox = styleEl("div", {});
+    logBox.className = "ld-log";
+    logBox.setAttribute("aria-readonly", "true");
+    wrap.append(logLabel, logBox);
+    const dom = node.addDOMWidget("ld_activity_log", "div", wrap, {
+        hideOnZoom: false,
+        serialize: false,
+    });
+    dom.serialize = false;
+    dom.computeSize = (width) => [width || 200, 120];
+    node._ldLogDom = dom;
+    node._ldLogLabel = logLabel;
+    node._ldLogBox = logBox;
+    const prevI18n = node._ldRefreshI18n;
+    node._ldRefreshI18n = () => {
+        prevI18n?.();
+        if (node._ldLogLabel) node._ldLogLabel.textContent = t(node, "actividad");
+    };
+    hookActivityLog();
+}
+
+function growConfigToFit(node) {
+    try {
+        const min = typeof node.computeSize === "function" ? node.computeSize() : null;
+        if (!min || !node.size) return;
+        if (node.size[1] < min[1]) {
+            if (typeof node.setSize === "function") node.setSize([node.size[0], min[1]]);
+            else node.size[1] = min[1];
+            node.graph?.setDirtyCanvas?.(true, true);
+        }
+    } catch (_e) {}
+}
+
 function setupConfigNode(nodeType) {
     installSafeHook(nodeType, "onNodeCreated", function () {
         ensureThemeStyles();
         applyNodeTheme(this, THEME.config);
         const setStatus = attachStatusLine(this, true, "config");
         attachModelRefresh(this, setStatus);
+        attachConfigActivityLog(this);
         shrinkExtraInstructions(this);
         hookIdiomaWidget(this);
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
-        if (!this.size || this.size[1] < 760) {
-            if (typeof this.setSize === "function") this.setSize([400, 820]);
-            else this.size = [400, 820];
+        if (!this.size || this.size[1] < 900) {
+            if (typeof this.setSize === "function") this.setSize([400, 940]);
+            else this.size = [400, 940];
         }
     });
     installSafeHook(nodeType, "onConfigure", function (info) {
@@ -2756,6 +2841,9 @@ function setupConfigNode(nodeType) {
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
         this._ldRefreshModels?.(false);
         refreshAllWriterI18n();
+        // Saved workflows keep their size; grow only the height if the new
+        // activity box below "Probar conexión" doesn't fit.
+        setTimeout(() => growConfigToFit(this), 0);
     });
 }
 
@@ -3215,6 +3303,7 @@ function setupWriterV2(nodeType) {
                     num_personas: String(widgetValue(this, "num_personas", "1") || "1"),
                     num_personas_custom: widgetValue(this, "num_personas_custom", 1),
                     camara: String(widgetValue(this, "camara", CAMARA_AUTO) || CAMARA_AUTO),
+                    modo_ropa: String(widgetValue(this, "modo_ropa", ROPA_AUTO) || ROPA_AUTO),
                 };
                 for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refs[i];

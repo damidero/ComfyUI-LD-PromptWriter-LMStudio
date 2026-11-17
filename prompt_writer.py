@@ -1522,7 +1522,10 @@ def _generate_prompt_impl(
 
     triggers = normalize_triggers(lora_triggers)
     trig_inst = triggers_instruction(is_illustrious, triggers)
-    extra_bits = [str(extra_instructions or "").strip(), estilo_inst, trig_inst]
+    ropa_inst = ropa_instruction(kwargs.get("modo_ropa", ROPA_AUTO), refs, bool(triggers))
+    if ropa_inst:
+        print(f"[LD-PromptWriter] ropa={normalize_ropa(kwargs.get('modo_ropa', ROPA_AUTO))!r}", flush=True)
+    extra_bits = [str(extra_instructions or "").strip(), estilo_inst, trig_inst, ropa_inst]
     extra_instructions = "\n\n".join(b for b in extra_bits if b)
 
     try:
@@ -2243,6 +2246,50 @@ def personas_instruction(n, refs) -> str:
     )
 
 
+ROPA_AUTO = "Automático"
+ROPA_FOTO = "Foto"
+ROPA_DESNUDO = "Desnudo"
+ROPA_OPTIONS = (ROPA_AUTO, ROPA_FOTO, ROPA_DESNUDO)
+
+
+def normalize_ropa(value) -> str:
+    raw = " ".join(str(value or "").strip().split()).lower()
+    if raw in ("foto", "photo"):
+        return ROPA_FOTO
+    if raw in ("desnudo", "nude", "nudo"):
+        return ROPA_DESNUDO
+    return ROPA_AUTO
+
+
+def ropa_instruction(modo, refs, has_triggers=False) -> str:
+    """Clothing rule for the LLM: Automático / Foto / Desnudo."""
+    modo = normalize_ropa(modo)
+    ropa_imgs = []
+    for idx, _tensor, aspects in refs or []:
+        asp = aspects if isinstance(aspects, (list, tuple)) else [aspects]
+        if "ropa" in asp or "todo" in asp:
+            ropa_imgs.append(idx)
+    if modo == ROPA_DESNUDO:
+        return (
+            "Clothing rule (overrides everything above): the subject(s) wear no clothing. "
+            "Do not describe garments, underwear, accessories worn as clothing or fabric covering the body. "
+            "Ignore any clothing mentioned in the idea, in the reference image notes or implied by the LoRA trigger words; "
+            "keep every other aspect (identity, pose, action, background, camera, style) as instructed."
+        )
+    if modo == ROPA_FOTO and ropa_imgs:
+        imgs = ", ".join(f"IMAGE {i}" for i in ropa_imgs)
+        return (
+            f"Clothing rule (overrides everything above): take the clothing exactly from {imgs} "
+            "(garments, colors, materials, fit, accessories). This clothing has priority over any clothing "
+            "mentioned in the idea or implied by the LoRA trigger words. Do not invent different clothing."
+        )
+    if has_triggers:
+        return (
+            "Clothing rule: you decide the clothing. If the LoRA trigger words imply a specific outfit or "
+            "clothing style, prefer that outfit; otherwise choose clothing that fits the idea and the scene."
+        )
+    return ""
+
 
 def translate_spanish_to_english(
     text,
@@ -2564,6 +2611,8 @@ def register_routes() -> None:
                 extra_kw["num_personas_custom"] = body.get("num_personas_custom")
             if body.get("camara") is not None:
                 extra_kw["camara"] = body.get("camara")
+            if body.get("modo_ropa") is not None:
+                extra_kw["modo_ropa"] = normalize_ropa(body.get("modo_ropa"))
             extra_kw["idioma"] = body.get("idioma", "Español")
             if body.get("descarga_idle_min") is not None:
                 extra_kw["descarga_idle_min"] = body.get("descarga_idle_min")
@@ -2914,6 +2963,7 @@ _WRITER_PROMPT_KEYS = (
     "num_personas",
     "num_personas_custom",
     "camara",
+    "modo_ropa",
     "lora_triggers",
 )
 
@@ -3533,6 +3583,14 @@ class LD_LMStudioPromptWriterV2:
             "BOOLEAN",
             {"default": False, "tooltip": "Ocultar la sección de imágenes de referencia."},
         )
+        # Last on purpose: older workflows have fewer widgets_values and keep the default.
+        opt["modo_ropa"] = (
+            list(ROPA_OPTIONS),
+            {
+                "default": ROPA_AUTO,
+                "tooltip": "Ropa: Automático (decide el LLM; si hay LoRA usa su ropa), Foto (gana la ropa de la imagen con Ropa activado), Desnudo (sin ropa).",
+            },
+        )
         return types
 
     RETURN_TYPES = ()
@@ -3549,6 +3607,7 @@ class LD_LMStudioPromptWriterV2:
         estilo_salida=None,
         num_personas=None,
         camara=None,
+        modo_ropa=None,
         **kwargs,
     ):
         return True
@@ -3590,6 +3649,7 @@ class LD_LMStudioPromptWriterV2:
             str(estilo_salida or ESTILO_SALIDA_DEFAULT),
             str(parse_personas(kwargs.get("num_personas", "1"), kwargs.get("num_personas_custom", 1))),
             str(kwargs.get("camara") or CAMARA_AUTO),
+            normalize_ropa(kwargs.get("modo_ropa")),
         ]
         for idx in range(1, N_IMAGES + 1):
             parts.append(archivo_fingerprint(kwargs.get(f"archivo_imagen_{idx}")))
@@ -3627,6 +3687,7 @@ class LD_LMStudioPromptWriterV2:
             kwargs["num_personas"] = sanitize_combo(kwargs.get("num_personas"), PERSONAS_OPTIONS, "1")
         if "camara" in kwargs:
             kwargs["camara"] = sanitize_combo(kwargs.get("camara"), CAMARA_OPTIONS, CAMARA_AUTO)
+        kwargs["modo_ropa"] = normalize_ropa(kwargs.get("modo_ropa"))
         bundled = config_image_kwargs(cfg)
         if not str(lora_triggers or "").strip():
             lora_triggers = cfg.get("lora_triggers") or ""

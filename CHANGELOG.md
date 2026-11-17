@@ -1,5 +1,13 @@
 # Changelog
 
+## Sin publicar
+
+- El recuadro **Actividad del LLM** pasó del Writer al nodo Config, debajo de **Probar conexión**.
+- Nuevo desplegable **Ropa** en el Writer (Automático / Foto / Desnudo), al lado de **N° de personas** (ambos en la columna derecha). Se guarda en el widget `modo_ropa` (al final, así los workflows viejos cargan con Automático).
+  - Foto: gana la ropa de la imagen con el interruptor Ropa activado (si ninguna lo tiene, actúa como Automático).
+  - Automático: decide el LLM; si hay trigger words de LoRA, prefiere la ropa que implican.
+  - Desnudo: sin ropa; ignora la ropa de las imágenes y de los LoRA.
+
 ## 1.1.0 — 2026-11-16
 
 ### Writer y Config
