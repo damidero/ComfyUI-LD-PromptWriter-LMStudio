@@ -1117,6 +1117,82 @@ def ensure_triggers(positive: str, triggers: list, is_illustrious: bool) -> str:
     return prefix + ", " + text
 
 
+_CLOTHING_RE = re.compile(
+    r"\b(?:"
+    r"(?:crop|tank|tube|halter|bikini|bra|sports\s+bra|strapless|ribbed)\s+tops?|"
+    r"t-?shirts?|shirts?|blouses?|dress(?:es)?|skirts?|miniskirts?|jeans|pants|trousers|shorts|leggings|"
+    r"bikinis?|swimsuits?|swimwear|lingerie|bras?|brassieres?|panties|underwear|thongs?|briefs|"
+    r"stockings|pantyhose|tights|socks|shoes|heels|high\s+heels|boots|sneakers|sandals|"
+    r"jackets?|coats?|hoodies?|sweaters?|cardigans?|vests?|corsets?|bodysuits?|leotards?|robes?|"
+    r"kimonos?|uniforms?|outfits?|costumes?|clothing|clothes|garments?|apparel|attire|"
+    r"wearing|wears|worn|dressed|neckline|cleavage\s+window|sleeves?|sleeveless|collar|"
+    r"gloves|hats?|caps?|scarf|scarves|belts?|fabric|denim|lace|satin|silk|latex|leather\s+(?:jacket|pants|skirt)"
+    r")\b",
+    re.IGNORECASE,
+)
+_TOP_RE = re.compile(r"\b(?:\w+\s+)?tops?\b", re.IGNORECASE)
+_TOP_SAFE_RE = re.compile(r"\b(?:on\s+top|top\s+(?:of|view|down|light|lighting)|from\s+the\s+top)\b", re.IGNORECASE)
+
+
+def _mentions_clothing(text: str) -> bool:
+    t = str(text or "")
+    if _CLOTHING_RE.search(t):
+        return True
+    if _TOP_RE.search(t) and not _TOP_SAFE_RE.search(t):
+        return True
+    return False
+
+
+def split_trigger_clothing(triggers: list) -> tuple:
+    """Return (kept_triggers, removed_clothing_fragments).
+
+    Trigger text from LoRA Manager can be a whole description ("young woman...
+    Tight pink crop top..."). Sentences/fragments that describe clothing are
+    removed so they are neither forced verbatim nor re-added by ensure_triggers.
+    """
+    kept, removed = [], []
+    for trig in triggers or []:
+        tok = str(trig or "").strip()
+        if not tok:
+            continue
+        sentences = [x.strip() for x in re.split(r"(?<=[.;!?])\s+", tok) if x.strip()]
+        keep_s = []
+        for sen in sentences:
+            if _mentions_clothing(sen):
+                removed.append(sen.rstrip(".;"))
+            else:
+                keep_s.append(sen)
+        if keep_s:
+            kept.append(" ".join(keep_s).rstrip(" ."))
+    return kept, removed
+
+
+def ropa_image_indices(refs=None, **kwargs) -> list:
+    """Images whose clothing should be used (Ropa chip on, or no chip = todo)."""
+    out = []
+    if refs is not None:
+        for idx, _t, aspects in refs:
+            asp = aspects if isinstance(aspects, (list, tuple)) else [aspects]
+            if "ropa" in asp or "todo" in asp:
+                out.append(idx)
+        return out
+    for idx in range(1, N_IMAGES + 1):
+        if not str(kwargs.get(f"archivo_imagen_{idx}") or "").strip() and not _has_image(kwargs.get(f"image_{idx}")):
+            continue
+        chips = [bool(kwargs.get(f"img{idx}_{k}")) for k in ASPECT_KEYS]
+        if kwargs.get(f"img{idx}_ropa") or not any(chips):
+            out.append(idx)
+    return out
+
+
+def effective_triggers(triggers: list, modo_ropa, ropa_imgs) -> tuple:
+    """(triggers_to_enforce, removed_clothing) according to the Ropa mode."""
+    modo = normalize_ropa(modo_ropa)
+    if modo == ROPA_DESNUDO or (modo == ROPA_FOTO and ropa_imgs):
+        return split_trigger_clothing(triggers)
+    return list(triggers or []), []
+
+
 def _model_is_vision(url: str, model_id: str):
     """True/False if detectable from /api/v0, else None."""
     cat = catalog_models(url, timeout=3.0)
@@ -1496,9 +1572,8 @@ def _generate_prompt_impl(
     is_illustrious = str(mode).lower().startswith("illustrious")
     system = SYS_ILLUSTRIOUS if is_illustrious else SYS_KREA2
     want_es = want_spanish_view(kwargs.get("idioma", "Español"))
-    if want_es:
-        system = system + "\n\n" + bilingual_instruction(is_illustrious, modify=False)
-    max_tokens = _bump_tokens_for_es(max_tokens, want_es)
+    # The Spanish view is no longer written in the same reply: it is a separate
+    # translation of the FINAL English prompt (after triggers are merged).
     guide = " ".join(image_use_sentence(idx, use) for idx, _tensor, use in refs)
     roles = _roles_rule(refs)
     if roles:
@@ -1520,9 +1595,13 @@ def _generate_prompt_impl(
     elif idea and has_img:
         idea = idea + "\n\n" + (guide or "Use the attached image as a visual reference.")
 
-    triggers = normalize_triggers(lora_triggers)
+    all_triggers = normalize_triggers(lora_triggers)
+    modo_ropa = kwargs.get("modo_ropa", ROPA_AUTO)
+    triggers, removed_clothing = effective_triggers(all_triggers, modo_ropa, ropa_image_indices(refs))
+    if removed_clothing:
+        print(f"[LD-PromptWriter] ropa={normalize_ropa(modo_ropa)!r}: se quitan de los triggers {len(removed_clothing)} fragmento(s) de ropa", flush=True)
     trig_inst = triggers_instruction(is_illustrious, triggers)
-    ropa_inst = ropa_instruction(kwargs.get("modo_ropa", ROPA_AUTO), refs, bool(triggers))
+    ropa_inst = ropa_instruction(modo_ropa, refs, bool(all_triggers), removed_clothing)
     if ropa_inst:
         print(f"[LD-PromptWriter] ropa={normalize_ropa(kwargs.get('modo_ropa', ROPA_AUTO))!r}", flush=True)
     extra_bits = [str(extra_instructions or "").strip(), estilo_inst, trig_inst, ropa_inst]
@@ -1627,8 +1706,9 @@ def _generate_prompt_impl(
         )
 
     positive = ensure_triggers(positive, triggers, is_illustrious)
-    if not want_es:
-        vista_es = ""
+    vista_es = ""
+    if want_es:
+        vista_es = spanish_view_of(url, model_id, positive, is_illustrious, seed, idioma, max_tokens)
     emit_vista_es(vista_es)
     return positive, negative, vista_es
 
@@ -1966,6 +2046,8 @@ ACTIVITY_I18N = {
         "described_one": "Descripción lista ({secs} s)",
         "translating_es": "Traduciendo la vista en español al inglés…",
         "translated_es": "Vista traducida al inglés ({secs} s)",
+        "translating_view": "Traduciendo el prompt final al español…",
+        "translated_view": "Vista en español lista ({secs} s)",
         "composing": "Componiendo prompt final…",
         "done": "Listo",
         "unloading": "Descargando modelo…",
@@ -1986,6 +2068,8 @@ ACTIVITY_I18N = {
         "described_one": "Description ready ({secs} s)",
         "translating_es": "Translating the Spanish view into English…",
         "translated_es": "Spanish view translated to English ({secs} s)",
+        "translating_view": "Translating the final prompt into Spanish…",
+        "translated_view": "Spanish view ready ({secs} s)",
         "composing": "Composing the final prompt…",
         "done": "Done",
         "unloading": "Unloading the model…",
@@ -2246,7 +2330,7 @@ def personas_instruction(n, refs) -> str:
     )
 
 
-ROPA_AUTO = "Automático"
+ROPA_AUTO = "LoRA"  # was "Automático" in 1.1.2; normalize_ropa maps old values
 ROPA_FOTO = "Foto"
 ROPA_DESNUDO = "Desnudo"
 ROPA_OPTIONS = (ROPA_AUTO, ROPA_FOTO, ROPA_DESNUDO)
@@ -2258,37 +2342,106 @@ def normalize_ropa(value) -> str:
         return ROPA_FOTO
     if raw in ("desnudo", "nude", "nudo"):
         return ROPA_DESNUDO
+    # "LoRA", legacy "Automático"/"Auto", empty or unknown.
     return ROPA_AUTO
 
 
-def ropa_instruction(modo, refs, has_triggers=False) -> str:
-    """Clothing rule for the LLM: Automático / Foto / Desnudo."""
+def ropa_instruction(modo, refs, has_triggers=False, removed=None) -> str:
+    """Clothing rule for the LLM: LoRA / Foto / Desnudo."""
     modo = normalize_ropa(modo)
-    ropa_imgs = []
-    for idx, _tensor, aspects in refs or []:
-        asp = aspects if isinstance(aspects, (list, tuple)) else [aspects]
-        if "ropa" in asp or "todo" in asp:
-            ropa_imgs.append(idx)
+    ropa_imgs = ropa_image_indices(refs or [])
+    removed = [r for r in (removed or []) if str(r).strip()]
+    omit = ""
+    if removed:
+        omit = (
+            " The following LoRA description fragments were withheld because they describe clothing; "
+            "do NOT reproduce their garments, but you may keep any non-clothing physical trait they mention "
+            "(body, skin, hair, tattoos): " + " | ".join(removed) + "."
+        )
     if modo == ROPA_DESNUDO:
         return (
-            "Clothing rule (overrides everything above): the subject(s) wear no clothing. "
-            "Do not describe garments, underwear, accessories worn as clothing or fabric covering the body. "
-            "Ignore any clothing mentioned in the idea, in the reference image notes or implied by the LoRA trigger words; "
-            "keep every other aspect (identity, pose, action, background, camera, style) as instructed."
+            "CLOTHING RULE — HIGHEST PRIORITY, overrides the idea, the reference image notes and the LoRA trigger words: "
+            "the subject(s) are fully unclothed. Do not mention or describe any garment, underwear, swimwear, footwear, "
+            "fabric, outfit or accessory worn on the body, and do not write phrases such as 'no clothing except', "
+            "'as specified' or 'where garments end'. Keep identity and physical appearance traits from the LoRA trigger "
+            "words (face, hair, eyes, skin, body, tattoos) and every other aspect (pose, action, background, camera, "
+            "lighting, style) as instructed." + omit
         )
     if modo == ROPA_FOTO and ropa_imgs:
         imgs = ", ".join(f"IMAGE {i}" for i in ropa_imgs)
         return (
-            f"Clothing rule (overrides everything above): take the clothing exactly from {imgs} "
-            "(garments, colors, materials, fit, accessories). This clothing has priority over any clothing "
-            "mentioned in the idea or implied by the LoRA trigger words. Do not invent different clothing."
+            f"CLOTHING RULE — HIGHEST PRIORITY: take the clothing exactly from {imgs} "
+            "(garments, colors, materials, fit, accessories). This clothing replaces any clothing "
+            "mentioned in the idea or in the LoRA trigger words; keep only the non-clothing traits from the triggers. "
+            "Do not invent different clothing." + omit
         )
     if has_triggers:
         return (
-            "Clothing rule: you decide the clothing. If the LoRA trigger words imply a specific outfit or "
-            "clothing style, prefer that outfit; otherwise choose clothing that fits the idea and the scene."
+            "Clothing rule: use the clothing described or implied by the LoRA trigger words. "
+            "If they do not imply any clothing, choose clothing that fits the idea and the scene."
         )
     return ""
+
+
+def _view_tokens(text: str, max_tokens=0) -> int:
+    """Enough tokens for a full Spanish rendering (Spanish runs ~1.3x English)."""
+    words = len(str(text or "").split())
+    need = int(words * 2.6) + 200
+    try:
+        mt = int(max_tokens or 0)
+    except (TypeError, ValueError):
+        mt = 0
+    return max(800, min(4096, max(need, mt)))
+
+
+def translate_english_to_spanish(url, model_id, text, is_illustrious, seed=0, max_tokens=0) -> str:
+    """Full translation (Krea2) or full gloss (Illustrious) of the FINAL English prompt."""
+    text = str(text or "").strip()
+    if not text:
+        return ""
+    if is_illustrious:
+        system = (
+            "You explain an English Danbooru-style tag line in natural Spanish for the user. "
+            "Write a readable Spanish paragraph that covers EVERY tag (including LoRA trigger words, "
+            "kept verbatim), in the same order. Do not add, drop or soften anything. "
+            "Output only the Spanish text, no preamble."
+        )
+    else:
+        system = (
+            "You translate an English image prompt into natural Spanish for the user to read and edit. "
+            "Translate ALL of it, sentence by sentence, keeping every detail, the order and the meaning. "
+            "Do not summarize, add, drop or soften anything. Keep LoRA trigger words, names and technical "
+            "terms that have no Spanish equivalent verbatim. Output only the Spanish translation, no preamble "
+            "or quotation marks."
+        )
+    raw = chat_complete(
+        url,
+        model_id,
+        [{"role": "system", "content": system}, {"role": "user", "content": text}],
+        0.2,
+        _view_tokens(text, max_tokens),
+        int(seed or 0),
+    )
+    out = clean_output(raw)
+    out = _ES_LABEL_HEAD.sub("", out).strip()
+    return out
+
+
+_ES_LABEL_HEAD = re.compile(r"^\s*(?:ES|ESPAÑOL|SPANISH|TRADUCCI[ÓO]N)\s*:\s*", re.IGNORECASE)
+
+
+def spanish_view_of(url, model_id, positive, is_illustrious, seed, idioma, max_tokens=0) -> str:
+    """Spanish view of the final English prompt; never breaks generation."""
+    try:
+        emit_activity(idioma, "translating_view")
+        t0 = time.perf_counter()
+        es = translate_english_to_spanish(url, model_id, positive, is_illustrious, seed, max_tokens)
+        emit_activity(idioma, "translated_view", secs=f"{time.perf_counter() - t0:.1f}")
+        return es
+    except Exception as e:
+        print(f"[LD-PromptWriter] no pude traducir la vista en español: {e}", flush=True)
+        emit_activity(idioma, "error", msg=f"vista en español: {e}", level="err")
+        return ""
 
 
 def translate_spanish_to_english(
@@ -2336,7 +2489,7 @@ def translate_spanish_to_english(
             model_id,
             [{"role": "system", "content": system}, {"role": "user", "content": user}],
             float(temperature or 0.3),
-            max(int(max_tokens or 700), 200),
+            max(int(max_tokens or 700), _view_tokens(text, 0)),
             int(seed or 0),
         )
         out = clean_output(raw)
@@ -2464,8 +2617,6 @@ def modify_prompt(
         is_illustrious = str(mode).lower().startswith("illustrious")
         want_es = want_spanish_view(idioma)
         system = SYS_MODIFY_ILLUSTRIOUS if is_illustrious else SYS_MODIFY_KREA2
-        if want_es:
-            system = system + "\n\n" + bilingual_instruction(is_illustrious, modify=True)
         if is_illustrious:
             user = (
                 "CURRENT POSITIVE:\n" + prompt
@@ -2488,12 +2639,11 @@ def modify_prompt(
             url, model_id,
             [{"role": "system", "content": system}, {"role": "user", "content": user}],
             temp,
-            _bump_tokens_for_es(max(int(max_tokens or 800), 800), want_es),
+            max(int(max_tokens or 800), 800),
             int(seed or 0),
         )
-        body, vista_es = parse_bilingual(raw)
-        if not want_es:
-            vista_es = ""
+        body, _ignored_es = parse_bilingual(raw)
+        vista_es = ""
         if is_illustrious:
             positive, new_neg = parse_illustrious(body)
             if not positive:
@@ -2513,6 +2663,8 @@ def modify_prompt(
             )
         secs = f"{time.perf_counter() - t0:.1f}"
         emit_activity(idioma, "modified", secs=secs)
+        if want_es:
+            vista_es = spanish_view_of(url, model_id, positive, is_illustrious, seed, idioma, max_tokens)
         emit_activity(idioma, "done")
         emit_vista_es(vista_es)
         return positive, negative, vista_es
@@ -2994,7 +3146,11 @@ def resolve_config_prompts(cfg, writer_inputs, image_kwargs, lora_triggers, neg_
         triggers_text = lora_triggers
     else:
         triggers_text = writer_inputs.get("lora_triggers", "") or ""
-    triggers = normalize_triggers(triggers_text)
+    triggers, _removed = effective_triggers(
+        normalize_triggers(triggers_text),
+        writer_inputs.get("modo_ropa", ROPA_AUTO),
+        ropa_image_indices(None, **writer_inputs),
+    )
     idea = writer_inputs.get("idea", "")
     usar = writer_inputs.get("usar_prompt_generado", True)
     if isinstance(usar, str):
@@ -3081,7 +3237,7 @@ class LD_LMStudioConfig:
                 ),
                 "max_tokens": (
                     "INT",
-                    {"default": 600, "min": 64, "max": 4096, "step": 1},
+                    {"default": 1200, "min": 64, "max": 4096, "step": 1},
                 ),
                 "seed": (
                     "INT",
@@ -3588,7 +3744,7 @@ class LD_LMStudioPromptWriterV2:
             list(ROPA_OPTIONS),
             {
                 "default": ROPA_AUTO,
-                "tooltip": "Ropa: Automático (decide el LLM; si hay LoRA usa su ropa), Foto (gana la ropa de la imagen con Ropa activado), Desnudo (sin ropa).",
+                "tooltip": "Ropa: LoRA (la ropa que indican los triggers del LoRA; sin triggers decide el LLM), Foto (gana la ropa de la imagen con Ropa activado), Desnudo (sin ropa). 'Automático' de 1.1.2 se lee como LoRA.",
             },
         )
         return types
@@ -3704,7 +3860,11 @@ class LD_LMStudioPromptWriterV2:
             if not _has_image(kwargs.get(key)):
                 kwargs[key] = bundled.get(key)
         is_illustrious = str(cfg.get("mode", "")).lower().startswith("illustrious")
-        triggers = normalize_triggers(lora_triggers)
+        triggers, _removed = effective_triggers(
+            normalize_triggers(lora_triggers),
+            kwargs.get("modo_ropa", ROPA_AUTO),
+            ropa_image_indices(None, image_1=image_1, image_2=image_2, image_3=image_3, image_4=image_4, **kwargs),
+        )
         cached = str(prompt_generado or "").strip()
         if cached:
             emit_activity(cfg.get("idioma", "Español"), "cached")

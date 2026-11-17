@@ -782,9 +782,18 @@ const N_IMAGES = 8;
 const PERSONAS_AUTO = "Auto (decide el LLM)";
 const PERSONAS_CUSTOM = "Personalizado";
 const PERSONAS_OPTIONS = [PERSONAS_AUTO, "1", "2", "3", "4", "5", "6", "7", "8", PERSONAS_CUSTOM];
-const ROPA_AUTO = "Automático";
-const ROPA_OPTIONS = [ROPA_AUTO, "Foto", "Desnudo"];
-const ROPA_I18N = { "Automático": "ropaAuto", "Foto": "ropaFoto", "Desnudo": "ropaDesnudo" };
+const ROPA_AUTO = "LoRA";
+const ROPA_FOTO = "Foto";
+const ROPA_DESNUDO = "Desnudo";
+const ROPA_OPTIONS = [ROPA_AUTO, ROPA_FOTO, ROPA_DESNUDO];
+const ROPA_I18N = { "LoRA": "ropaAuto", "Foto": "ropaFoto", "Desnudo": "ropaDesnudo" };
+// 1.1.2 saved "Automático"; read it (and anything unknown) as LoRA.
+function normalizeRopa(v) {
+    const s = String(v ?? "").trim().toLowerCase();
+    if (s === "foto" || s === "photo") return ROPA_FOTO;
+    if (s === "desnudo" || s === "nude") return ROPA_DESNUDO;
+    return ROPA_AUTO;
+}
 const MODELO_GEN = "LD_ModeloGen";
 
 const ASPECT_KEYS = ["accion", "pose", "persona", "ropa", "fondo", "estilo", "camara"];
@@ -872,10 +881,10 @@ const I18N = {
         negPh: "Prompt negativo (Illustrious). En Krea2 suele quedar vacío.",
         numPersonas: "N° de personas",
         ropa: "Ropa",
-        ropaAuto: "Automático",
+        ropaAuto: "LoRA",
         ropaFoto: "Foto",
         ropaDesnudo: "Desnudo",
-        ropaTitle: "Automático: decide el LLM (si hay LoRA, usa su ropa). Foto: gana la ropa de la imagen con Ropa activado. Desnudo: sin ropa.",
+        ropaTitle: "LoRA: usa la ropa que indican los triggers del LoRA (sin triggers decide el LLM). Foto: gana la ropa de la imagen con Ropa activado (se elige solo al prender un chip Ropa). Desnudo: sin ropa.",
         imagen: "Imagen {n}",
         descPh: "Descripción informativa. Pulsá 🔄 Describir.",
         describir: "🔄 Describir",
@@ -956,10 +965,10 @@ const I18N = {
         negPh: "Negative prompt (Illustrious). Usually empty for Krea2.",
         numPersonas: "N° of people",
         ropa: "Clothing",
-        ropaAuto: "Auto",
+        ropaAuto: "LoRA",
         ropaFoto: "Photo",
         ropaDesnudo: "Nude",
-        ropaTitle: "Auto: the LLM decides (uses the LoRA's clothing if any). Photo: clothing from the image with Clothing on wins. Nude: no clothing.",
+        ropaTitle: "LoRA: uses the clothing given by the LoRA triggers (the LLM decides if there are none). Photo: clothing from the image with Clothing on wins (picked automatically when you turn a Clothing chip on). Nude: no clothing.",
         imagen: "Image {n}",
         descPh: "Informational description. Click 🔄 Describe.",
         describir: "🔄 Describe",
@@ -1746,7 +1755,7 @@ function readConfigValues(cfgNode) {
         model: widgetValue(cfgNode, "model", AUTO_MODEL),
         mode: widgetValue(cfgNode, "mode", "Krea2 (natural)"),
         temperature: widgetValue(cfgNode, "temperature", 0.7),
-        max_tokens: widgetValue(cfgNode, "max_tokens", 600),
+        max_tokens: widgetValue(cfgNode, "max_tokens", 1200),
         seed: widgetValue(cfgNode, "seed", 0),
         extra_instructions: widgetValue(cfgNode, "extra_instructions", ""),
         unload_after: !!widgetValue(cfgNode, "unload_after", true),
@@ -2222,8 +2231,10 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             o.textContent = t(node, ROPA_I18N[val]);
             ropaSel.appendChild(o);
         }
-        const savedR = String(widgetValue(node, "modo_ropa", ROPA_AUTO) || ROPA_AUTO);
-        ropaSel.value = ROPA_OPTIONS.includes(savedR) ? savedR : ROPA_AUTO;
+        const savedR = normalizeRopa(widgetValue(node, "modo_ropa", ROPA_AUTO));
+        ropaSel.value = savedR;
+        const rwInit = widgetByName(node, "modo_ropa");
+        if (rwInit && rwInit.value !== savedR) rwInit.value = savedR;
         const ropaStack = styleEl("div", {});
         ropaStack.className = "ld-field-stack";
         ropaStack.append(ropaLabel, ropaSel);
@@ -2240,6 +2251,27 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         midR.append(peopleLabel, peopleRow);
     }
     mid.append(posRow, midR);
+    // Ropa chips drive the selector: any chip on -> Foto; all off -> back to
+    // LoRA. Desnudo is never changed automatically.
+    const anyRopaChipOn = () => {
+        for (let k = 1; k <= N_IMAGES; k++) {
+            if (widgetValue(node, `img${k}_ropa`, false)) return true;
+        }
+        return false;
+    };
+    const autoRopaFromChips = () => {
+        if (!ropaSel) return;
+        const cur = normalizeRopa(ropaSel.value);
+        let next = cur;
+        if (cur === ROPA_DESNUDO) return;
+        if (anyRopaChipOn()) next = ROPA_FOTO;
+        else if (cur === ROPA_FOTO) next = ROPA_AUTO;
+        if (next !== ropaSel.value) {
+            ropaSel.value = next;
+            const rw = widgetByName(node, "modo_ropa");
+            if (rw) rw.value = next;
+        }
+    };
 
     const grid = styleEl("div", {});
     grid.className = "ld-img-grid";
@@ -2263,6 +2295,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                 const next = !(w ? w.value : chip.classList.contains("on"));
                 if (w) w.value = next;
                 chip.classList.toggle("on", next);
+                if (key === "ropa") autoRopaFromChips();
                 node.graph?.setDirtyCanvas?.(true);
             });
             chips.appendChild(chip);
@@ -2468,8 +2501,8 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         }
         const rw = widgetByName(node, "modo_ropa");
         if (ropaSel) {
-            const rv = String(rw?.value ?? ROPA_AUTO);
-            const want = ROPA_OPTIONS.includes(rv) ? rv : ROPA_AUTO;
+            const want = normalizeRopa(rw?.value ?? ROPA_AUTO);
+            if (rw && rw.value !== want) rw.value = want;
             if (ropaSel.value !== want) ropaSel.value = want;
         }
         const cw = widgetByName(node, "camara");
@@ -2601,6 +2634,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             }
             col.refreshThumb?.();
         }
+        autoRopaFromChips();
         syncToWidgets();
         if (cambiosInput) cambiosInput.value = "";
         status.textContent = "";
@@ -3305,7 +3339,7 @@ function setupWriterV2(nodeType) {
                     num_personas: String(widgetValue(this, "num_personas", "1") || "1"),
                     num_personas_custom: widgetValue(this, "num_personas_custom", 1),
                     camara: String(widgetValue(this, "camara", CAMARA_AUTO) || CAMARA_AUTO),
-                    modo_ropa: String(widgetValue(this, "modo_ropa", ROPA_AUTO) || ROPA_AUTO),
+                    modo_ropa: normalizeRopa(widgetValue(this, "modo_ropa", ROPA_AUTO)),
                 };
                 for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refs[i];

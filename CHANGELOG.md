@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.3 — 2026-11-17
+
+- **Vista en español**: ahora es una traducción aparte del prompt inglés **final** (después de agregar los triggers de LoRA), con tokens suficientes según el largo. Antes el LLM la escribía en la misma respuesta que el inglés: no incluía lo que se agregaba después (triggers faltantes), compartía el límite de tokens y se resumía o cortaba. Lo mismo al usar **Modificar**.
+- **Ropa**: la opción *Automático* pasa a llamarse **LoRA** (usa la ropa de los triggers del LoRA; sin triggers decide el LLM). Los workflows con *Automático* se leen como LoRA.
+  - Al prender un chip **Ropa** en una imagen, el selector pasa solo a **Foto**; al apagar todos vuelve a **LoRA** (Desnudo nunca se cambia solo). **Limpiar** también lo devuelve a LoRA.
+  - **Desnudo** y **Foto** (con imagen con Ropa): los fragmentos de ropa de los triggers del LoRA se quitan antes de mandarlos (ya no se fuerzan textuales ni se vuelven a agregar al encolar) y la regla de ropa tiene prioridad máxima.
+- Config: `max_tokens` por defecto 1200 (antes 600). La traducción español→inglés también usa tokens suficientes.
+
 ## 1.1.2 — 2026-11-17
 
 - **Limpiar** también apaga las selecciones (chips) de las 8 imágenes.
