@@ -231,6 +231,7 @@ function ensureThemeStyles() {
     font-family: inherit;
 }
 .ld-thumb-clear { right: 4px; }
+.ld-desc-clear { top: 3px; right: 3px; width: 18px; height: 18px; line-height: 18px; font-size: 10px; }
 .ld-thumb-pick { left: 4px; }
 .ld-thumb-clear:hover, .ld-thumb-pick:hover { background: rgba(115, 215, 224, 0.85); color: #0b1618; }
 .ld-thumb-badge {
@@ -922,6 +923,7 @@ const I18N = {
         imagen: "Imagen {n}",
         descPh: "Descripción informativa. Pulsá 🔄 Describir.",
         describir: "🔄 Describir",
+        descClearTitle: "Borrar esta descripción (con el próximo Generar se vuelve a describir la foto).",
         thumbPh: "Clic o arrastrá una imagen",
         pickTitle: "Elegir de la carpeta input",
         clearTitle: "Quitar imagen",
@@ -1020,6 +1022,7 @@ const I18N = {
         imagen: "Image {n}",
         descPh: "Informational description. Click 🔄 Describe.",
         describir: "🔄 Describe",
+        descClearTitle: "Clear this description (the next Generate describes the photo again).",
         thumbPh: "Click or drop an image",
         pickTitle: "Pick from the input folder",
         clearTitle: "Remove image",
@@ -1600,24 +1603,99 @@ function getDescMeta(node) {
     return node.properties.ld_desc_meta;
 }
 
-function setImageDescription(node, index, text, aspectsSig) {
+// What picture is in slot N right now, as far as the UI can tell:
+// a LoadImage file (connected) or the Writer's own uploaded file; if the slot
+// is wired to another kind of node we only know "something is connected".
+function slotImageState(node, index) {
+    const info = refImageInfo(node, index);
+    if (info) {
+        return {
+            present: true,
+            key: `${info.connected ? "load" : "file"}:${info.type || "input"}/${info.subfolder || ""}/${info.filename || ""}`,
+        };
+    }
+    for (const holder of [node, findUpstreamConfig(node)]) {
+        if (!holder) continue;
+        const names = index === 1 ? [`image_${index}`, "image"] : [`image_${index}`];
+        for (const nm of names) {
+            const origin = walkUpstream(holder, nm);
+            if (origin && !isNodeBypassed(origin)) return { present: true, key: `node:${origin.id}` };
+        }
+    }
+    return { present: false, key: "" };
+}
+
+function descText(node, index) {
+    const col = (node._ldPanel?.cols || []).find((c) => c.index === index);
+    const dw = widgetByName(node, `desc_imagen_${index}`);
+    return String((col?.desc?.value ?? dw?.value) || "").trim();
+}
+
+// Each description remembers what it was made from: chips (a), picture (img)
+// and the backend signature (s = chips + picture fingerprint).
+function setImageDescription(node, index, text, sig) {
     const val = String(text || "");
     const col = (node._ldPanel?.cols || []).find((c) => c.index === index);
     if (col?.desc && col.desc.value !== val) col.desc.value = val;
     const dw = widgetByName(node, `desc_imagen_${index}`);
     if (dw) dw.value = val;
     const meta = getDescMeta(node);
-    meta[String(index)] = String(aspectsSig || "");
+    if (val) {
+        meta[String(index)] = {
+            a: aspectSignature(node, index),
+            img: slotImageState(node, index).key,
+            s: String(sig || ""),
+        };
+    } else {
+        delete meta[String(index)];
+    }
     node.properties.ld_desc_meta = meta;
 }
 
+function clearImageDescription(node, index) {
+    if (!descText(node, index) && !getDescMeta(node)[String(index)]) return false;
+    setImageDescription(node, index, "", "");
+    return true;
+}
+
 function descriptionNeedsRefresh(node, index) {
-    const col = (node._ldPanel?.cols || []).find((c) => c.index === index);
-    const dw = widgetByName(node, `desc_imagen_${index}`);
-    const text = String((col?.desc?.value ?? dw?.value) || "").trim();
-    if (!text) return true;
-    const meta = getDescMeta(node);
-    return String(meta[String(index)] || "") !== aspectSignature(node, index);
+    if (!descText(node, index)) return true;
+    const m = getDescMeta(node)[String(index)];
+    // Old saved format (just the chips) or no signature: stale, re-describe once.
+    if (!m || typeof m !== "object" || !String(m.s || "").includes("|img=")) return true;
+    if (m.a !== aspectSignature(node, index)) return true;
+    return m.img !== slotImageState(node, index).key;
+}
+
+// Signature to send with the description: only when it still matches the
+// current chips and picture; otherwise "" so the backend re-describes.
+function descSigFor(node, index) {
+    if (descriptionNeedsRefresh(node, index)) return "";
+    return String(getDescMeta(node)[String(index)]?.s || "");
+}
+
+// Clear descriptions whose picture is gone/changed or whose chips changed.
+function pruneImageDescriptions(node) {
+    if (!node) return 0;
+    let n = 0;
+    for (let i = 1; i <= N_IMAGES; i++) {
+        if (!descText(node, i)) continue;
+        const st = slotImageState(node, i);
+        if (!st.present || descriptionNeedsRefresh(node, i)) {
+            if (clearImageDescription(node, i)) n++;
+        }
+    }
+    if (n) node._ldPanel?.syncToWidgets?.();
+    return n;
+}
+
+function pruneAllWriterDescriptions() {
+    const nodes = app.graph?._nodes || app.graph?.nodes || [];
+    for (const n of nodes) {
+        try {
+            if (isWriterNode(n)) pruneImageDescriptions(n);
+        } catch (_e) {}
+    }
 }
 
 async function postTranslateEs(body) {
@@ -1695,7 +1773,6 @@ async function ensureImageDescriptions(node, { setStatus } = {}) {
             i,
             img,
             aspects: aspectListForImage(node, i),
-            sig: aspectSignature(node, i),
         });
     }
     if (!needed.length) return 0;
@@ -1723,7 +1800,7 @@ async function ensureImageDescriptions(node, { setStatus } = {}) {
         if (!data?.ok) {
             throw new Error(data?.message || t(node, "describeFail", { n: item.i }));
         }
-        setImageDescription(node, item.i, data.description || "", data.aspects || item.sig);
+        setImageDescription(node, item.i, data.description || "", data.signature || "");
     }
     node._ldPanel?.syncToWidgets?.();
     return needed.length;
@@ -2783,6 +2860,8 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                 if (w) w.value = next;
                 chip.classList.toggle("on", next);
                 if (key === "ropa") autoRopaFromChips();
+                // Other chips = other description: clear it (re-made on next Generar).
+                if (descText(node, i) && descriptionNeedsRefresh(node, i)) clearImageDescription(node, i);
                 node.graph?.setDirtyCanvas?.(true);
             });
             chips.appendChild(chip);
@@ -2832,10 +2911,20 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             }
             badge.style.display = info?.connected ? "" : "none";
             clearBtn.style.display = has && !info?.connected ? "" : "none";
+            clearTimeout(thumb._ldPruneT);
+            thumb._ldPruneT = setTimeout(() => {
+                try {
+                    if (!descText(node, i)) return;
+                    const st = slotImageState(node, i);
+                    if (!st.present || descriptionNeedsRefresh(node, i)) clearImageDescription(node, i);
+                } catch (_e) {}
+            }, 400);
         };
         const setArchivo = (info) => {
             const w = widgetByName(node, `archivo_imagen_${i}`);
+            const before = String(w?.value ?? "");
             if (w) w.value = serializeArchivo(info);
+            if (String(w?.value ?? "") !== before) clearImageDescription(node, i);
             refreshThumb();
             node.graph?.setDirtyCanvas?.(true);
         };
@@ -2897,7 +2986,19 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         desc.className = "ld-textarea ld-desc";
         Object.assign(desc.style, { height: "60px", minHeight: "60px", maxHeight: "60px", overflow: "auto", resize: "none", flex: "0 0 60px" });
         desc.readOnly = true;
-        col.appendChild(desc);
+        const descWrap = styleEl("div", { position: "relative", flex: "0 0 60px" });
+        const descClear = styleEl("button", {}, "✖");
+        descClear.type = "button";
+        descClear.className = "ld-thumb-clear ld-desc-clear";
+        descClear.title = t(node, "descClearTitle");
+        descClear.dataset.i18nTitle = "descClearTitle";
+        descClear.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            clearImageDescription(node, i);
+            node.graph?.setDirtyCanvas?.(true);
+        });
+        descWrap.append(desc, descClear);
+        col.appendChild(descWrap);
         const dBtn = styleEl("button", {}, t(node, "describir")); dBtn.dataset.i18n = "describir";
         dBtn.type = "button";
         dBtn.className = "ld-btn ld-btn-small";
@@ -3051,7 +3152,10 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     });
     neg.addEventListener("input", syncToWidgets);
     ideaArea?.addEventListener("input", syncToWidgets);
-    estiloSel?.addEventListener("change", syncToWidgets);
+    estiloSel?.addEventListener("change", () => {
+        syncToWidgets();
+        pruneImageDescriptions(node);
+    });
     useBox?.addEventListener("change", syncToWidgets);
     peopleSel?.addEventListener("change", syncToWidgets);
     peopleCustom?.addEventListener("input", syncToWidgets);
@@ -3091,7 +3195,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                     setStatus(data?.message || t(node, "describeFail", { n: col.index }));
                     return;
                 }
-                setImageDescription(node, col.index, data.description || "", data.aspects || aspectSignature(node, col.index));
+                setImageDescription(node, col.index, data.description || "", data.signature || "");
                 syncToWidgets();
                 setStatus(t(node, "described", { n: col.index }));
             } catch (err) {
@@ -3161,6 +3265,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
                 syncToWidgets();
                 return;
             }
+            pruneImageDescriptions(node);
             await ensureImageDescriptions(node, { setStatus });
             syncToWidgets();
             await onGenerate({
@@ -3470,6 +3575,8 @@ function setupConfigNode(nodeType) {
     });
     installSafeHook(nodeType, "onConnectionsChange", function () {
         layoutConfigInputs(this);
+        clearTimeout(this._ldPruneT);
+        this._ldPruneT = setTimeout(() => pruneAllWriterDescriptions(), 100);
     });
     installSafeHook(nodeType, "onResize", function () {
         layoutConfigInputs(this);
@@ -4021,7 +4128,7 @@ function setupWriterV2(nodeType) {
                         body[`archivo_imagen_${i}`] = serializeArchivo(img);
                     }
                     body[`desc_imagen_${i}`] = String(widgetValue(this, `desc_imagen_${i}`, "") || "");
-                    body[`desc_aspects_${i}`] = aspectSignature(this, i);
+                    body[`desc_aspects_${i}`] = descSigFor(this, i);
                     const active = readImageAspects(this, i);
                     aspects[String(i)] = active;
                     for (const k of ASPECT_KEYS) {
@@ -4747,8 +4854,7 @@ function injectWriterPromptsIntoGraphPrompt(result) {
             const col = (panel?.cols || []).find((c) => c.index === i);
             const desc = String((col?.desc?.value ?? dw?.value) || "");
             if (desc) entry.inputs[`desc_imagen_${i}`] = desc;
-            const sig = aspectSignature(n, i);
-            if (sig) entry.inputs[`desc_aspects_${i}`] = sig;
+            entry.inputs[`desc_aspects_${i}`] = descSigFor(n, i);
         }
     }
     return result;
@@ -4764,6 +4870,7 @@ async function prepareAllWritersForQueue() {
         const setStatus = n._ldPanel?.setStatus || n._ldSetStatus;
         await ensureEnglishFromSpanish(n, { setStatus });
         const pos = String(n._ldPanel?.pos?.value || widgetValue(n, "prompt_generado", "") || "").trim();
+        pruneImageDescriptions(n);
         if (!pos) await ensureImageDescriptions(n, { setStatus });
     }
 }

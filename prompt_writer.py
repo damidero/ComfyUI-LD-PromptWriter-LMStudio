@@ -958,6 +958,36 @@ def aspect_signature(use) -> str:
     return ",".join(sorted(normalize_aspect_list(use)))
 
 
+def _image_identity(image) -> str:
+    """Stable id of the picture itself (8-bit quantized, subsampled), so the
+    same file loaded by LoadImage or by /describe gives the same id."""
+    try:
+        import numpy as np
+        arr = image
+        if hasattr(arr, "detach"):
+            arr = arr.detach()
+        if hasattr(arr, "cpu"):
+            arr = arr.cpu().numpy()
+        arr = np.asarray(arr)
+        if arr.ndim == 4:
+            arr = arr[0]
+        h, w = int(arr.shape[0]), int(arr.shape[1])
+        sy, sx = max(1, h // 64), max(1, w // 64)
+        q = np.clip(np.rint(arr[::sy, ::sx, :3].astype("float32") * 255.0), 0, 255).astype("uint8")
+        return hashlib.sha256(f"{h}x{w}".encode("utf-8") + q.tobytes()).hexdigest()[:16]
+    except Exception:
+        return ""
+
+
+def image_desc_signature(use, image) -> str:
+    """Signature of a saved description: chips (aspects) + which picture it came from.
+
+    Old saved signatures (aspects only, no '|img=') never match, so those
+    descriptions are re-made once instead of being trusted.
+    """
+    return aspect_signature(use) + "|img=" + (_image_identity(image) or "?")
+
+
 def emit_desc_update(index, text, aspects="") -> None:
     """Push an auto-description into the Writer image box (and properties, on the JS side)."""
     payload = {
@@ -1777,8 +1807,10 @@ def _generate_prompt_impl(
                 rules.append(composer_only_rule(idx, asp))
                 saved = saved_image_description(idx, kwargs)
                 saved_sig = str(kwargs.get("desc_aspects_%s" % idx) or "").strip()
-                cur_sig = aspect_signature(asp)
-                fresh = bool(saved) and saved_sig == cur_sig
+                cur_sig = image_desc_signature(asp, tensor)
+                fresh = bool(saved) and saved_sig == cur_sig and not cur_sig.endswith("|img=?")
+                if saved and not fresh:
+                    print(f"[LD-PromptWriter] IMAGE {idx}: la descripción guardada es de otra foto o de otros chips; se describe de nuevo", flush=True)
                 if fresh:
                     note = saved
                     print(f"[LD-PromptWriter] IMAGE {idx}: descripción al día ({asp_lbl}), no se redescribe", flush=True)
@@ -3165,8 +3197,9 @@ def register_routes() -> None:
                 )
                 emit_activity(idioma, "described", n=idx, secs=f"{time.perf_counter() - t0:.1f}")
                 emit_activity(idioma, "done")
-                emit_desc_update(idx, text, aspect_signature(asp))
-                return web.json_response({"ok": True, "description": text, "aspects": aspect_signature(asp)})
+                sig = image_desc_signature(asp, image)
+                emit_desc_update(idx, text, sig)
+                return web.json_response({"ok": True, "description": text, "aspects": aspect_signature(asp), "signature": sig})
             text = describe_image_info(
                 url,
                 model,
