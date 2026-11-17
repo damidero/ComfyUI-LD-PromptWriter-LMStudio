@@ -3341,7 +3341,7 @@ def sanitize_combo(value, options, default=None):
     return default
 
 
-def pack_config(url, model, mode, temperature, max_tokens, seed, unload_after, extra_instructions="", idioma="Español", descarga_idle_min=0):
+def pack_config(url, model, mode, temperature, max_tokens, seed, unload_after, extra_instructions="", idioma="Español", descarga_idle_min=0, pasadas=None):
     try:
         idle = int(descarga_idle_min or 0)
     except (TypeError, ValueError):
@@ -3359,6 +3359,7 @@ def pack_config(url, model, mode, temperature, max_tokens, seed, unload_after, e
         "extra_instructions": extra_instructions or "",
         "idioma": idioma or "Español",
         "descarga_idle_min": max(0, idle),
+        "pasadas": normalize_pasadas(pasadas),
     }
 
 
@@ -3376,6 +3377,7 @@ def unpack_config(cfg) -> dict:
         cfg.get("extra_instructions", ""),
         cfg.get("idioma", "Español"),
         cfg.get("descarga_idle_min", 0),
+        cfg.get("pasadas"),
     )
     # Keep bundled images/triggers so the Writer can run from a single config link.
     for key, value in cfg.items():
@@ -3490,6 +3492,8 @@ def resolve_config_prompts(cfg, writer_inputs, image_kwargs, lora_triggers, neg_
     idioma = cfg.get("idioma", "Español")
 
     extra_kw = writer_kwargs_from_inputs(writer_inputs)
+    # Pasadas lives in the Config node now (the Writer's old hidden widget is ignored).
+    extra_kw["pasadas"] = normalize_pasadas(cfg.get("pasadas"))
     for drop in (
         "idea",
         "lora_triggers",
@@ -3637,6 +3641,13 @@ class LD_LMStudioConfig:
                         "tooltip": "Salida de Embeddings negativos (LD). Se agrega al prompt negativo (Illustrious).",
                     },
                 ),
+                "pasadas": (
+                    list(PASADAS_OPTIONS),
+                    {
+                        "default": PASADAS_1,
+                        "tooltip": "Pasadas del LLM. 1 pasada: escribe el prompt. 2 pasadas: una segunda llamada revisa el prompt con todas las especificaciones y lo corrige o mejora (más lento). Vale para todos los Writer conectados.",
+                    },
+                ),
             },
             "hidden": {
                 "prompt": "PROMPT",
@@ -3684,9 +3695,11 @@ class LD_LMStudioConfig:
         neg_embeddings="",
         prompt=None,
         unique_id=None,
+        pasadas=None,
         **kwargs,
     ):
         parts = [
+            normalize_pasadas(pasadas),
             _norm_url(str(url)),
             "" if is_auto_model(model) else strip_model_label(str(model or "")),
             str(mode),
@@ -3725,11 +3738,12 @@ class LD_LMStudioConfig:
         neg_embeddings="",
         prompt=None,
         unique_id=None,
+        pasadas=None,
         **kwargs,
     ):
         cfg = pack_config(
             url, model, mode, temperature, max_tokens, seed, unload_after,
-            extra_instructions, idioma, descarga_idle_min,
+            extra_instructions, idioma, descarga_idle_min, pasadas,
         )
         images = {}
         for idx in range(1, N_IMAGES + 1):
@@ -4089,7 +4103,7 @@ class LD_LMStudioPromptWriterV2:
             list(PASADAS_OPTIONS),
             {
                 "default": PASADAS_1,
-                "tooltip": "1 pasada: un prompt. 2 pasadas: después del prompt, una segunda llamada lo revisa con todas las especificaciones y lo corrige o mejora (más lento).",
+                "tooltip": "Obsoleto: se conserva para que los workflows guardados no se corran. Las pasadas ahora se eligen en el nodo Config.",
             },
         )
         return types
@@ -4191,7 +4205,9 @@ class LD_LMStudioPromptWriterV2:
         if "camara" in kwargs:
             kwargs["camara"] = sanitize_combo(kwargs.get("camara"), CAMARA_OPTIONS, CAMARA_AUTO)
         kwargs["modo_ropa"] = normalize_ropa(kwargs.get("modo_ropa"))
-        kwargs["pasadas"] = normalize_pasadas(kwargs.get("pasadas"))
+        # Pasadas is a Config setting; the Writer's hidden widget is only kept
+        # so old workflows load with the same widget order.
+        kwargs["pasadas"] = normalize_pasadas(cfg.get("pasadas"))
         bundled = config_image_kwargs(cfg)
         if not str(lora_triggers or "").strip():
             lora_triggers = cfg.get("lora_triggers") or ""

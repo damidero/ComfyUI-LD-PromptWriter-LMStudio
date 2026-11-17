@@ -413,7 +413,8 @@ function ensureThemeStyles() {
     box-sizing: border-box;
 }
 .ld-people-custom { width: 72px; flex: 0 0 72px; }
-.ld-pasadas-row { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+.ld-pasadas-row { display: flex; gap: 6px; width: 100%; margin-top: 2px; }
+.ld-pasadas-config { gap: 3px; }
 .ld-pasadas-row .ld-switch { padding: 5px 8px; font-size: 12px; border-radius: 8px; }
 .ld-pair-row.ld-pair-low { margin-top: 2px; }
 .ld-tamano-box { display: flex; flex-direction: column; gap: 4px; width: 100%; box-sizing: border-box; padding: 2px 2px 0; font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eef2; }
@@ -909,6 +910,8 @@ const I18N = {
         numPersonas: "Participantes",
         pasadas1: "1 pasada",
         pasadas2: "2 pasadas",
+        pasadasHead: "Pasadas del LLM",
+        pasadasHint: "1 = escribe el prompt. 2 = además lo revisa y lo mejora con una segunda llamada (más lento).",
         pasadasTitle: "1 pasada: Generar describe las imágenes que hagan falta y escribe el prompt. 2 pasadas: en el mismo Generar, después del prompt hace una segunda pasada que lo revisa con todas las especificaciones (imágenes, chips, ropa, participantes, estilo, cámara, LoRA) y lo corrige o mejora. Tarda más.",
         generating2: "⏳ Generando (2 pasadas: prompt + revisión)…",
         ropa: "Ropa",
@@ -1001,6 +1004,8 @@ const I18N = {
         numPersonas: "Participants",
         pasadas1: "1 pass",
         pasadas2: "2 passes",
+        pasadasHead: "LLM passes",
+        pasadasHint: "1 = writes the prompt. 2 = also reviews and improves it with a second call (slower).",
         pasadasTitle: "1 pass: Generate describes the images that need it and writes the prompt. 2 passes: in the same Generate, after the prompt a second pass reviews it against all the settings (images, chips, clothing, participants, style, camera, LoRA) and fixes or improves it. Slower.",
         generating2: "⏳ Generating (2 passes: prompt + review)…",
         ropa: "Clothing",
@@ -1155,7 +1160,8 @@ Install: ComfyUI Manager → Install via Git URL
 const NOTES_SPECS = {
     es: `Especificaciones
 
-Pasadas
+Pasadas (en el nodo Config, debajo de Actividad del LLM)
+• Valen para todos los Writer conectados a ese Config.
 • 1 pasada: Generar describe las imágenes que hagan falta y
   escribe el prompt.
 • 2 pasadas: en el mismo Generar, una segunda llamada revisa el
@@ -1175,7 +1181,8 @@ Prompt positivo
 • Modificar: aplica un cambio puntual al prompt actual.
 • Limpiar: borra idea, prompts, las imágenes del Writer, sus chips
   y descripciones, y vuelve las listas (Estilo, Cámara, Participantes,
-  Ropa, Pasadas) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.
+  Ropa) a su valor por defecto. No toca Config (ni las Pasadas),
+  LoRA ni la imagen i2i.
 
 Imágenes del Writer (chips)
 • Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,
@@ -1222,7 +1229,8 @@ Actividad del LLM
 • Está en el nodo Config, debajo de Probar conexión.`,
     en: `How it works
 
-Passes
+Passes (in the Config node, below LLM activity)
+• They apply to every Writer connected to that Config.
 • 1 pass: Generate describes the images that need it and writes
   the prompt.
 • 2 passes: in the same Generate, a second call reviews the prompt
@@ -1242,7 +1250,8 @@ Positive prompt
 • Modify: applies a precise change to the current prompt.
 • Clear: clears idea, prompts, the Writer images, their chips
   and descriptions, and resets the dropdowns (Style, Camera, Participants,
-  Clothing, Passes) to their defaults. Does not touch Config, LoRA or the i2i image.
+  Clothing) to their defaults. Does not touch Config (nor the Passes),
+  LoRA or the i2i image.
 
 Writer images (chips)
 • Chips (Spanish alphabetical order): Accessories, Action, Camera,
@@ -2059,6 +2068,7 @@ function readConfigValues(cfgNode) {
         unload_after: !!widgetValue(cfgNode, "unload_after", true),
         idioma: currentIdioma(),
         descarga_idle_min: widgetValue(cfgNode, "descarga_idle_min", 0),
+        pasadas: normalizePasadas(widgetValue(cfgNode, "pasadas", PASADAS_1)),
     };
 }
 
@@ -2521,12 +2531,8 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     peopleRow.append(peopleSel, peopleCustom);
     let ropaSel = null;
     let pairRowEl = null;
-    let pasadasRow = null;
-    const refreshPasadas = () => {
-        if (!pasadasRow) return;
-        const cur = normalizePasadas(widgetValue(node, "pasadas", PASADAS_1));
-        for (const b of pasadasRow.querySelectorAll("button")) b.classList.toggle("on", b.dataset.pasadas === cur);
-    };
+    // Pasadas moved to the Config node; the Writer's "pasadas" widget is hidden and ignored.
+    const refreshPasadas = () => {};
     if (includeIdea) {
         // Ropa + N° de personas side by side in the right column (where the
         // LLM activity box used to be; that box now lives in the Config node).
@@ -2556,30 +2562,17 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         const pairRow = styleEl("div", {});
         pairRow.className = "ld-pair-row ld-pair-low";
         pairRow.append(ropaStack, peopleStack);
-        // 1 pasada / 2 pasadas segmented toggle, above Ropa + Participantes.
-        pasadasRow = styleEl("div", {});
-        pasadasRow.className = "ld-pasadas-row";
-        pasadasRow.title = t(node, "pasadasTitle");
-        pasadasRow.dataset.i18nTitle = "pasadasTitle";
-        for (const [val, key] of [[PASADAS_1, "pasadas1"], [PASADAS_2, "pasadas2"]]) {
-            const b = styleEl("button", {}, t(node, key));
-            b.type = "button";
-            b.className = "ld-switch";
-            b.dataset.i18n = key;
-            b.dataset.pasadas = val;
-            b.addEventListener("click", () => {
-                const w = widgetByName(node, "pasadas");
-                if (w) w.value = val;
-                refreshPasadas();
-                node.graph?.setDirtyCanvas?.(true);
-            });
-            pasadasRow.appendChild(b);
-        }
         const pairWrap = styleEl("div", { display: "flex", flexDirection: "column", gap: "6px", width: "100%" });
-        pairWrap.append(pasadasRow, pairRow);
+        pairWrap.append(pairRow);
         pairRowEl = pairWrap;
-        if (useNote && useNote.parentNode === right) right.insertBefore(pairWrap, useNote);
-        else right.appendChild(pairWrap);
+        // Right column: Generar -> explanatory note -> Ropa + Participantes ->
+        // (pushed down to the Cámara level) the "Cambios" box with Modificar.
+        right.innerHTML = "";
+        right.append(actions);
+        if (useNote) right.append(useNote);
+        right.append(pairWrap);
+        modifyRow.style.marginTop = "auto";
+        right.append(modifyRow);
     } else {
         midR.append(peopleLabel, peopleRow);
     }
@@ -2984,7 +2977,6 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             ["modo_ropa", ROPA_AUTO],
             ["usar_imagen_1", "todo"],
             ["usar_imagen_2", "todo"],
-            ["pasadas", PASADAS_1],
         ]) {
             const w = widgetByName(node, name);
             if (w) w.value = val;
@@ -3217,17 +3209,19 @@ function setupConfigNode(nodeType) {
         const setStatus = attachStatusLine(this, true, "config");
         attachModelRefresh(this, setStatus);
         attachConfigActivityLog(this);
+        attachConfigPasadas(this);
         shrinkExtraInstructions(this);
         hookIdiomaWidget(this);
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
-        if (!this.size || this.size[1] < 900) {
-            if (typeof this.setSize === "function") this.setSize([400, 940]);
-            else this.size = [400, 940];
+        if (!this.size || this.size[1] < 1000) {
+            if (typeof this.setSize === "function") this.setSize([400, 1040]);
+            else this.size = [400, 1040];
         }
     });
     installSafeHook(nodeType, "onConfigure", function (info) {
         repairNodeWidgets(this);
         applyNodeTheme(this, THEME.config);
+        attachConfigPasadas(this);
         const combo = widgetByName(this, "model");
         if (combo && isAuto(combo.value)) combo.value = AUTO_MODEL;
         shrinkExtraInstructions(this);
@@ -3239,6 +3233,65 @@ function setupConfigNode(nodeType) {
         // activity box below "Probar conexión" doesn't fit.
         setTimeout(() => growConfigToFit(this), 0);
     });
+}
+
+function attachConfigPasadas(node) {
+    const w = widgetByName(node, "pasadas");
+    if (!w) return;
+    hideWidget(w);
+    if (node._ldPasadasDom) {
+        node._ldRefreshPasadas?.();
+        return;
+    }
+    const wrap = styleEl("div", {});
+    wrap.className = "ld-panel ld-config ld-log-wrap ld-log-config ld-pasadas-config";
+    const label = styleEl("div", {}, t(node, "pasadasHead"));
+    label.className = "ld-label";
+    const hint = styleEl("div", {}, t(node, "pasadasHint"));
+    hint.className = "ld-note";
+    const row = styleEl("div", {});
+    row.className = "ld-pasadas-row";
+    row.title = t(node, "pasadasTitle");
+    const btns = [];
+    for (const [val, key] of [[PASADAS_1, "pasadas1"], [PASADAS_2, "pasadas2"]]) {
+        const b = styleEl("button", {}, t(node, key));
+        b.type = "button";
+        b.className = "ld-switch";
+        b.dataset.pasadas = val;
+        b.dataset.key = key;
+        b.addEventListener("click", () => {
+            const ww = widgetByName(node, "pasadas");
+            if (ww) {
+                ww.value = val;
+                ww.callback?.(val);
+            }
+            refresh();
+            node.graph?.setDirtyCanvas?.(true);
+        });
+        row.appendChild(b);
+        btns.push(b);
+    }
+    const refresh = () => {
+        const ww = widgetByName(node, "pasadas");
+        const cur = normalizePasadas(ww?.value ?? PASADAS_1);
+        if (ww && ww.value !== cur) ww.value = cur;
+        for (const b of btns) b.classList.toggle("on", b.dataset.pasadas === cur);
+    };
+    wrap.append(label, hint, row);
+    const dom = node.addDOMWidget("ld_pasadas_box", "div", wrap, { hideOnZoom: false, serialize: false });
+    dom.serialize = false;
+    dom.computeSize = (width) => [width || 200, 92];
+    node._ldPasadasDom = dom;
+    node._ldRefreshPasadas = refresh;
+    const prevI18n = node._ldRefreshI18n;
+    node._ldRefreshI18n = () => {
+        prevI18n?.();
+        label.textContent = t(node, "pasadasHead");
+        hint.textContent = t(node, "pasadasHint");
+        row.title = t(node, "pasadasTitle");
+        for (const b of btns) b.textContent = t(node, b.dataset.key);
+    };
+    refresh();
 }
 
 function shrinkExtraInstructions(node) {
@@ -3698,7 +3751,7 @@ function setupWriterV2(nodeType) {
                     num_personas_custom: widgetValue(this, "num_personas_custom", 1),
                     camara: String(widgetValue(this, "camara", CAMARA_AUTO) || CAMARA_AUTO),
                     modo_ropa: normalizeRopa(widgetValue(this, "modo_ropa", ROPA_AUTO)),
-                    pasadas: normalizePasadas(widgetValue(this, "pasadas", PASADAS_1)),
+                    pasadas: normalizePasadas(cfg.pasadas),
                 };
                 for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refs[i];
