@@ -870,7 +870,8 @@ const I18N = {
         limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones (no toca interruptores, estilo ni LoRA).",
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
-        vistaEs: "Vista en español",
+        vistaEs: "Vista en español ⓘ",
+        vistaEsTitle: "Cómo funciona: primero se genera el prompt en inglés; después una llamada aparte traduce al español el inglés FINAL (con los triggers de LoRA). Podés editar el español: antes de generar o encolar se traduce de vuelta al inglés. Con Español es una llamada extra al LLM. Si agregás un LoRA después de generar, apretá Generar de nuevo para que el español lo incluya. En Illustrious se muestra una explicación de los tags.",
         vistaPh: "Editable. Si la cambiás, se traduce al inglés antes de generar.",
         usedEditedPos: "Usando el prompt en inglés (editado a mano).",
         usedTranslatedEs: "Traduje la vista en español y actualicé el positivo.",
@@ -954,7 +955,8 @@ const I18N = {
         limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions (does not touch toggles, style or LoRA).",
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
-        vistaEs: "Spanish view",
+        vistaEs: "Spanish view ⓘ",
+        vistaEsTitle: "How it works: the English prompt is generated first; then a separate call translates the FINAL English (with the LoRA triggers) into Spanish. You can edit the Spanish: before generating or queueing it is translated back to English. With Español this is one extra LLM call. If you add a LoRA after generating, press Generate again so the Spanish includes it. Illustrious shows an explanation of the tags.",
         vistaPh: "Editable. If you change it, it is translated to English before generating.",
         usedEditedPos: "Using the English prompt (edited by hand).",
         usedTranslatedEs: "Translated the Spanish view and updated the positive prompt.",
@@ -2161,8 +2163,13 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     const vistaLabel = styleEl("div", {}, t(node, "vistaEs"));
     vistaLabel.className = "ld-label";
     vistaLabel.dataset.i18n = "vistaEs";
+    vistaLabel.title = t(node, "vistaEsTitle");
+    vistaLabel.dataset.i18nTitle = "vistaEsTitle";
+    vistaLabel.style.cursor = "help";
     const vistaEsArea = makeTextarea(t(node, "vistaPh"), "0 0 140px");
     vistaEsArea.dataset.i18nPh = "vistaPh";
+    vistaEsArea.title = t(node, "vistaEsTitle");
+    vistaEsArea.dataset.i18nTitle = "vistaEsTitle";
     Object.assign(vistaEsArea.style, {
         height: "140px",
         minHeight: "140px",

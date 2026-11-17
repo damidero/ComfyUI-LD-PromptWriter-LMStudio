@@ -6,6 +6,7 @@
 - **Ropa**: la opción *Automático* pasa a llamarse **LoRA** (usa la ropa de los triggers del LoRA; sin triggers decide el LLM). Los workflows con *Automático* se leen como LoRA.
   - Al prender un chip **Ropa** en una imagen, el selector pasa solo a **Foto**; al apagar todos vuelve a **LoRA** (Desnudo nunca se cambia solo). **Limpiar** también lo devuelve a LoRA.
   - **Desnudo** y **Foto** (con imagen con Ropa): los fragmentos de ropa de los triggers del LoRA se quitan antes de mandarlos (ya no se fuerzan textuales ni se vuelven a agregar al encolar) y la regla de ropa tiene prioridad máxima.
+- Writer: el título **Vista en español ⓘ** explica (al pasar el mouse) cómo se genera y se edita la vista en español.
 - Config: `max_tokens` por defecto 1200 (antes 600). La traducción español→inglés también usa tokens suficientes.
 
 ## 1.1.2 — 2026-11-17
