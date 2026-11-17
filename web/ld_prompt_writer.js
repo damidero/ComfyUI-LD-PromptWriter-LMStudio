@@ -415,9 +415,6 @@ function ensureThemeStyles() {
 .ld-people-custom { width: 72px; flex: 0 0 72px; }
 .ld-pasadas-row { display: flex; gap: 6px; width: 100%; margin-top: 2px; }
 .ld-pasadas-config { gap: 3px; }
-.ld-seed-row { display: flex; flex-direction: row; gap: 6px; align-items: stretch; width: 100%; height: 100%; padding: 0 8px; box-sizing: border-box; }
-.ld-seed-row .ld-seed-auto { flex: 1 1 60%; padding: 4px 8px; font-size: 12px; border-radius: 8px; }
-.ld-seed-row .ld-seed-btn { flex: 1 1 40%; padding: 4px 8px; font-size: 12px; white-space: nowrap; }
 .ld-pasadas-row .ld-switch { padding: 5px 8px; font-size: 12px; border-radius: 8px; }
 .ld-pair-row.ld-pair-low { margin-top: 2px; }
 .ld-tamano-box { display: flex; flex-direction: column; gap: 4px; width: 100%; box-sizing: border-box; padding: 2px 2px 0; font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eef2; }
@@ -914,7 +911,7 @@ const I18N = {
         pasadas1: "1 pasada",
         pasadas2: "2 pasadas",
         pasadasHead: "Pasadas del LLM",
-        pasadasHint: "1 = escribe el prompt. 2 = además lo revisa y lo mejora con una segunda llamada (más lento).",
+        pasadasHint: "2 = revisa y mejora el prompt (más lento)",
         pasadasTitle: "1 pasada: Generar describe las imágenes que hagan falta y escribe el prompt. 2 pasadas: en el mismo Generar, después del prompt hace una segunda pasada que lo revisa con todas las especificaciones (imágenes, chips, ropa, participantes, estilo, cámara, LoRA) y lo corrige o mejora. Tarda más.",
         generating2: "⏳ Generando (2 pasadas: prompt + revisión)…",
         ropa: "Ropa",
@@ -1012,7 +1009,7 @@ const I18N = {
         pasadas1: "1 pass",
         pasadas2: "2 passes",
         pasadasHead: "LLM passes",
-        pasadasHint: "1 = writes the prompt. 2 = also reviews and improves it with a second call (slower).",
+        pasadasHint: "2 = reviews and improves the prompt (slower)",
         pasadasTitle: "1 pass: Generate describes the images that need it and writes the prompt. 2 passes: in the same Generate, after the prompt a second pass reviews it against all the settings (images, chips, clothing, participants, style, camera, LoRA) and fixes or improves it. Slower.",
         generating2: "⏳ Generating (2 passes: prompt + review)…",
         ropa: "Clothing",
@@ -2171,45 +2168,117 @@ function maybeAutoSeed(cfgNode) {
     return randomizeSeed(cfgNode);
 }
 
+// Native LiteGraph look (same as "Probar conexión", unload_after, etc.).
+function ldWColors() {
+    const LG = typeof LiteGraph !== "undefined" ? LiteGraph : {};
+    return {
+        bg: LG.WIDGET_BGCOLOR || "#222",
+        outline: LG.WIDGET_OUTLINE_COLOR || "#666",
+        text: LG.WIDGET_TEXT_COLOR || "#DDD",
+        sec: LG.WIDGET_SECONDARY_TEXT_COLOR || "#999",
+        h: LG.NODE_WIDGET_HEIGHT || 20,
+    };
+}
+
+function ldDrawBox(ctx, x, y, w, h, c, fill) {
+    ctx.fillStyle = fill || c.bg;
+    ctx.strokeStyle = c.outline;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, [h * 0.5]);
+    else ctx.rect(x, y, w, h);
+    ctx.fill();
+    ctx.stroke();
+}
+
+function ldFitText(ctx, text, maxW) {
+    let s = String(text);
+    if (ctx.measureText(s).width <= maxW) return s;
+    while (s.length > 1 && ctx.measureText(s + "…").width > maxW) s = s.slice(0, -1);
+    return s + "…";
+}
+
+function ldEventX(pos) {
+    return Array.isArray(pos) || (pos && pos.length != null) ? pos[0] : (pos?.x ?? 0);
+}
+
+function ldIsDown(event) {
+    const tp = String(event?.type || "");
+    return tp === "pointerdown" || tp === "mousedown";
+}
+
 function attachSeedControls(node, setStatus) {
     const typ = String(node?.type || node?.comfyClass || "");
-    if (typ !== CONFIG_NODE || node._ldSeedDom || !widgetByName(node, "seed")) return;
+    if (typ !== CONFIG_NODE || node._ldSeedRow || !widgetByName(node, "seed")) return;
     node.properties = node.properties || {};
-    // One row below seed: [switch "random on every run"] [🎲 Random seed]
-    const row = styleEl("div", {});
-    row.className = "ld-panel ld-config ld-seed-row";
-    const sw = styleEl("button", {}, t(node, "seedAuto"));
-    sw.type = "button";
-    sw.className = "ld-switch ld-seed-auto";
-    sw.title = t(node, "seedAutoTitle");
-    const btn = styleEl("button", {}, t(node, "btnSeed"));
-    btn.type = "button";
-    btn.className = "ld-btn ld-btn-blue ld-seed-btn";
-    const refresh = () => sw.classList.toggle("on", !!node.properties?.ld_seed_auto);
-    sw.addEventListener("click", () => {
-        node.properties = node.properties || {};
-        node.properties.ld_seed_auto = !node.properties.ld_seed_auto;
-        refresh();
-        node.graph?.setDirtyCanvas?.(true);
-    });
-    btn.addEventListener("click", () => {
-        const val = randomizeSeed(node);
-        if (val != null) setStatus?.(t(node, "seedSet", { n: val }));
-    });
-    row.append(sw, btn);
-    const dom = node.addDOMWidget("ld_seed_row", "div", row, { hideOnZoom: false, serialize: false });
-    dom.serialize = false;
-    dom.computeSize = (width) => [width || 200, 34];
-    node._ldSeedDom = dom;
-    node._ldSeedRefresh = refresh;
-    node._ldSeedI18n = () => {
-        sw.textContent = t(node, "seedAuto");
-        sw.title = t(node, "seedAutoTitle");
-        btn.textContent = t(node, "btnSeed");
+    // One row below seed: [toggle "random on every run"] [🎲 Random seed],
+    // drawn like the node's native widgets.
+    const M = 15, GAP = 6;
+    const split = (width) => {
+        const inner = width - M * 2;
+        const lw = Math.round((inner - GAP) * 0.6);
+        return { lx: M, lw, rx: M + lw + GAP, rw: inner - lw - GAP };
     };
+    const row = {
+        name: "ld_seed_row",
+        type: "ld_seed_row",
+        value: null,
+        serialize: false,
+        options: { serialize: false },
+        tooltip: t(node, "seedAutoTitle"),
+        computeSize(width) {
+            return [width || 200, ldWColors().h];
+        },
+        draw(ctx, n, width, y, H) {
+            const c = ldWColors();
+            const h = H || c.h;
+            const { lx, lw, rx, rw } = split(width);
+            const on = !!n.properties?.ld_seed_auto;
+            ctx.save();
+            ctx.font = `${Math.round(h * 0.6)}px Arial`;
+            ctx.textBaseline = "middle";
+            // toggle
+            ldDrawBox(ctx, lx, y, lw, h, c);
+            ctx.fillStyle = on ? "#89A" : "#333";
+            ctx.beginPath();
+            ctx.arc(lx + lw - h * 0.5, y + h * 0.5, h * 0.36, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = c.sec;
+            ctx.textAlign = "left";
+            ctx.fillText(ldFitText(ctx, t(n, "seedAuto"), lw - h * 1.6), lx + h * 0.5, y + h * 0.5);
+            // button
+            ldDrawBox(ctx, rx, y, rw, h, c, row._pressed ? "#AAA" : c.bg);
+            ctx.fillStyle = c.text;
+            ctx.textAlign = "center";
+            ctx.fillText(ldFitText(ctx, t(n, "btnSeed"), rw - 8), rx + rw * 0.5, y + h * 0.5);
+            ctx.restore();
+        },
+        mouse(event, pos, n) {
+            if (!ldIsDown(event)) {
+                if (row._pressed) { row._pressed = false; n.setDirtyCanvas?.(true, true); }
+                return false;
+            }
+            const x = ldEventX(pos);
+            const { lx, lw, rx, rw } = split(n.size?.[0] || 400);
+            if (x >= lx && x <= lx + lw) {
+                n.properties = n.properties || {};
+                n.properties.ld_seed_auto = !n.properties.ld_seed_auto;
+            } else if (x >= rx && x <= rx + rw) {
+                row._pressed = true;
+                setTimeout(() => { row._pressed = false; n.setDirtyCanvas?.(true, true); }, 150);
+                const val = randomizeSeed(n);
+                if (val != null) setStatus?.(t(n, "seedSet", { n: val }));
+            }
+            n.setDirtyCanvas?.(true, true);
+            n.graph?.setDirtyCanvas?.(true, true);
+            return true;
+        },
+    };
+    const w = typeof node.addCustomWidget === "function" ? node.addCustomWidget(row) : (node.widgets.push(row), row);
+    node._ldSeedRow = w || row;
+    node._ldSeedRefresh = () => node.setDirtyCanvas?.(true, true);
+    node._ldSeedI18n = () => { (node._ldSeedRow || row).tooltip = t(node, "seedAutoTitle"); };
     const afterName = widgetByName(node, "control_after_generate") ? "control_after_generate" : "seed";
-    moveWidgetAfter(node, dom, afterName);
-    refresh();
+    moveWidgetAfter(node, node._ldSeedRow, afterName);
 }
 
 function syncSeedAutoToggle(node) {
@@ -3319,62 +3388,78 @@ function setupConfigNode(nodeType) {
 }
 
 function attachConfigPasadas(node) {
-    const w = widgetByName(node, "pasadas");
-    if (!w) return;
-    hideWidget(w);
-    if (node._ldPasadasDom) {
-        node._ldRefreshPasadas?.();
+    const pw = widgetByName(node, "pasadas");
+    if (!pw) return;
+    hideWidget(pw);
+    if (node._ldPasadasRow) {
+        node.setDirtyCanvas?.(true, true);
         return;
     }
-    const wrap = styleEl("div", {});
-    wrap.className = "ld-panel ld-config ld-log-wrap ld-log-config ld-pasadas-config";
-    const label = styleEl("div", {}, t(node, "pasadasHead"));
-    label.className = "ld-label";
-    const hint = styleEl("div", {}, t(node, "pasadasHint"));
-    hint.className = "ld-note";
-    const row = styleEl("div", {});
-    row.className = "ld-pasadas-row";
-    row.title = t(node, "pasadasTitle");
-    const btns = [];
-    for (const [val, key] of [[PASADAS_1, "pasadas1"], [PASADAS_2, "pasadas2"]]) {
-        const b = styleEl("button", {}, t(node, key));
-        b.type = "button";
-        b.className = "ld-switch";
-        b.dataset.pasadas = val;
-        b.dataset.key = key;
-        b.addEventListener("click", () => {
-            const ww = widgetByName(node, "pasadas");
+    // Title line + [1 pasada | 2 pasadas], drawn like the node's native widgets.
+    const M = 15, GAP = 6;
+    const cur = () => normalizePasadas(widgetByName(node, "pasadas")?.value ?? PASADAS_1);
+    const row = {
+        name: "ld_pasadas_row",
+        type: "ld_pasadas_row",
+        value: null,
+        serialize: false,
+        options: { serialize: false },
+        tooltip: t(node, "pasadasTitle"),
+        computeSize(width) {
+            const h = ldWColors().h;
+            return [width || 200, h * 2 + 4];
+        },
+        draw(ctx, n, width, y, H) {
+            const c = ldWColors();
+            const h = c.h;
+            const inner = width - M * 2;
+            const bw = (inner - GAP) / 2;
+            const v = cur();
+            ctx.save();
+            ctx.textBaseline = "middle";
+            ctx.font = `${Math.round(h * 0.6)}px Arial`;
+            ctx.textAlign = "left";
+            ctx.fillStyle = c.text;
+            const head = t(n, "pasadasHead") + " — ";
+            ctx.fillText(head, M + 2, y + h * 0.5);
+            const hw = ctx.measureText(head).width;
+            ctx.fillStyle = c.sec;
+            ctx.fillText(ldFitText(ctx, t(n, "pasadasHint"), inner - hw - 4), M + 2 + hw, y + h * 0.5);
+            const by = y + h + 4;
+            ctx.textAlign = "center";
+            [[PASADAS_1, "pasadas1"], [PASADAS_2, "pasadas2"]].forEach(([val, key], k) => {
+                const x = M + k * (bw + GAP);
+                const sel = v === val;
+                ldDrawBox(ctx, x, by, bw, h, c, sel ? "#4a5560" : c.bg);
+                ctx.fillStyle = sel ? c.text : c.sec;
+                ctx.fillText(ldFitText(ctx, (sel ? "● " : "") + t(n, key), bw - 8), x + bw * 0.5, by + h * 0.5);
+            });
+            ctx.restore();
+        },
+        mouse(event, pos, n) {
+            if (!ldIsDown(event)) return false;
+            const inner = (n.size?.[0] || 400) - M * 2;
+            const bw = (inner - GAP) / 2;
+            const x = ldEventX(pos);
+            const val = x < M + bw + GAP / 2 ? PASADAS_1 : PASADAS_2;
+            const ww = widgetByName(n, "pasadas");
             if (ww) {
                 ww.value = val;
                 ww.callback?.(val);
             }
-            refresh();
-            node.graph?.setDirtyCanvas?.(true);
-        });
-        row.appendChild(b);
-        btns.push(b);
-    }
-    const refresh = () => {
-        const ww = widgetByName(node, "pasadas");
-        const cur = normalizePasadas(ww?.value ?? PASADAS_1);
-        if (ww && ww.value !== cur) ww.value = cur;
-        for (const b of btns) b.classList.toggle("on", b.dataset.pasadas === cur);
+            n.setDirtyCanvas?.(true, true);
+            n.graph?.setDirtyCanvas?.(true, true);
+            return true;
+        },
     };
-    wrap.append(label, hint, row);
-    const dom = node.addDOMWidget("ld_pasadas_box", "div", wrap, { hideOnZoom: false, serialize: false });
-    dom.serialize = false;
-    dom.computeSize = (width) => [width || 200, 92];
-    node._ldPasadasDom = dom;
-    node._ldRefreshPasadas = refresh;
+    const w = typeof node.addCustomWidget === "function" ? node.addCustomWidget(row) : (node.widgets.push(row), row);
+    node._ldPasadasRow = w || row;
     const prevI18n = node._ldRefreshI18n;
     node._ldRefreshI18n = () => {
         prevI18n?.();
-        label.textContent = t(node, "pasadasHead");
-        hint.textContent = t(node, "pasadasHint");
-        row.title = t(node, "pasadasTitle");
-        for (const b of btns) b.textContent = t(node, b.dataset.key);
+        (node._ldPasadasRow || row).tooltip = t(node, "pasadasTitle");
+        node.setDirtyCanvas?.(true, true);
     };
-    refresh();
 }
 
 function shrinkExtraInstructions(node) {
