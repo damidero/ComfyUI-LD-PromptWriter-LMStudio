@@ -892,7 +892,7 @@ const I18N = {
         ideaPh: "La idea (o dejala vacía y usá una imagen de referencia).",
         generar: "✍️ Generar prompt",
         limpiar: "🧹 Limpiar",
-        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones, y vuelve las listas (Estilo, Cámara, Participantes, Ropa, Pasadas) a sus valores por defecto. No toca Config, LoRA, interruptores ni la imagen i2i.",
+        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones, y vuelve las listas a su valor inicial (Estilo como la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas), LoRA, interruptores ni la imagen i2i.",
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
         vistaEs: "Vista en español ⓘ",
@@ -991,7 +991,7 @@ const I18N = {
         ideaPh: "The idea (or leave it empty and use a reference image).",
         generar: "✍️ Generate prompt",
         limpiar: "🧹 Clear",
-        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions, and resets the dropdowns (Style, Camera, Participants, Clothing, Passes) to their defaults. Does not touch Config, LoRA, switches or the i2i image.",
+        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions, and resets the dropdowns (Style as the reference, Camera and Participants automatic, Clothing LoRA). Does not touch Config (nor the Passes), LoRA, switches or the i2i image.",
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
         vistaEs: "Spanish view ⓘ",
@@ -1191,8 +1191,8 @@ Prompt positivo
   (solo con los chips activos).
 • Modificar: aplica un cambio puntual al prompt actual.
 • Limpiar: borra idea, prompts, las imágenes del Writer, sus chips
-  y descripciones, y vuelve las listas (Estilo, Cámara, Participantes,
-  Ropa) a su valor por defecto. No toca Config (ni las Pasadas),
+  y descripciones, y vuelve las listas a su valor inicial (Estilo como
+  la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas),
   LoRA ni la imagen i2i.
 
 Imágenes del Writer (chips)
@@ -1250,8 +1250,8 @@ Positive prompt
   (only with the active chips).
 • Modify: applies a precise change to the current prompt.
 • Clear: clears idea, prompts, the Writer images, their chips
-  and descriptions, and resets the dropdowns (Style, Camera, Participants,
-  Clothing) to their defaults. Does not touch Config (nor the Passes),
+  and descriptions, and resets the dropdowns (Style as the reference,
+  Camera and Participants automatic, Clothing LoRA). Does not touch Config (nor the Passes),
   LoRA or the i2i image.
 
 Writer images (chips)
@@ -3213,7 +3213,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         // Dropdowns back to their Python defaults (not Config, LoRA, switches or i2i).
         if (estiloSel) estiloSel.value = ESTILO_SALIDA_DEFAULT;
         if (camSel) camSel.value = CAMARA_AUTO;
-        if (peopleSel) peopleSel.value = "1";
+        if (peopleSel) peopleSel.value = PERSONAS_AUTO;
         if (peopleCustom) {
             peopleCustom.value = "1";
             peopleCustom.style.display = "none";
@@ -3222,7 +3222,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         for (const [name, val] of [
             ["estilo_salida", ESTILO_SALIDA_DEFAULT],
             ["camara", CAMARA_AUTO],
-            ["num_personas", "1"],
+            ["num_personas", PERSONAS_AUTO],
             ["num_personas_custom", 1],
             ["modo_ropa", ROPA_AUTO],
             ["usar_imagen_1", "todo"],
