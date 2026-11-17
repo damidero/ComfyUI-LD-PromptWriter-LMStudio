@@ -1,12 +1,14 @@
 # Changelog
 
-## Sin publicar
+## 1.1.2 — 2026-11-17
 
+- **Limpiar** también apaga las selecciones (chips) de las 8 imágenes.
 - El recuadro **Actividad del LLM** pasó del Writer al nodo Config, debajo de **Probar conexión**.
 - Nuevo desplegable **Ropa** en el Writer (Automático / Foto / Desnudo), al lado de **N° de personas** (ambos en la columna derecha). Se guarda en el widget `modo_ropa` (al final, así los workflows viejos cargan con Automático).
   - Foto: gana la ropa de la imagen con el interruptor Ropa activado (si ninguna lo tiene, actúa como Automático).
   - Automático: decide el LLM; si hay trigger words de LoRA, prefiere la ropa que implican.
   - Desnudo: sin ropa; ignora la ropa de las imágenes y de los LoRA.
+- **Imagen base (i2i)**: aviso visible (y en la descripción/tooltip) de que la IA no ve esa imagen; con denoise bajo se conservan su ropa, pose y colores. Para copiar ropa/pose, usar las imágenes del Writer con sus chips.
 
 ## 1.1.0 — 2026-11-16
 

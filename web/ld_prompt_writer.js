@@ -931,6 +931,7 @@ const I18N = {
         guardarNeedImage: "⚠️ No hay una imagen para guardar. Ejecutá el workflow primero.",
         i2iLabel: "Imagen base (i2i)",
         i2iHint: "Sin imagen: texto a imagen (denoise 1). Con imagen: i2i al tamaño de Tamaño.",
+        i2iWarn: "⚠ La IA no ve esta imagen: solo es el punto de partida. Con denoise bajo se conserva su ropa, pose y colores aunque el prompt diga otra cosa; con denoise alto se parece menos. Para copiar ropa/pose usá las imágenes del Writer con sus chips.",
         denoise: "Denoise",
         stepsKrea2: "Steps Krea2",
     },
@@ -1014,6 +1015,7 @@ const I18N = {
         guardarNeedImage: "⚠️ No image to save. Run the workflow first.",
         i2iLabel: "Base image (i2i)",
         i2iHint: "No image: text-to-image (denoise 1). With an image: i2i at the Tamaño size.",
+        i2iWarn: "⚠ The AI does not see this image: it is only the starting point. At low denoise its clothing, pose and colors stay even if the prompt says otherwise; at high denoise it looks less like it. To copy clothing/pose, use the Writer images with their chips.",
         denoise: "Denoise",
         stepsKrea2: "Krea2 steps",
     },
@@ -3805,6 +3807,22 @@ function setupImagenBaseI2I(nodeType) {
         hint.style.fontSize = "11px";
         hint.style.opacity = "0.75";
         hint.style.margin = "0 0 6px";
+        const warn = document.createElement("div");
+        warn.className = "ld-hint ld-i2i-warn";
+        warn.dataset.i18n = "i2iWarn";
+        warn.textContent = t(node, "i2iWarn");
+        Object.assign(warn.style, {
+            fontSize: "10.5px",
+            lineHeight: "1.3",
+            color: "#f3d27a",
+            background: "rgba(243, 210, 122, 0.08)",
+            border: "1px solid rgba(243, 210, 122, 0.28)",
+            borderRadius: "6px",
+            padding: "4px 6px",
+            margin: "0 0 6px",
+            whiteSpace: "normal",
+            overflowWrap: "anywhere",
+        });
 
         const thumb = document.createElement("div");
         thumb.className = "ld-thumb";
@@ -3838,7 +3856,7 @@ function setupImagenBaseI2I(nodeType) {
         thumb.append(ph, imgEl, pickBtn, clearBtn, fileInput);
         const nameEl = document.createElement("div");
         nameEl.className = "ld-thumb-name";
-        root.append(label, hint, thumb, nameEl);
+        root.append(label, hint, warn, thumb, nameEl);
 
         const setArchivo = (info) => {
             const w = widgetByName(node, "archivo");
@@ -3911,11 +3929,12 @@ function setupImagenBaseI2I(nodeType) {
         const dom = node.addDOMWidget("ld_i2i_thumb", "div", root, { serialize: false, hideOnZoom: false });
         if (dom) {
             dom.serialize = false;
-            dom.computeSize = (width) => [width || 200, 210];
+            dom.computeSize = (width) => [width || 200, 290];
         }
         node._ldRefreshI18n = () => {
             label.textContent = t(node, "i2iLabel");
             hint.textContent = t(node, "i2iHint");
+            warn.textContent = t(node, "i2iWarn");
             ph.textContent = t(node, "thumbPh");
             pickBtn.title = t(node, "pickTitle");
             clearBtn.title = t(node, "clearTitle");
@@ -3931,13 +3950,16 @@ function setupImagenBaseI2I(nodeType) {
     installSafeHook(nodeType, "onNodeCreated", function () {
         ensureUi(this);
         if (!this.size || this.size[0] < 300) {
-            if (typeof this.setSize === "function") this.setSize([400, 320]);
-            else this.size = [400, 320];
+            if (typeof this.setSize === "function") this.setSize([400, 400]);
+            else this.size = [400, 400];
         }
+        setTimeout(() => growConfigToFit(this), 0);
     });
     installSafeHook(nodeType, "onConfigure", function (info) {
         repairNodeWidgets(this);
         ensureUi(this);
+        // Saved size stays; only grow the height if the warning doesn't fit.
+        setTimeout(() => growConfigToFit(this), 0);
     });
 }
 

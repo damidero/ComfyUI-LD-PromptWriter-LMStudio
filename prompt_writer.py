@@ -4454,7 +4454,7 @@ class LD_ImagenBaseI2I:
                 "latent_illustrious": ("LATENT", {"lazy": True, "tooltip": "Latent vacío de Tamaño (LD) de la rama Illustrious."}),
                 "vae_krea2": ("VAE", {"lazy": True, "tooltip": "VAE de Krea2 (solo se usa si hay imagen base)."}),
                 "vae_illustrious": ("VAE", {"lazy": True, "tooltip": "VAE del checkpoint Illustrious (solo se usa si hay imagen base)."}),
-                "image": ("IMAGE", {"tooltip": "Imagen base opcional. Si está vacía, es texto a imagen."}),
+                "image": ("IMAGE", {"tooltip": "Imagen base opcional. Si está vacía, es texto a imagen. La IA no la ve: con denoise bajo se conserva su ropa, pose y colores aunque el prompt diga otra cosa."}),
                 "archivo": (
                     "STRING",
                     {
@@ -4476,7 +4476,9 @@ class LD_ImagenBaseI2I:
         return True
     DESCRIPTION = (
         "Sin imagen: entrega el latent de Tamaño y denoise 1 (texto a imagen). "
-        "Con imagen: recorta/reescala al tamaño de Tamaño, la encodifica con el VAE de la rama activa y entrega ese latent y el denoise."
+        "Con imagen: recorta/reescala al tamaño de Tamaño, la encodifica con el VAE de la rama activa y entrega ese latent y el denoise. "
+        "⚠ La IA no ve esta imagen: solo es el punto de partida. Con denoise bajo se conserva su ropa, pose y colores "
+        "aunque el prompt diga otra cosa; con denoise alto se parece menos. Para copiar ropa/pose usá las imágenes del Writer con sus chips."
     )
 
     def check_lazy_status(
