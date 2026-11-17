@@ -2537,6 +2537,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         // row 1 Estilo | Cámara, row 2 Ropa | Participantes (added below).
         dropRow1 = styleEl("div", {});
         dropRow1.className = "ld-pair-row";
+        dropRow1.style.marginTop = "4px"; // ~1 mm below the Idea box
         dropRow1.append(estiloStack);
         left.appendChild(dropRow1);
 
@@ -2781,6 +2782,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         peopleStack.append(peopleLabel, peopleRow);
         const pairRow = styleEl("div", {});
         pairRow.className = "ld-pair-row";
+        pairRow.style.marginTop = "4px"; // ~1 mm below Estilo | Cámara
         pairRow.append(ropaStack, peopleStack);
         const pairWrap = styleEl("div", { display: "flex", flexDirection: "column", gap: "6px", width: "100%" });
         pairWrap.append(pairRow);
