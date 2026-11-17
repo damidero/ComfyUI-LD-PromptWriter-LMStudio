@@ -3829,6 +3829,9 @@ const WRITER_NODE_H_MAX = 2000;
 const WRITER_PANEL_H_MIN = 260;
 
 const WRITER_BG_EXTRA = 18;
+// Extra room at the bottom (~5 mm) so the background never ends right at the
+// last row of content.
+const WRITER_BOTTOM_PAD = 20;
 
 function scheduleWriterResize(node) {
     if (!node) return;
@@ -3838,7 +3841,20 @@ function scheduleWriterResize(node) {
         const el = node._ldPanel?.root;
         if (!el) return;
         el.style.height = "auto";
-        const panelH = Math.max(WRITER_PANEL_H_MIN, Math.ceil(el.scrollHeight || 0));
+        const panelH = Math.max(WRITER_PANEL_H_MIN, Math.ceil(el.scrollHeight || 0)) + WRITER_BOTTOM_PAD;
+        // Re-measure whenever any block of the panel changes size (thumbnails
+        // loading, notes wrapping, folds), not only on the first layout.
+        if (!node._ldResizeObs && typeof ResizeObserver === "function") {
+            try {
+                node._ldResizeObs = new ResizeObserver(() => {
+                    const sig = Array.from(el.children).map((c) => c.offsetHeight).join(",");
+                    if (sig === node._ldObsSig) return;
+                    node._ldObsSig = sig;
+                    scheduleWriterResize(node);
+                });
+                for (const child of Array.from(el.children)) node._ldResizeObs.observe(child);
+            } catch (_e) {}
+        }
         // Stretch the background down to the node's bottom edge.
         el.style.height = `${panelH + WRITER_BG_EXTRA}px`;
         if (node._ldPanelH && Math.abs(node._ldPanelH - panelH) < 2) return;
