@@ -1746,8 +1746,11 @@ def _generate_prompt_impl(
                 {"role": "system", "content": system},
                 {"role": "user", "content": _user_content(idea, extra_instructions, images=refs)},
             ]
+        two = normalize_pasadas(kwargs.get("pasadas")) == PASADAS_2
+        if two:
+            emit_activity(idioma, "pass_n", n=1, total=2)
         raw = chat_complete(url, model_id, messages, temperature, max_tokens, seed)
-        emit_activity(idioma, "done")
+        print(f"[LD-PromptWriter] pasada 1: respuesta de {len(clean_output(raw).split())} palabras", flush=True)
     except RuntimeError as e:
         if has_img and _looks_like_no_vision_error(str(e)):
             raise RuntimeError(VISION_REQUIRED) from e
@@ -1758,13 +1761,24 @@ def _generate_prompt_impl(
             raise RuntimeError(VISION_REQUIRED) from e
         raise RuntimeError(_down_msg(url)) from e
 
-    body, vista_es = parse_bilingual(raw)
-    if is_illustrious:
-        positive, negative = parse_illustrious(body)
-    else:
-        positive, negative = clean_output(body), ""
-    if not want_es:
-        vista_es = ""
+    positive, negative = _parse_final_prompt(raw, is_illustrious)
+
+    # Too-short answer (some models stop after a sentence or only echo the
+    # LoRA text): ask once more for the complete prompt.
+    if _prompt_too_short(positive, is_illustrious):
+        print(f"[LD-PromptWriter] respuesta corta ({len(positive.split())} palabras): se pide el prompt completo otra vez", flush=True)
+        emit_activity(idioma, "retry_short")
+        try:
+            retry_msgs = list(messages) + [
+                {"role": "assistant", "content": positive or "(empty)"},
+                {"role": "user", "content": RETRY_SHORT_ILLUSTRIOUS if is_illustrious else RETRY_SHORT_KREA2},
+            ]
+            raw2 = chat_complete(url, model_id, retry_msgs, temperature, max(int(max_tokens or 0), 1500), seed)
+            p2, n2 = _parse_final_prompt(raw2, is_illustrious)
+            if len(p2.split()) > len(positive.split()):
+                positive, negative = p2, (n2 or negative)
+        except Exception as e:
+            print(f"[LD-PromptWriter] reintento falló: {e}", flush=True)
 
     if not positive:
         raise RuntimeError(
@@ -1772,12 +1786,113 @@ def _generate_prompt_impl(
             "desactivá Reasoning/Thinking en LM Studio e intentá de nuevo."
         )
 
+    if two:
+        positive, negative = refine_prompt_pass(
+            url, model_id, system, messages, positive, negative, is_illustrious,
+            triggers, temperature, max_tokens, seed, idioma,
+        )
+    emit_activity(idioma, "done")
+
     positive = ensure_triggers(positive, triggers, is_illustrious)
     vista_es = ""
     if want_es:
         vista_es = spanish_view_of(url, model_id, positive, is_illustrious, seed, idioma, max_tokens)
     emit_vista_es(vista_es)
     return positive, negative, vista_es
+
+
+PASADAS_1 = "1 pasada"
+PASADAS_2 = "2 pasadas"
+PASADAS_OPTIONS = (PASADAS_1, PASADAS_2)
+
+
+def normalize_pasadas(value) -> str:
+    return PASADAS_2 if str(value or "").strip().startswith("2") else PASADAS_1
+
+
+RETRY_SHORT_KREA2 = (
+    "Your answer is incomplete. Write the COMPLETE final image prompt now, following every instruction above: "
+    "all participants, their appearance, action and pose, camera and framing, setting, lighting and style. "
+    "Output only the prompt."
+)
+RETRY_SHORT_ILLUSTRIOUS = (
+    "Your answer is incomplete. Write the COMPLETE Danbooru-style tag line now, following every instruction above "
+    "(quality tags, LoRA triggers, subject count, appearance, action, pose, camera, setting, style), then the "
+    "Negative: line. Output only that."
+)
+
+
+def _parse_final_prompt(raw, is_illustrious):
+    body, _es = parse_bilingual(raw)
+    if is_illustrious:
+        return parse_illustrious(body)
+    return clean_output(body), ""
+
+
+def _prompt_too_short(positive, is_illustrious) -> bool:
+    text = str(positive or "").strip()
+    if not text:
+        return True
+    if is_illustrious:
+        return len([t for t in text.split(",") if t.strip()]) < 8
+    return len(text.split()) < 25
+
+
+def refine_prompt_pass(url, model_id, system, messages, positive, negative, is_illustrious,
+                       triggers, temperature, max_tokens, seed, idioma):
+    """Pass 2/2: same instructions + the pass-1 draft; the LLM checks and improves it.
+
+    Returns (positive, negative). On any failure keeps the pass-1 result.
+    """
+    original_user = ""
+    for m in messages:
+        if m.get("role") == "user":
+            c = m.get("content")
+            if isinstance(c, list):
+                c = "\n".join(p.get("text", "") for p in c if isinstance(p, dict) and p.get("type") == "text")
+            original_user = str(c or "")
+    draft = positive if not is_illustrious else (positive + "\nNegative: " + (negative or ""))
+    if is_illustrious:
+        task = (
+            "Review the DRAFT tag line against ALL the specifications above (reference image notes and their "
+            "allowed aspects, clothing rule, number of participants, output style, camera, LoRA trigger words). "
+            "Fix contradictions, add any requested aspect that is missing, remove anything that breaks a rule, "
+            "keep the required tag order and the LoRA trigger words verbatim. "
+            "Output only the final tag line followed by a line starting with 'Negative:'. No explanations."
+        )
+    else:
+        task = (
+            "Review the DRAFT prompt against ALL the specifications above (reference image notes and their "
+            "allowed aspects, clothing rule, number of participants, output style, camera, LoRA trigger words). "
+            "Fix contradictions, add any requested aspect that is missing, remove anything that breaks a rule, "
+            "and improve clarity and visual detail while keeping it one natural-language prompt. "
+            "Keep the LoRA trigger words verbatim. Output only the final prompt. No explanations, no headings."
+        )
+    user = (
+        "SPECIFICATIONS (same as for the draft):\n" + original_user.strip()
+        + "\n\nDRAFT (pass 1):\n" + draft.strip()
+        + "\n\n" + task
+    )
+    emit_activity(idioma, "pass_n", n=2, total=2)
+    t0 = time.perf_counter()
+    try:
+        raw = chat_complete(
+            url, model_id,
+            [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            min(float(temperature if temperature is not None else 0.5), 0.5),
+            max(int(max_tokens or 0), 1500),
+            seed,
+        )
+        p2, n2 = _parse_final_prompt(raw, is_illustrious)
+        print(f"[LD-PromptWriter] pasada 2: {len(p2.split())} palabras ({time.perf_counter() - t0:.1f} s)", flush=True)
+        if _prompt_too_short(p2, is_illustrious) or len(p2.split()) < 0.5 * len(positive.split()):
+            print("[LD-PromptWriter] pasada 2 descartada (respuesta corta); se usa la pasada 1", flush=True)
+            return positive, negative
+        return p2, (n2 or negative)
+    except Exception as e:
+        print(f"[LD-PromptWriter] pasada 2 falló, se usa la pasada 1: {e}", flush=True)
+        emit_activity(idioma, "error", msg=f"pasada 2: {e}", level="err")
+        return positive, negative
 
 
 def _image_fingerprint(image) -> str:
@@ -2114,6 +2229,8 @@ ACTIVITY_I18N = {
         "translating_es": "Traduciendo la vista en español al inglés…",
         "translated_es": "Vista traducida al inglés ({secs} s)",
         "translating_view": "Traduciendo el prompt final al español…",
+        "pass_n": "Pasada {n}/{total}…",
+        "retry_short": "Respuesta corta: pidiendo el prompt completo…",
         "translated_view": "Vista en español lista ({secs} s)",
         "composing": "Componiendo prompt final…",
         "done": "Listo",
@@ -2136,6 +2253,8 @@ ACTIVITY_I18N = {
         "translating_es": "Translating the Spanish view into English…",
         "translated_es": "Spanish view translated to English ({secs} s)",
         "translating_view": "Translating the final prompt into Spanish…",
+        "pass_n": "Pass {n}/{total}…",
+        "retry_short": "Short answer: asking for the complete prompt…",
         "translated_view": "Spanish view ready ({secs} s)",
         "composing": "Composing the final prompt…",
         "done": "Done",
@@ -2832,6 +2951,8 @@ def register_routes() -> None:
                 extra_kw["camara"] = body.get("camara")
             if body.get("modo_ropa") is not None:
                 extra_kw["modo_ropa"] = normalize_ropa(body.get("modo_ropa"))
+            if body.get("pasadas") is not None:
+                extra_kw["pasadas"] = normalize_pasadas(body.get("pasadas"))
             extra_kw["idioma"] = body.get("idioma", "Español")
             if body.get("descarga_idle_min") is not None:
                 extra_kw["descarga_idle_min"] = body.get("descarga_idle_min")
@@ -3183,6 +3304,7 @@ _WRITER_PROMPT_KEYS = (
     "num_personas_custom",
     "camara",
     "modo_ropa",
+    "pasadas",
     "lora_triggers",
 )
 
@@ -3304,7 +3426,7 @@ class LD_LMStudioConfig:
                 ),
                 "max_tokens": (
                     "INT",
-                    {"default": 1200, "min": 64, "max": 4096, "step": 1},
+                    {"default": 2048, "min": 64, "max": 8192, "step": 1},
                 ),
                 "seed": (
                     "INT",
@@ -3822,6 +3944,13 @@ class LD_LMStudioPromptWriterV2:
                     "BOOLEAN",
                     {"default": False, "tooltip": f"Tomar {label} de la imagen {idx}."},
                 )
+        opt["pasadas"] = (
+            list(PASADAS_OPTIONS),
+            {
+                "default": PASADAS_1,
+                "tooltip": "1 pasada: un prompt. 2 pasadas: después del prompt, una segunda llamada lo revisa con todas las especificaciones y lo corrige o mejora (más lento).",
+            },
+        )
         return types
 
     RETURN_TYPES = ()
@@ -3839,6 +3968,7 @@ class LD_LMStudioPromptWriterV2:
         num_personas=None,
         camara=None,
         modo_ropa=None,
+        pasadas=None,
         **kwargs,
     ):
         return True
@@ -3881,6 +4011,7 @@ class LD_LMStudioPromptWriterV2:
             str(parse_personas(kwargs.get("num_personas", "1"), kwargs.get("num_personas_custom", 1))),
             str(kwargs.get("camara") or CAMARA_AUTO),
             normalize_ropa(kwargs.get("modo_ropa")),
+            normalize_pasadas(kwargs.get("pasadas")),
         ]
         for idx in range(1, N_IMAGES + 1):
             parts.append(archivo_fingerprint(kwargs.get(f"archivo_imagen_{idx}")))
@@ -3919,6 +4050,7 @@ class LD_LMStudioPromptWriterV2:
         if "camara" in kwargs:
             kwargs["camara"] = sanitize_combo(kwargs.get("camara"), CAMARA_OPTIONS, CAMARA_AUTO)
         kwargs["modo_ropa"] = normalize_ropa(kwargs.get("modo_ropa"))
+        kwargs["pasadas"] = normalize_pasadas(kwargs.get("pasadas"))
         bundled = config_image_kwargs(cfg)
         if not str(lora_triggers or "").strip():
             lora_triggers = cfg.get("lora_triggers") or ""

@@ -411,6 +411,9 @@ function ensureThemeStyles() {
     box-sizing: border-box;
 }
 .ld-people-custom { width: 72px; flex: 0 0 72px; }
+.ld-pasadas-row { display: flex; gap: 6px; width: 100%; margin-top: 6px; }
+.ld-pasadas-row .ld-switch { padding: 5px 8px; font-size: 12px; border-radius: 8px; }
+.ld-pair-row.ld-pair-low { margin-top: 2px; }
 .ld-tamano-box { display: flex; flex-direction: column; gap: 4px; width: 100%; box-sizing: border-box; padding: 2px 2px 0; font-family: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif; color: #e8eef2; }
 .ld-tamano-size {
     text-align: center;
@@ -783,6 +786,12 @@ const N_IMAGES = 8;
 const PERSONAS_AUTO = "Auto (decide el LLM)";
 const PERSONAS_CUSTOM = "Personalizado";
 const PERSONAS_OPTIONS = [PERSONAS_AUTO, "1", "2", "3", "4", "5", "6", "7", "8", PERSONAS_CUSTOM];
+const PASADAS_1 = "1 pasada";
+const PASADAS_2 = "2 pasadas";
+const PASADAS_OPTIONS = [PASADAS_1, PASADAS_2];
+function normalizePasadas(v) {
+    return String(v ?? "").trim().startsWith("2") ? PASADAS_2 : PASADAS_1;
+}
 const ROPA_AUTO = "LoRA";
 const ROPA_FOTO = "Foto";
 const ROPA_DESNUDO = "Desnudo";
@@ -879,7 +888,7 @@ const I18N = {
         ideaPh: "La idea (o dejala vacía y usá una imagen de referencia).",
         generar: "✍️ Generar prompt",
         limpiar: "🧹 Limpiar",
-        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas, Ropa) a sus valores por defecto. No toca Config, LoRA, interruptores ni la imagen i2i.",
+        limpiarTitle: "Borra idea, prompts, las 8 imágenes, sus selecciones y descripciones, y vuelve las listas (Estilo, Cámara, Participantes, Ropa, Pasadas) a sus valores por defecto. No toca Config, LoRA, interruptores ni la imagen i2i.",
         useNote: "Si el recuadro positivo tiene texto, al ejecutar se usa tal cual (no llama al LLM). Si está vacío, se genera. Los trigger words de LoRA se agregan si faltan.",
         posLabel: "Prompt generado · positivo",
         vistaEs: "Vista en español ⓘ",
@@ -892,7 +901,11 @@ const I18N = {
         negLabel: "Negativo generado",
         posPh: "Prompt positivo. Editable antes de correr el workflow.",
         negPh: "Prompt negativo (Illustrious). En Krea2 suele quedar vacío.",
-        numPersonas: "N° de personas",
+        numPersonas: "Participantes",
+        pasadas1: "1 pasada",
+        pasadas2: "2 pasadas",
+        pasadasTitle: "1 pasada: Generar describe las imágenes que hagan falta y escribe el prompt. 2 pasadas: en el mismo Generar, después del prompt hace una segunda pasada que lo revisa con todas las especificaciones (imágenes, chips, ropa, participantes, estilo, cámara, LoRA) y lo corrige o mejora. Tarda más.",
+        generating2: "⏳ Generando (2 pasadas: prompt + revisión)…",
         ropa: "Ropa",
         ropaAuto: "LoRA",
         ropaFoto: "Foto",
@@ -964,7 +977,7 @@ const I18N = {
         ideaPh: "The idea (or leave it empty and use a reference image).",
         generar: "✍️ Generate prompt",
         limpiar: "🧹 Clear",
-        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions, and resets the dropdowns (Style, Camera, N° of people, Clothing) to their defaults. Does not touch Config, LoRA, switches or the i2i image.",
+        limpiarTitle: "Clears idea, prompts, the 8 images, their selections and descriptions, and resets the dropdowns (Style, Camera, Participants, Clothing, Passes) to their defaults. Does not touch Config, LoRA, switches or the i2i image.",
         useNote: "If the positive box already has text, execution uses it as-is (no LLM call). If empty, a prompt is generated. LoRA trigger words are added if missing.",
         posLabel: "Generated prompt · positive",
         vistaEs: "Spanish view ⓘ",
@@ -977,7 +990,11 @@ const I18N = {
         negLabel: "Generated negative",
         posPh: "Positive prompt. Editable before you run the workflow.",
         negPh: "Negative prompt (Illustrious). Usually empty for Krea2.",
-        numPersonas: "N° of people",
+        numPersonas: "Participants",
+        pasadas1: "1 pass",
+        pasadas2: "2 passes",
+        pasadasTitle: "1 pass: Generate describes the images that need it and writes the prompt. 2 passes: in the same Generate, after the prompt a second pass reviews it against all the settings (images, chips, clothing, participants, style, camera, LoRA) and fixes or improves it. Slower.",
+        generating2: "⏳ Generating (2 passes: prompt + review)…",
         ropa: "Clothing",
         ropaAuto: "LoRA",
         ropaFoto: "Photo",
@@ -1130,6 +1147,17 @@ Install: ComfyUI Manager → Install via Git URL
 const NOTES_SPECS = {
     es: `Especificaciones
 
+Pasadas
+• 1 pasada: Generar describe las imágenes que hagan falta y
+  escribe el prompt.
+• 2 pasadas: en el mismo Generar, una segunda llamada revisa el
+  prompt con todas las especificaciones (imágenes, chips, ropa,
+  participantes, estilo, cámara, LoRA) y lo corrige o mejora.
+  Tarda más. La actividad muestra Pasada 1/2 y 2/2.
+• Si el modelo responde muy corto, se le pide el prompt completo
+  otra vez automáticamente.
+• max_tokens recomendado en Config: 2048.
+
 Prompt positivo
 • Si el recuadro positivo tiene texto, al ejecutar se usa tal cual
   (no llama al LLM). Si está vacío, se genera.
@@ -1138,8 +1166,8 @@ Prompt positivo
   (solo con los chips activos).
 • Modificar: aplica un cambio puntual al prompt actual.
 • Limpiar: borra idea, prompts, las imágenes del Writer, sus chips
-  y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas,
-  Ropa) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.
+  y descripciones, y vuelve las listas (Estilo, Cámara, Participantes,
+  Ropa, Pasadas) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.
 
 Imágenes del Writer (chips)
 • Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,
@@ -1186,6 +1214,17 @@ Actividad del LLM
 • Está en el nodo Config, debajo de Probar conexión.`,
     en: `How it works
 
+Passes
+• 1 pass: Generate describes the images that need it and writes
+  the prompt.
+• 2 passes: in the same Generate, a second call reviews the prompt
+  against all the settings (images, chips, clothing, participants,
+  style, camera, LoRA) and fixes or improves it. Slower.
+  The activity shows Pass 1/2 and 2/2.
+• If the model answers too briefly, it is automatically asked
+  for the complete prompt again.
+• Recommended max_tokens in Config: 2048.
+
 Positive prompt
 • If the positive box has text, execution uses it as-is
   (no LLM call). If it is empty, a prompt is generated.
@@ -1194,8 +1233,8 @@ Positive prompt
   (only with the active chips).
 • Modify: applies a precise change to the current prompt.
 • Clear: clears idea, prompts, the Writer images, their chips
-  and descriptions, and resets the dropdowns (Style, Camera, N° of people,
-  Clothing) to their defaults. Does not touch Config, LoRA or the i2i image.
+  and descriptions, and resets the dropdowns (Style, Camera, Participants,
+  Clothing, Passes) to their defaults. Does not touch Config, LoRA or the i2i image.
 
 Writer images (chips)
 • Chips (Spanish alphabetical order): Accessories, Action, Camera,
@@ -1537,7 +1576,7 @@ async function ensureImageDescriptions(node, { setStatus } = {}) {
             sig: aspectSignature(node, i),
         });
     }
-    if (!needed.length) return;
+    if (!needed.length) return 0;
     const cfgNode = findUpstreamConfig(node);
     const cfg = readConfigValues(cfgNode);
     if (!cfg) {
@@ -1565,6 +1604,7 @@ async function ensureImageDescriptions(node, { setStatus } = {}) {
         setImageDescription(node, item.i, data.description || "", data.aspects || item.sig);
     }
     node._ldPanel?.syncToWidgets?.();
+    return needed.length;
 }
 
 async function resolveEditedPrompts(node, { setStatus, pos } = {}) {
@@ -1908,7 +1948,7 @@ function readConfigValues(cfgNode) {
         model: widgetValue(cfgNode, "model", AUTO_MODEL),
         mode: widgetValue(cfgNode, "mode", "Krea2 (natural)"),
         temperature: widgetValue(cfgNode, "temperature", 0.7),
-        max_tokens: widgetValue(cfgNode, "max_tokens", 1200),
+        max_tokens: widgetValue(cfgNode, "max_tokens", 2048),
         seed: widgetValue(cfgNode, "seed", 0),
         extra_instructions: widgetValue(cfgNode, "extra_instructions", ""),
         unload_after: !!widgetValue(cfgNode, "unload_after", true),
@@ -2373,6 +2413,12 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     peopleRow.append(peopleSel, peopleCustom);
     let ropaSel = null;
     let pairRowEl = null;
+    let pasadasRow = null;
+    const refreshPasadas = () => {
+        if (!pasadasRow) return;
+        const cur = normalizePasadas(widgetValue(node, "pasadas", PASADAS_1));
+        for (const b of pasadasRow.querySelectorAll("button")) b.classList.toggle("on", b.dataset.pasadas === cur);
+    };
     if (includeIdea) {
         // Ropa + N° de personas side by side in the right column (where the
         // LLM activity box used to be; that box now lives in the Config node).
@@ -2400,11 +2446,32 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         peopleStack.className = "ld-field-stack";
         peopleStack.append(peopleLabel, peopleRow);
         const pairRow = styleEl("div", {});
-        pairRow.className = "ld-pair-row";
+        pairRow.className = "ld-pair-row ld-pair-low";
         pairRow.append(ropaStack, peopleStack);
-        pairRowEl = pairRow;
-        if (useNote && useNote.parentNode === right) right.insertBefore(pairRow, useNote);
-        else right.appendChild(pairRow);
+        // 1 pasada / 2 pasadas segmented toggle, above Ropa + Participantes.
+        pasadasRow = styleEl("div", {});
+        pasadasRow.className = "ld-pasadas-row";
+        pasadasRow.title = t(node, "pasadasTitle");
+        pasadasRow.dataset.i18nTitle = "pasadasTitle";
+        for (const [val, key] of [[PASADAS_1, "pasadas1"], [PASADAS_2, "pasadas2"]]) {
+            const b = styleEl("button", {}, t(node, key));
+            b.type = "button";
+            b.className = "ld-switch";
+            b.dataset.i18n = key;
+            b.dataset.pasadas = val;
+            b.addEventListener("click", () => {
+                const w = widgetByName(node, "pasadas");
+                if (w) w.value = val;
+                refreshPasadas();
+                node.graph?.setDirtyCanvas?.(true);
+            });
+            pasadasRow.appendChild(b);
+        }
+        const pairWrap = styleEl("div", { display: "flex", flexDirection: "column", gap: "6px", width: "100%" });
+        pairWrap.append(pasadasRow, pairRow);
+        pairRowEl = pairWrap;
+        if (useNote && useNote.parentNode === right) right.insertBefore(pairWrap, useNote);
+        else right.appendChild(pairWrap);
     } else {
         midR.append(peopleLabel, peopleRow);
     }
@@ -2657,6 +2724,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         if (peopleCustom && nwC && String(peopleCustom.value) !== String(nwC.value ?? 1)) {
             peopleCustom.value = String(nwC.value ?? 1);
         }
+        refreshPasadas();
         const rw = widgetByName(node, "modo_ropa");
         if (ropaSel) {
             const want = normalizeRopa(rw?.value ?? ROPA_AUTO);
@@ -2809,10 +2877,12 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             ["modo_ropa", ROPA_AUTO],
             ["usar_imagen_1", "todo"],
             ["usar_imagen_2", "todo"],
+            ["pasadas", PASADAS_1],
         ]) {
             const w = widgetByName(node, name);
             if (w) w.value = val;
         }
+        refreshPasadas();
         syncToWidgets();
         if (cambiosInput) cambiosInput.value = "";
         status.textContent = "";
@@ -3518,6 +3588,7 @@ function setupWriterV2(nodeType) {
                     num_personas_custom: widgetValue(this, "num_personas_custom", 1),
                     camara: String(widgetValue(this, "camara", CAMARA_AUTO) || CAMARA_AUTO),
                     modo_ropa: normalizeRopa(widgetValue(this, "modo_ropa", ROPA_AUTO)),
+                    pasadas: normalizePasadas(widgetValue(this, "pasadas", PASADAS_1)),
                 };
                 for (let i = 1; i <= N_IMAGES; i++) {
                     const img = refs[i];
@@ -3535,7 +3606,8 @@ function setupWriterV2(nodeType) {
                 }
                 body.aspects = aspects;
                 if (triggerInfo.text) body.lora_triggers = triggerInfo.text;
-                setStatus(n > 1 ? t(this, "generatingN", { n }) : t(this, "generating"));
+                if (body.pasadas === PASADAS_2) setStatus(t(this, "generating2"));
+                else setStatus(n > 1 ? t(this, "generatingN", { n }) : t(this, "generating"));
                 console.log("[LD-PromptWriter] POST /generate con", n, "imagen(es)", body);
                 let data;
                 try {

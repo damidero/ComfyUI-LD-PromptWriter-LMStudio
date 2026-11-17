@@ -10,7 +10,10 @@
 - Notas: la nota *Recomendaciones de modelos* pasa a llamarse **Configuración** (modelos, LoRAs, nodos necesarios) y hay una segunda nota **Especificaciones** (prompt positivo, chips, vista en español, Ropa, imagen i2i, actividad del LLM). El pack mantiene el texto y el título de ambas en español/inglés; la segunda se reconoce por `properties.ld_note = "specs"`.
 - **Limpiar** también vuelve las listas del Writer a sus valores por defecto: Estilo `(como la referencia)`, Cámara `(Automático - decide el LLM)`, N° de personas `1` (personalizado 1), Ropa `LoRA`, usar_imagen_1/2 `todo`.
 - **Chips por imagen**: 5 nuevos (Accesorios, Colores, Expresión, Iluminación, Pelo) y todos ordenados alfabéticamente. Sin chips ("todo") los incluye. Pelo/Expresión/Accesorios de otra imagen se aplican a la persona elegida. Accesorios va aparte de Ropa y se mantiene con Desnudo. Los widgets nuevos `img{N}_{clave}` van al final, así los workflows guardados no se corren. Las descripciones "todo" guardadas se vuelven a generar una vez (cambió la firma de aspectos).
-- Config: `max_tokens` por defecto 1200 (antes 600). La traducción español→inglés también usa tokens suficientes.
+- **Pasadas** (nuevo, encima de Ropa/Participantes): *1 pasada* (como antes) o *2 pasadas*: en el mismo Generar, una segunda llamada revisa el prompt con todas las especificaciones y lo corrige o mejora; la actividad muestra Pasada 1/2 y 2/2. Widget `pasadas` al final (los workflows viejos quedan en 1 pasada). Limpiar lo vuelve a 1 pasada.
+- Si el modelo devuelve un prompt demasiado corto, se le pide una vez el prompt completo (antes podía quedar solo el texto del LoRA).
+- "N° de personas" pasa a llamarse **Participantes**.
+- Config: `max_tokens` por defecto 2048 (antes 600; máximo 8192). La traducción español→inglés también usa tokens suficientes.
 
 ## 1.1.2 — 2026-11-17
 
