@@ -4,10 +4,11 @@
 
 Nodos de ComfyUI que se conectan a un servidor local de **LM Studio** y convierten una idea (o hasta ocho imágenes de referencia) en un prompt listo para **Krea2** (lenguaje natural) o **Illustrious** (tags estilo Danbooru).
 
-Dos nodos trabajan juntos:
+Estos nodos trabajan juntos:
 
 1. **LM Studio Config (LD):** URL, modelo, modo Krea2 / Illustrious, temperatura, `max_tokens`, seed, `unload_after` (prendido por defecto), instrucciones extra y **Pasadas del LLM**. Botones: **🔄 Actualizar modelos**, **Probar conexión**, **🎲 Seed aleatoria** y el interruptor **Aleatoria en cada generación**. Debajo de Probar conexión está la **Actividad del LLM** (registro en vivo: conexión, carga/reuso del modelo, cada descripción, pasadas, tiempos, descarga, errores). Acá se conectan las referencias (`image_1`…`image_8`), `lora_triggers` y, en Illustrious, `neg_embeddings`; las entradas se acomodan en 2–3 filas, las conectadas primero. Salidas: `config` (un solo cable al Writer), **positive** y **negative**.
-2. **LM Studio Prompt Writer (LD):** la idea, **✍️ Generar prompt**, **✏️ Modificar** con su recuadro **Cambios**, **🧹 Limpiar**, los recuadros positivo (inglés) y negativo editables, y las 8 imágenes de referencia. Su única entrada visible es `config`.
+2. **LM Studio Prompt Writer (LD):** la idea, **✍️ Generar prompt**, **✨ Mejorar idea**, **✏️ Modificar** con su recuadro **Cambios**, **🧹 Limpiar**, los recuadros positivo (inglés) y negativo editables, y las 8 imágenes de referencia. Su única entrada visible es `config`.
+3. **Describir como prompt (LD):** cargá o conectá una imagen y el modelo de visión escribe un prompt completo, editable (Krea2 o Illustrious). **Enviar a idea** / **Enviar a prompt** lo copian al Writer, con deshacer de un nivel. Respeta `unload_after` del Config.
 
 ## Cómo se usa
 
@@ -16,6 +17,7 @@ Dos nodos trabajan juntos:
 3. Escribí una idea y/o cargá imágenes, y prendé los chips de lo que querés tomar de cada una.
 4. Apretá **✍️ Generar prompt**, revisá el texto y encolá el workflow.
 5. Para un cambio puntual (p. ej. "pelo rojo"), escribilo en **Cambios** y apretá **✏️ Modificar**: solo cambia eso.
+6. **✨ Mejorar idea** (junto a Generar) reescribe la idea para que quede más clara (**Mejorar**) o señala problemas y después la mejora (**Criticar**), sin convertirla en el prompt final. Casillas opcionales (se guardan con el nodo): **Incluir detalle de las fotos**, **Incluir LoRAs**, **Incluir foto de referencia**.
 
 Si el recuadro **positivo** tiene texto, al ejecutar se usa tal cual y no se llama al LLM. Borralo para generar otro. Los trigger words de LoRA se agregan si faltan.
 
@@ -26,6 +28,7 @@ Si el recuadro **positivo** tiene texto, al ejecutar se usa tal cual y no se lla
   - *Cámara*: encuadre; el chip Cámara de una imagen gana sobre la lista; en Automático decide el LLM.
   - *Ropa*: **LoRA** (la ropa de los triggers del LoRA; sin triggers decide el LLM), **Foto** (gana la ropa de la imagen con el chip Ropa; se elige sola al prender un chip Ropa y vuelve a LoRA al apagarlos) o **Desnudo** (sin ropa; ignora la ropa de imágenes y LoRA; nunca cambia sola).
   - *Participantes*: 1–8, **Auto (decide el LLM)** o Personalizado. No hace falta una imagen por persona.
+- **✨ Mejorar idea** (junto a **✍️ Generar prompt**): **Mejorar** reescribe la idea más clara y concreta; **Criticar** señala problemas y después la mejora. No escribe el prompt final (para eso está Generar). Casillas, se guardan con el nodo: **Incluir detalle de las fotos** (prendida por defecto), **Incluir LoRAs** (prendida) e **Incluir foto de referencia** (apagada). Deshacer de un nivel. Respeta `unload_after`.
 - **🧹 Limpiar** borra idea, prompts, imágenes del Writer, chips y descripciones, y vuelve las listas a su valor inicial (Estilo como la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config, los LoRA ni la imagen i2i.
 
 ## Imágenes de referencia y chips
@@ -46,6 +49,7 @@ Si el modelo no tiene visión (sin mmproj) y mandás una imagen, el Writer avisa
 
 - **1 pasada**: describe las imágenes que hagan falta y escribe el prompt.
 - **2 pasadas**: en el mismo Generar, una segunda llamada revisa el prompt con todas las especificaciones (imágenes, chips, ropa, participantes, estilo, cámara, LoRA) y lo corrige o mejora. Más lento. La actividad muestra Pasada 1/2 y 2/2.
+- La idea se combina con los ajustes, las personas y la cámara: ya no los pisa. La pasada 2 usa prompts de refine que revisan el resultado contra esos ajustes.
 - Si el modelo responde muy corto, se le pide una vez el prompt completo.
 
 Vale para todos los Writer conectados a ese Config.
@@ -62,7 +66,7 @@ Vale para todos los Writer conectados a ese Config.
 - En Config elegí un **modelo fijo** en vez de `(auto: el cargado)`.
 - `max_tokens`: **2048** (valor por defecto en Config nuevos).
 
-`unload_after` (prendido por defecto) descarga el modelo después de Generar / Modificar / ejecutar, liberando VRAM; Describir no descarga. `descarga_idle_min` (0 = apagado) lo descarga tras N minutos sin uso.
+`unload_after` (prendido por defecto) descarga el modelo después de Generar, Modificar, **Mejorar idea**, **Describir como prompt** y ejecutar el workflow, liberando VRAM. El **🔄 Describir** de cada imagen del Writer no descarga. `descarga_idle_min` (0 = apagado) lo descarga tras N minutos sin uso.
 
 ## Krea2 e Illustrious
 

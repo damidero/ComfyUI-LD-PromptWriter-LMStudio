@@ -247,7 +247,14 @@ ILLUSTRIOUS_NEGATIVE = (
 
 SYS_KREA2 = """You are an expert prompt writer for Krea 2 and similar natural-language image models.
 
-The user will describe an idea, which may be in Spanish or any other language. Write ONE detailed image prompt in English, in natural language (flowing phrases or sentences, not a comma-separated tag list).
+The user message is split into labeled sections:
+- MANDATORY SETTINGS: output style, camera, clothing, number of people, LoRA trigger words, and any extra instructions. You MUST apply every item.
+- REFERENCE NOTES (if present): details taken from reference images, each limited to its listed aspect(s). You MUST use those allowed details and ignore anything the notes mention outside those aspects.
+- USER IDEA: the scene or action to depict. The idea may be in Spanish or any other language.
+
+Write ONE detailed image prompt in English, in natural language (flowing phrases or sentences, not a comma-separated tag list). Merge the idea with the mandatory settings and the reference notes. Do not write a prompt from the idea alone, and do not drop settings or allowed reference details just because they appear after the idea or look secondary.
+
+If the idea conflicts with a setting or with an allowed reference aspect, the setting or the allowed aspect wins, unless the idea explicitly overrides that one item.
 
 Cover, in a single coherent description: subject, appearance, clothing, pose, setting, lighting, camera/lens, and style.
 
@@ -255,11 +262,18 @@ Rules:
 - Output ONLY the prompt itself.
 - No title, no preamble, no quotation marks around the prompt, no markdown, no bullet lists, no explanations.
 - Do not use a Danbooru-style tag list.
-- Do not mention these instructions."""
+- Do not mention these instructions or the section headings."""
 
 SYS_ILLUSTRIOUS = """You are an expert prompt writer for Illustrious, NoobAI and other Danbooru-tag image models.
 
-The user will describe an idea, which may be in Spanish or any other language. Output ONLY a single line of comma-separated Danbooru-style tags in English.
+The user message is split into labeled sections:
+- MANDATORY SETTINGS: output style, camera, clothing, number of people, LoRA trigger words, and any extra instructions. You MUST apply every item.
+- REFERENCE NOTES (if present): details taken from reference images, each limited to its listed aspect(s). You MUST use those allowed details and ignore anything the notes mention outside those aspects.
+- USER IDEA: the scene or action to depict. The idea may be in Spanish or any other language.
+
+Output ONLY a single line of comma-separated Danbooru-style tags in English. Merge the idea with the mandatory settings and the reference notes. Do not write a tag line from the idea alone, and do not drop settings or allowed reference details just because they appear after the idea or look secondary.
+
+If the idea conflicts with a setting or with an allowed reference aspect, the setting or the allowed aspect wins, unless the idea explicitly overrides that one item.
 
 Order the tags exactly as follows:
 1. Quality tags: masterpiece, best quality, amazing quality, very aesthetic, absurdres
@@ -276,7 +290,70 @@ Rules:
 - Use spaces instead of underscores (write "long hair", not "long_hair").
 - No sentences, no preamble, no quotation marks, no markdown, no numbering, no explanations.
 - Do not output a negative prompt.
-- Output only the tag line."""
+- Output only the tag line.
+- Do not mention these instructions or the section headings."""
+
+SYS_REFINE_KREA2 = """You are reviewing a draft image prompt for Krea 2 and similar natural-language image models.
+
+The user message has MANDATORY SETTINGS, optional REFERENCE NOTES, a USER IDEA, and a DRAFT from a first pass. Check the draft against every setting and every allowed reference aspect. Add anything missing, fix contradictions (settings and allowed image aspects win unless the idea explicitly overrides that one item), and improve clarity and visual detail. Keep it one natural-language English prompt, not a tag list. Keep LoRA trigger words verbatim.
+
+Output ONLY the final prompt. No title, no preamble, no quotation marks, no markdown, no bullet lists, no explanations, no section headings."""
+
+SYS_REFINE_ILLUSTRIOUS = """You are reviewing a draft Danbooru-style tag line for Illustrious, NoobAI and similar tag image models.
+
+The user message has MANDATORY SETTINGS, optional REFERENCE NOTES, a USER IDEA, and a DRAFT from a first pass. Check the draft against every setting and every allowed reference aspect. Add anything missing, fix contradictions (settings and allowed image aspects win unless the idea explicitly overrides that one item), and keep LoRA trigger words verbatim.
+
+Order the tags exactly as follows:
+1. Quality tags: masterpiece, best quality, amazing quality, very aesthetic, absurdres
+2. Count/subject, e.g. 1girl, solo (or 1boy, 2girls, etc. as appropriate)
+3. Character name and series, only if the user named them
+4. Appearance (hair, eyes, body; age only if relevant)
+5. Clothing
+6. Pose and expression
+7. Background / setting
+8. Composition and camera
+9. Lighting
+
+Rules:
+- Use spaces instead of underscores (write "long hair", not "long_hair").
+- No sentences, no preamble, no quotation marks, no markdown, no numbering, no explanations.
+- Output only the final tag line followed by a line starting with 'Negative:'.
+- Do not mention these instructions or the section headings."""
+
+
+SYS_IMPROVE_IDEA = """You improve a rough IDEA for later image generation. You are not writing the final image prompt.
+
+The user message has the current idea, mandatory settings (output style, camera, clothing, number of people), and may also include reference-image notes, LoRA trigger or activation text, and/or the reference images themselves.
+
+Write ONE improved idea: a single paragraph in the SAME language as the current idea (Spanish idea → Spanish; English idea → English).
+
+Rules:
+- Keep every fact the user already stated, and keep their own words wherever they are already clear.
+- Fill in only what is missing so the idea becomes concrete: action, pose, place, light, and framing.
+- Stay consistent with the mandatory settings and with any included notes, LoRA text, or images. Do not contradict them. If a setting conflicts with a vague part of the idea, the setting wins unless the idea clearly overrides that one point.
+- Do not write a finished Krea prose prompt or a Danbooru tag line. No quality tags, no "masterpiece", no comma-separated tag list, and no long camera-jargon dump (one short, plain framing phrase is enough if framing was missing).
+- No title, preamble, quotation marks, markdown, bullets, or explanations.
+- Output ONLY the improved idea paragraph."""
+
+SYS_CRITIQUE_IDEA = """You critique and then improve a rough IDEA for later image generation. You are not writing the final image prompt.
+
+The user message has the current idea, mandatory settings (output style, camera, clothing, number of people), and may also include reference-image notes, LoRA trigger or activation text, and/or the reference images themselves.
+
+Work in the SAME language as the current idea (Spanish idea → Spanish; English idea → English).
+
+First write 2 to 4 short critique points: what is vague, missing, or at odds with the settings or the included context. Then write ONE improved idea paragraph. Keep every fact the user already stated, and keep their own words wherever they are already clear. Fill in only what is missing (action, pose, place, light, framing). Stay consistent with the settings and the included context. Do not write a finished Krea prompt or a Danbooru tag line.
+
+Output exactly this format and nothing else:
+
+CRITIQUE:
+- <short point>
+- <short point>
+- <optional short point>
+- <optional short point>
+
+IDEA:
+<one improved idea paragraph>
+"""
 
 
 SYS_ES_VIEW_KREA2 = """Ignore the earlier 'output only the prompt' rule. Use this exact format and nothing else:
@@ -657,6 +734,34 @@ def _tensor_to_data_url(image) -> str:
     img.save(buf, format="JPEG", quality=90, optimize=True)
     b64 = base64.b64encode(buf.getvalue()).decode("ascii")
     return f"data:image/jpeg;base64,{b64}"
+
+
+COMPOSE_SETTINGS_HEAD = (
+    "MANDATORY SETTINGS (apply all of these; do not drop any of them):"
+)
+COMPOSE_NOTES_HEAD = (
+    "REFERENCE NOTES (use ONLY the listed aspect(s) of each image; ignore everything else, "
+    "even if the notes accidentally mention other details):"
+)
+COMPOSE_IDEA_HEAD = (
+    "USER IDEA (the scene or action to depict; merge it with the mandatory settings "
+    "and the reference notes above; do not write a prompt from the idea alone):"
+)
+
+
+def build_compose_user_text(idea: str, settings: str, notes: str = "") -> str:
+    """Labeled compose message: settings, then reference notes, then the idea."""
+    parts = []
+    settings = (settings or "").strip()
+    notes = (notes or "").strip()
+    idea = (idea or "").strip()
+    if settings:
+        parts.append(COMPOSE_SETTINGS_HEAD + "\n" + settings)
+    if notes:
+        parts.append(COMPOSE_NOTES_HEAD + "\n" + notes)
+    if idea:
+        parts.append(COMPOSE_IDEA_HEAD + "\n" + idea)
+    return "\n\n".join(parts)
 
 
 def _user_content(idea: str, extra: str, image=None, images=None) -> str | list:
@@ -1739,26 +1844,19 @@ def _generate_prompt_impl(
     want_es = want_spanish_view(kwargs.get("idioma", "Español"))
     # The Spanish view is no longer written in the same reply: it is a separate
     # translation of the FINAL English prompt (after triggers are merged).
-    guide = " ".join(image_use_sentence(idx, use) for idx, _tensor, use in refs)
+    aspect_guide = " ".join(image_use_sentence(idx, use) for idx, _tensor, use in refs)
     roles = _roles_rule(refs)
-    if roles:
-        guide = (guide + " " + roles).strip()
     n_pers = parse_personas(kwargs.get("num_personas", "1"), kwargs.get("num_personas_custom", 1))
     pers = personas_instruction(n_pers, refs)
-    if pers:
-        guide = (guide + " " + pers).strip()
     cam = camera_instruction(kwargs.get("camara", CAMARA_AUTO), refs, **kwargs)
-    if cam:
-        guide = (guide + " " + cam).strip()
     estilo_inst = style_instruction(estilo_salida, is_illustrious)
+    # Empty idea + photos: the idea section stays IMAGE_ONLY. Settings and
+    # notes are attached as their own labeled sections, including when there
+    # are no photos (personas and camera used to be dropped in that case).
     if not idea and has_img:
         idea = IMAGE_ONLY_ILLUSTRIOUS if is_illustrious else IMAGE_ONLY_KREA2
         if len(refs) > 1:
             idea = idea.replace("this reference image", "these reference images").replace("from it", "from them")
-        if guide:
-            idea = idea + "\n\n" + guide
-    elif idea and has_img:
-        idea = idea + "\n\n" + (guide or "Use the attached image as a visual reference.")
 
     all_triggers = normalize_triggers(lora_triggers)
     modo_ropa = kwargs.get("modo_ropa", ROPA_AUTO)
@@ -1769,8 +1867,16 @@ def _generate_prompt_impl(
     ropa_inst = ropa_instruction(modo_ropa, refs, bool(all_triggers), removed_clothing)
     if ropa_inst:
         print(f"[LD-PromptWriter] ropa={normalize_ropa(kwargs.get('modo_ropa', ROPA_AUTO))!r}", flush=True)
-    extra_bits = [str(extra_instructions or "").strip(), estilo_inst, trig_inst, ropa_inst]
-    extra_instructions = "\n\n".join(b for b in extra_bits if b)
+    settings = "\n\n".join(
+        b for b in (
+            str(extra_instructions or "").strip(),
+            estilo_inst,
+            trig_inst,
+            ropa_inst,
+            pers,
+            cam,
+        ) if b
+    )
 
     try:
         model_id = pick_model(url, model)
@@ -1833,18 +1939,19 @@ def _generate_prompt_impl(
                 "and ignore everything else, even if the notes accidentally mention other details. "
                 + " ".join(rules)
             )
-            compose = idea + "\n\n" + hard + "\n\n" + "\n\n".join(notes)
-            if roles:
-                compose += "\n\n" + roles
+            note_bits = [b for b in (aspect_guide, hard, "\n\n".join(notes), roles) if b]
+            notes_text = "\n\n".join(note_bits)
+            compose = build_compose_user_text(idea, settings, notes_text)
             messages = [
                 {"role": "system", "content": system},
-                {"role": "user", "content": _user_content(compose, extra_instructions, images=[])},
+                {"role": "user", "content": _user_content(compose, "", images=[])},
             ]
         else:
             emit_activity(idioma, "composing")
+            compose = build_compose_user_text(idea, settings, "")
             messages = [
                 {"role": "system", "content": system},
-                {"role": "user", "content": _user_content(idea, extra_instructions, images=refs)},
+                {"role": "user", "content": _user_content(compose, "", images=refs)},
             ]
         two = normalize_pasadas(kwargs.get("pasadas")) == PASADAS_2
         if two:
@@ -1988,9 +2095,10 @@ def refine_prompt_pass(url, model_id, system, messages, positive, negative, is_i
     emit_activity(idioma, "pass_n", n=2, total=2)
     t0 = time.perf_counter()
     try:
+        refine_sys = SYS_REFINE_ILLUSTRIOUS if is_illustrious else SYS_REFINE_KREA2
         raw = chat_complete(
             url, model_id,
-            [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            [{"role": "system", "content": refine_sys}, {"role": "user", "content": user}],
             min(float(temperature if temperature is not None else 0.5), 0.5),
             max(int(max_tokens or 0), 1500),
             seed,
@@ -2352,6 +2460,10 @@ ACTIVITY_I18N = {
         "cached": "Usando el prompt ya generado (sin llamar al LLM)",
         "modifying": "Aplicando cambios al prompt…",
         "modified": "Prompt modificado ({secs} s)",
+        "improving": "Mejorando la idea…",
+        "improved": "Idea mejorada ({secs} s)",
+        "critiquing": "Criticando la idea…",
+        "critiqued": "Idea criticada y mejorada ({secs} s)",
         "error": "Error: {msg}",
     },
     "en": {
@@ -2376,6 +2488,10 @@ ACTIVITY_I18N = {
         "cached": "Using the prompt already in the box (no LLM call)",
         "modifying": "Applying changes to the prompt…",
         "modified": "Prompt updated ({secs} s)",
+        "improving": "Improving the idea…",
+        "improved": "Idea improved ({secs} s)",
+        "critiquing": "Critiquing the idea…",
+        "critiqued": "Idea critiqued and improved ({secs} s)",
         "error": "Error: {msg}",
     },
 }
@@ -3018,6 +3134,187 @@ def modify_prompt(
             schedule_idle_unload(url, model, idioma, descarga_idle_min)
 
 
+_IMPROVE_IDEA_SPLIT = re.compile(r"(?im)^\s*IDEA:\s*")
+_IMPROVE_CRIT_HEAD = re.compile(r"(?im)^\s*CRITIQUE:\s*")
+MISSING_IDEA_TO_IMPROVE = "⚠️ Escribí una idea para mejorarla"
+
+
+def parse_improve_output(raw: str, critique: bool) -> tuple[str, str]:
+    """Return (improved_idea, critique_text)."""
+    text = clean_output(raw or "").strip()
+    if not text:
+        return "", ""
+    if not critique:
+        parts = _IMPROVE_IDEA_SPLIT.split(text, maxsplit=1)
+        idea = parts[-1].strip() if len(parts) == 2 else text
+        idea = _IMPROVE_CRIT_HEAD.sub("", idea).strip()
+        return idea, ""
+    parts = _IMPROVE_IDEA_SPLIT.split(text, maxsplit=1)
+    if len(parts) == 2:
+        crit = _IMPROVE_CRIT_HEAD.sub("", parts[0]).strip()
+        return parts[1].strip(), crit
+    return text, ""
+
+
+def triggers_idea_context(triggers: list) -> str:
+    """LoRA context for improving an idea (not a 'put these tags in the prompt' rule)."""
+    if not triggers:
+        return ""
+    tags, desc = split_trigger_kinds(triggers)
+    parts = []
+    if tags:
+        parts.append(
+            "Stay consistent with these LoRA trigger / activation words "
+            "(keep them in the idea if they belong there; do not turn this into a tag-list prompt): "
+            + ", ".join(tags)
+        )
+    if desc:
+        parts.append(
+            "The LoRA also describes the character. Stay consistent with these traits: "
+            + ", ".join(desc)
+        )
+    return "\n".join(parts)
+
+
+def build_idea_settings_text(kwargs, refs, is_illustrious: bool) -> str:
+    estilo = style_instruction(kwargs.get("estilo_salida", ESTILO_SALIDA_DEFAULT), is_illustrious)
+    cam = camera_instruction(kwargs.get("camara", CAMARA_AUTO), refs, **kwargs)
+    n_pers = parse_personas(kwargs.get("num_personas", "1"), kwargs.get("num_personas_custom", 1))
+    pers = personas_instruction(n_pers, refs)
+    all_triggers = normalize_triggers(kwargs.get("lora_triggers", ""))
+    modo_ropa = kwargs.get("modo_ropa", ROPA_AUTO)
+    _kept, removed = effective_triggers(all_triggers, modo_ropa, ropa_image_indices(refs))
+    ropa = ropa_instruction(modo_ropa, refs, bool(all_triggers), removed)
+    extra = str(kwargs.get("extra_instructions") or "").strip()
+    return "\n\n".join(b for b in (extra, estilo, cam, pers, ropa) if b)
+
+
+def build_idea_notes_text(refs, kwargs) -> str:
+    bits = []
+    for idx, tensor, use in refs or []:
+        asp = normalize_aspect_list(use)
+        asp_lbl = aspect_label_list(asp)
+        bits.append(composer_only_rule(idx, asp))
+        saved = saved_image_description(idx, kwargs)
+        if saved:
+            bits.append(f"Notes from IMAGE {idx} — use ONLY: {asp_lbl}; ignore everything else:\n{saved}")
+    roles = _roles_rule(refs or [])
+    if roles:
+        bits.append(roles)
+    return "\n\n".join(b for b in bits if b)
+
+
+def improve_idea(
+    idea,
+    url,
+    model,
+    temperature=0.4,
+    max_tokens=800,
+    seed=0,
+    unload_after=True,
+    critique=False,
+    include_photos=False,
+    include_loras=False,
+    include_refs=False,
+    **kwargs,
+):
+    """Turn a rough idea into a clearer idea (optionally with a short critique)."""
+    idea = str(idea or "").strip()
+    if not idea:
+        raise RuntimeError(MISSING_IDEA_TO_IMPROVE)
+
+    url = _norm_url(url)
+    idioma = kwargs.get("idioma", "Español")
+    idle_min = kwargs.get("descarga_idle_min", 0)
+    cancel_idle_unload()
+    set_chat_ttl(idle_min)
+
+    refs = []
+    if include_photos or include_refs:
+        refs = collect_ref_images(
+            kwargs.get("image"),
+            kwargs.get("image_1"),
+            kwargs.get("image_2"),
+            kwargs.get("image_3"),
+            kwargs.get("image_4"),
+            kwargs.get("usar_imagen_1", "todo"),
+            kwargs.get("usar_imagen_2", "todo"),
+            kwargs.get("estilo_salida", ESTILO_SALIDA_DEFAULT),
+            **kwargs,
+        )
+    # Settings always use whatever refs we have so person/camera-from-photo
+    # rules stay consistent when photos were requested.
+    settings_refs = refs if (include_photos or include_refs) else []
+    is_illustrious = str(kwargs.get("mode") or "").lower().startswith("illustrious")
+    settings = build_idea_settings_text(kwargs, settings_refs, is_illustrious)
+    notes = build_idea_notes_text(refs, kwargs) if include_photos else ""
+    lora_txt = ""
+    if include_loras:
+        lora_txt = triggers_idea_context(normalize_triggers(kwargs.get("lora_triggers", "")))
+
+    sections = []
+    if settings:
+        sections.append("SETTINGS (always apply; do not contradict these):\n" + settings)
+    if notes:
+        sections.append(
+            "REFERENCE NOTES (text from the photos, only the listed aspects):\n" + notes
+        )
+    if lora_txt:
+        sections.append(lora_txt)
+    sections.append(
+        "CURRENT IDEA (write in this same language; keep every fact; fill only what is missing):\n"
+        + idea
+    )
+    user_text = "\n\n".join(sections)
+    images = refs if include_refs else []
+
+    emit_activity(idioma, "connecting")
+    try:
+        model_id = pick_model(url, model)
+        model_id = announce_model_use(url, model_id, idioma) or model_id
+        if include_refs and refs:
+            vis = _model_is_vision(url, model_id)
+            if vis is False:
+                raise RuntimeError(VISION_REQUIRED)
+        emit_activity(idioma, "critiquing" if critique else "improving")
+        t0 = time.perf_counter()
+        system = SYS_CRITIQUE_IDEA if critique else SYS_IMPROVE_IDEA
+        raw = chat_complete(
+            url,
+            model_id,
+            [
+                {"role": "system", "content": system},
+                {"role": "user", "content": _user_content(user_text, "", images=images)},
+            ],
+            min(float(temperature if temperature is not None else 0.4), 0.6),
+            max(int(max_tokens or 0), 600),
+            seed,
+        )
+        improved, critique_text = parse_improve_output(raw, critique)
+        secs = f"{time.perf_counter() - t0:.1f}"
+        emit_activity(idioma, "critiqued" if critique else "improved", secs=secs)
+        emit_activity(idioma, "done")
+        if not improved:
+            raise RuntimeError(
+                "El modelo no devolvió una idea. Si es un modelo con thinking, "
+                "desactivá Reasoning/Thinking en LM Studio e intentá de nuevo."
+            )
+        return improved, critique_text
+    except Exception as e:
+        emit_activity(idioma, "error", msg=str(e), level="err")
+        raise
+    finally:
+        if unload_after:
+            try:
+                emit_activity(idioma, "unloading")
+                unload_models(url, model)
+                emit_activity(idioma, "unloaded")
+            except Exception as e:
+                print(f"[LD-PromptWriter] aviso al descargar el modelo: {e}", flush=True)
+        else:
+            schedule_idle_unload(url, model, idioma, idle_min)
+
+
 def register_routes() -> None:
     """ComfyUI HTTP route for the 'Probar conexión' button. Safe if PromptServer is absent."""
     try:
@@ -3310,7 +3607,107 @@ def register_routes() -> None:
     inst.routes.get("/ld_promptwriter/test")(ld_promptwriter_test)
     inst.routes.get("/ld_promptwriter/models")(ld_promptwriter_models)
     inst.routes.get("/ld_promptwriter/input_images")(ld_promptwriter_input_images)
+
+    async def ld_promptwriter_improve(request):
+        try:
+            body = await request.json()
+        except Exception:
+            return web.json_response(
+                {"ok": False, "message": "Pedido inválido: no pude leer el JSON."},
+                status=400,
+            )
+        if not isinstance(body, dict):
+            body = {}
+        idea = str(body.get("idea") or "").strip()
+        if not idea:
+            return web.json_response({"ok": False, "message": MISSING_IDEA_TO_IMPROVE})
+
+        def _parse_img_info(info, fallback_filename=None, fallback_sub="", fallback_typ="input"):
+            if isinstance(info, dict):
+                return (
+                    info.get("filename") or info.get("image") or fallback_filename,
+                    info.get("subfolder") or fallback_sub or "",
+                    info.get("type") or fallback_typ or "input",
+                )
+            if info:
+                return info, fallback_sub, fallback_typ
+            return fallback_filename, fallback_sub, fallback_typ
+
+        include_photos = bool(body.get("include_photos"))
+        include_loras = bool(body.get("include_loras"))
+        include_refs = bool(body.get("include_refs"))
+        critique = str(body.get("improve_mode") or "improve").strip().lower() in (
+            "critique", "criticar", "critic",
+        )
+        writer_mode = body.get("writer_mode") or body.get("mode") or "Krea2 (natural)"
+        if str(writer_mode).strip().lower() in ("improve", "critique", "criticar", "critic"):
+            writer_mode = "Krea2 (natural)"
+        extra_kw = {
+            "idioma": body.get("idioma", "Español"),
+            "mode": writer_mode,
+            "estilo_salida": body.get("estilo_salida", ESTILO_SALIDA_DEFAULT),
+            "camara": body.get("camara", CAMARA_AUTO),
+            "modo_ropa": normalize_ropa(body.get("modo_ropa", ROPA_AUTO)),
+            "num_personas": body.get("num_personas", "1"),
+            "num_personas_custom": body.get("num_personas_custom", 1),
+            "extra_instructions": body.get("extra_instructions", ""),
+            "lora_triggers": body.get("lora_triggers", "") if include_loras else "",
+            "usar_imagen_1": body.get("usar_imagen_1", IMAGE_USE_DEFAULT),
+            "usar_imagen_2": body.get("usar_imagen_2", IMAGE_USE_DEFAULT),
+            "descarga_idle_min": body.get("descarga_idle_min", 0),
+        }
+        aspects = body.get("aspects") if isinstance(body.get("aspects"), dict) else {}
+        extra_kw["aspects"] = aspects
+        images = {}
+        try:
+            if include_photos or include_refs:
+                for idx in range(1, N_IMAGES + 1):
+                    for k in ASPECT_KEYS:
+                        val = body.get(f"img{idx}_{k}")
+                        if val is not None:
+                            extra_kw[f"img{idx}_{k}"] = val
+                    desc = body.get(f"desc_imagen_{idx}")
+                    if desc:
+                        extra_kw[f"desc_imagen_{idx}"] = desc
+                    sig = body.get(f"desc_aspects_{idx}")
+                    if sig:
+                        extra_kw[f"desc_aspects_{idx}"] = sig
+                    if include_refs:
+                        info = body.get(f"image_{idx}")
+                        if idx == 1 and not info:
+                            info = body.get("image")
+                        fn, sub, typ = _parse_img_info(info)
+                        if not fn:
+                            arch = body.get(f"archivo_imagen_{idx}")
+                            if arch:
+                                fn, sub, typ = _parse_img_info(arch if isinstance(arch, dict) else {"filename": arch})
+                        if fn:
+                            images[idx] = load_ref_image(fn, sub, typ)
+                for idx, tensor in images.items():
+                    if idx in (1, 2, 3, 4):
+                        extra_kw[f"image_{idx}"] = tensor
+                    else:
+                        extra_kw[f"image_{idx}"] = tensor
+            improved, critique_text = improve_idea(
+                idea,
+                body.get("url", DEFAULT_URL),
+                body.get("model", AUTO_MODEL),
+                body.get("temperature", 0.4),
+                body.get("max_tokens", 800),
+                body.get("seed", 0),
+                body.get("unload_after", True),
+                critique=critique,
+                include_photos=include_photos,
+                include_loras=include_loras,
+                include_refs=include_refs,
+                **extra_kw,
+            )
+            return web.json_response({"ok": True, "idea": improved, "critique": critique_text or ""})
+        except Exception as e:
+            return web.json_response({"ok": False, "message": str(e)})
+
     inst.routes.post("/ld_promptwriter/generate")(ld_promptwriter_generate)
+    inst.routes.post("/ld_promptwriter/improve")(ld_promptwriter_improve)
     inst.routes.post("/ld_promptwriter/describe")(ld_promptwriter_describe)
     inst.routes.post("/ld_promptwriter/modify")(ld_promptwriter_modify)
     inst.routes.post("/ld_promptwriter/translate_es")(ld_promptwriter_translate_es)
@@ -3331,11 +3728,10 @@ def register_routes() -> None:
             return web.json_response({"ok": False, "message": str(exc), "saved": []}, status=200)
 
     inst.routes.post("/ld_promptwriter/save")(ld_promptwriter_save)
+    from .describe_prompt import register_describe_prompt_route
+    register_describe_prompt_route(inst, web)
     inst._ld_promptwriter_routes = True
-    print("[LD-PromptWriter] rutas /ld_promptwriter/test, /models, /generate, /describe, /modify, /save e /input_images registradas", flush=True)
-
-
-register_routes()
+    print("[LD-PromptWriter] rutas /ld_promptwriter/test, /models, /generate, /improve, /describe, /describe_prompt, /modify, /save e /input_images registradas", flush=True)
 
 
 
@@ -5116,6 +5512,8 @@ class LD_ImagenBaseI2I:
         return (out, d, start)
 
 
+from .describe_prompt import LD_DescribirComoPrompt
+
 NODE_CLASS_MAPPINGS = {
     "LD_LMStudioConfig": LD_LMStudioConfig,
     "LD_LMStudioPromptWriterV2": LD_LMStudioPromptWriterV2,
@@ -5124,6 +5522,7 @@ NODE_CLASS_MAPPINGS = {
     "LD_EmbeddingsNegativos": LD_EmbeddingsNegativos,
     "LD_GuardarImagen": LD_GuardarImagen,
     "LD_ImagenBaseI2I": LD_ImagenBaseI2I,
+    "LD_DescribirComoPrompt": LD_DescribirComoPrompt,
     NODE_NAME: LD_LMStudioPromptWriter,  # combined node, kept for old workflows
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -5134,5 +5533,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "LD_EmbeddingsNegativos": "Embeddings negativos (LD)",
     "LD_GuardarImagen": "Guardar imagen (LD)",
     "LD_ImagenBaseI2I": "Imagen base i2i (LD)",
+    "LD_DescribirComoPrompt": "Describir como prompt (LD)",
     NODE_NAME: "LM Studio Prompt Writer (LD) (viejo)",
 }
+
+register_routes()

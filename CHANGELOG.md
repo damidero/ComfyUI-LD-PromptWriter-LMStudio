@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.2.0 — 2026-11-24
+
+### Nuevo nodo
+- **Describir como prompt (LD):** carga o conectá una imagen y el modelo de visión escribe un prompt completo, editable, en estilo Krea2 o Illustrious. Botones **Enviar a idea** y **Enviar a prompt** hacia el Writer, con deshacer de un nivel. Respeta `unload_after` del Config.
+
+### Writer
+- Botón **✨ Mejorar idea** junto a Generar, con modos **Mejorar** y **Criticar** y casillas que se guardan con el nodo: **Incluir detalle de las fotos** (prendida por defecto), **Incluir LoRAs** (prendida) e **Incluir foto de referencia** (apagada). Deshacer de un nivel. También respeta `unload_after`.
+- **Compose:** la idea ya no pisa los ajustes, las personas ni la cámara. El texto se arma en bloques (ajustes obligatorios, notas de referencia, idea del usuario). En 2 pasadas, la pasada 2 usa prompts de refine que revisan el resultado contra esos ajustes.
+
+### Layout
+- Tamaños de nodo fijos; el recálculo del alto de **Describir como prompt** y del Writer usa píxeles de layout (no `getBoundingClientRect`), así el zoom del canvas ya no deja una banda vacía ni recorta los botones.
+
+### Notas y docs
+- README en inglés y español al día; workflow de ejemplo con el nodo Describir y el layout actual.
+
 ## 1.1.3 — 2026-11-17
 
 ### Writer

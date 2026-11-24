@@ -47,6 +47,58 @@ function ensureThemeStyles() {
 }
 .ld-panel.ld-config { border-color: rgba(136, 184, 243, 0.32); }
 .ld-panel.ld-old { border-color: rgba(190, 168, 255, 0.32); }
+.ld-panel.ld-desc-prompt {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 6px 8px 8px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+.ld-panel.ld-desc-prompt > * {
+    box-sizing: border-box;
+    max-width: 100%;
+}
+.ld-panel.ld-desc-prompt .ld-textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 6px;
+    height: 140px;
+    min-height: 140px;
+    max-height: 140px;
+    overflow: auto;
+    resize: none;
+}
+.ld-panel.ld-desc-prompt .ld-desc-send {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+}
+.ld-panel.ld-desc-prompt .ld-desc-send .ld-btn {
+    flex: 1 1 0;
+    width: calc(50% - 4px);
+    min-width: 0;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    font-size: 12px;
+    line-height: 1.2;
+    padding: 7px 8px;
+    min-height: 32px;
+}
 .ld-label {
     font-size: 10px;
     letter-spacing: 0.08em;
@@ -344,6 +396,68 @@ function ensureThemeStyles() {
     font-size: 12px;
 }
 .ld-modify-input:focus { outline: none; border-color: rgba(115, 215, 224, 0.7); }
+.ld-improve-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex: 0 0 auto;
+}
+.ld-improve-mode {
+    display: flex;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+.ld-improve-mode .ld-switch {
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.ld-improve-opts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.ld-improve-opts label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    color: rgba(232, 238, 242, 0.82);
+    white-space: nowrap;
+    user-select: none;
+}
+.ld-improve-opts input[type="checkbox"] {
+    accent-color: #4fb8c4;
+    margin: 0;
+    flex: 0 0 auto;
+}
+.ld-improve-critique {
+    display: none;
+    font-size: 11px;
+    line-height: 1.4;
+    max-height: 72px;
+    overflow: auto;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(115, 215, 224, 0.22);
+    background: rgba(0,0,0,0.18);
+    color: #d7eef1;
+    white-space: pre-wrap;
+    flex: 0 0 auto;
+}
 .ld-writer-head {
     display: flex;
     align-items: center;
@@ -983,6 +1097,41 @@ const I18N = {
         i2iWarn: "⚠ La IA no ve esta imagen: solo es el punto de partida. Con denoise bajo se conserva su ropa, pose y colores aunque el prompt diga otra cosa; con denoise alto se parece menos. Para copiar ropa/pose usá las imágenes del Writer con sus chips.",
         denoise: "Denoise",
         stepsKrea2: "Steps Krea2",
+        descPromptLabel: "Describir como prompt",
+        descPromptHint: "El modelo de visión escribe un prompt completo de la imagen. Editalo acá y usalo como salida del nodo.",
+        descPromptBtn: "🔄 Describir como prompt",
+        descPromptPh: "El prompt aparece acá. Podés editarlo antes de ejecutar el workflow.",
+        descPromptNeedImage: "⚠️ Cargá o conectá una imagen primero.",
+        descPromptWorking: "⏳ Describiendo la imagen como prompt…",
+        descPromptOk: "✅ Prompt listo. Revisalo y editalo si hace falta.",
+        descPromptFail: "❌ No pude describir la imagen.",
+        descPromptConnected: "Imagen conectada",
+        sendToIdea: "Enviar a idea",
+        sendToPrompt: "Enviar a prompt",
+        sendNeedText: "⚠️ No hay texto para enviar. Describí la imagen o escribí un prompt.",
+        sendNeedWriter: "⚠️ No encontré un Writer (LD) en el flujo.",
+        sendIdeaOk: "Enviado a la idea ✓ — ↶ deshacer",
+        sendPromptOk: "Enviado al prompt ✓ — ↶ deshacer",
+        undoOk: "✅ Se restauró el texto anterior.",
+        undoTitle: "Deshacer el último envío",
+        mejorarIdea: "✨ Mejorar idea",
+        mejorarIdeaTitle: "Reescribe la idea más clara y concreta, sin convertirla en el prompt final. Las opciones de abajo se guardan con el nodo.",
+        mejorarMode: "Mejorar",
+        criticarMode: "Criticar",
+        improveFotos: "Incluir detalle de las fotos",
+        improveFotosTitle: "Usa las descripciones y chips de cada imagen. Si alguna está vencida, la describe antes (como Generar).",
+        improveLoras: "Incluir LoRAs",
+        improveLorasTitle: "Incluye el texto de activación / trigger words del Lora Manager conectado.",
+        improveRefs: "Incluir foto de referencia",
+        improveRefsTitle: "Envía las fotos al modelo de visión para que las mire al mejorar la idea.",
+        improveNeedIdea: "⚠️ Escribí una idea para mejorarla.",
+        improveWorking: "⏳ Mejorando la idea…",
+        critiqueWorking: "⏳ Criticando la idea…",
+        improveOk: "✅ Idea mejorada. ↶ deshacer",
+        critiqueOk: "✅ Idea criticada y mejorada. ↶ deshacer",
+        improveFail: "❌ No pude mejorar la idea.",
+        improveUndoTitle: "Restaurar la idea anterior",
+        improveUndoOk: "✅ Se restauró la idea anterior.",
     },
     en: {
         writerTitle: "LM Studio Prompt Writer (LD)",
@@ -1082,6 +1231,41 @@ const I18N = {
         i2iWarn: "⚠ The AI does not see this image: it is only the starting point. At low denoise its clothing, pose and colors stay even if the prompt says otherwise; at high denoise it looks less like it. To copy clothing/pose, use the Writer images with their chips.",
         denoise: "Denoise",
         stepsKrea2: "Krea2 steps",
+        descPromptLabel: "Describe as prompt",
+        descPromptHint: "The vision model writes a full prompt from the image. Edit it here and use it as the node output.",
+        descPromptBtn: "🔄 Describe as prompt",
+        descPromptPh: "The prompt appears here. You can edit it before running the workflow.",
+        descPromptNeedImage: "⚠️ Load or connect an image first.",
+        descPromptWorking: "⏳ Describing the image as a prompt…",
+        descPromptOk: "✅ Prompt ready. Review and edit it if you need to.",
+        descPromptFail: "❌ I couldn't describe the image.",
+        descPromptConnected: "Connected image",
+        sendToIdea: "Send to idea",
+        sendToPrompt: "Send to prompt",
+        sendNeedText: "⚠️ There is no text to send. Describe the image or type a prompt.",
+        sendNeedWriter: "⚠️ I could not find a Writer (LD) node in the workflow.",
+        sendIdeaOk: "Sent to the idea ✓ — ↶ undo",
+        sendPromptOk: "Sent to the prompt ✓ — ↶ undo",
+        undoOk: "✅ The previous text was restored.",
+        undoTitle: "Undo the last send",
+        mejorarIdea: "✨ Improve idea",
+        mejorarIdeaTitle: "Rewrites the idea so it is clearer and more concrete, without turning it into the final prompt. The options below are saved with the node.",
+        mejorarMode: "Improve",
+        criticarMode: "Critique",
+        improveFotos: "Include photo details",
+        improveFotosTitle: "Uses each image's description and chips. Stale ones are described first (same as Generate).",
+        improveLoras: "Include LoRAs",
+        improveLorasTitle: "Includes activation / trigger text from the connected LoRA Manager.",
+        improveRefs: "Include reference photos",
+        improveRefsTitle: "Sends the photos to the vision model so it can look at them while improving the idea.",
+        improveNeedIdea: "⚠️ Type an idea first so I can improve it.",
+        improveWorking: "⏳ Improving the idea…",
+        critiqueWorking: "⏳ Critiquing the idea…",
+        improveOk: "✅ Idea improved. ↶ undo",
+        critiqueOk: "✅ Idea critiqued and improved. ↶ undo",
+        improveFail: "❌ I couldn't improve the idea.",
+        improveUndoTitle: "Restore the previous idea",
+        improveUndoOk: "✅ The previous idea was restored.",
     },
 };
 
@@ -2192,6 +2376,26 @@ async function postGenerate(body) {
     return data;
 }
 
+async function postImprove(body) {
+    const res = await api.fetchApi("/ld_promptwriter/improve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+    });
+    let data = null;
+    try {
+        data = await res.json();
+    } catch (_e) {
+        throw new Error(
+            `Error de red o el servidor no respondió (${res.status || "sin estado"}).`
+        );
+    }
+    if (!res.ok && !data?.message) {
+        throw new Error(`Error de red (${res.status}).`);
+    }
+    return data;
+}
+
 async function postModify(body) {
     const res = await api.fetchApi("/ld_promptwriter/modify", {
         method: "POST",
@@ -2606,8 +2810,197 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     clearAllBtn.className = "ld-btn ld-btn-blue";
     clearAllBtn.title = t(node, "limpiarTitle"); clearAllBtn.dataset.i18nTitle = "limpiarTitle";
     if (tone === "old") clearAllBtn.style.display = "none";
-    actions.append(btn, clearAllBtn, status);
+    const improveBtn = styleEl("button", {}, t(node, "mejorarIdea"));
+    improveBtn.type = "button";
+    improveBtn.className = "ld-btn";
+    improveBtn.dataset.i18n = "mejorarIdea";
+    improveBtn.title = t(node, "mejorarIdeaTitle");
+    improveBtn.dataset.i18nTitle = "mejorarIdeaTitle";
+    if (!includeIdea) improveBtn.style.display = "none";
+    actions.append(btn, improveBtn, clearAllBtn, status);
     right.appendChild(actions);
+
+    const improveBar = styleEl("div", {});
+    improveBar.className = "ld-improve-bar";
+    const improveMode = styleEl("div", {});
+    improveMode.className = "ld-improve-mode";
+    const modeImproveBtn = styleEl("button", {}, t(node, "mejorarMode"));
+    modeImproveBtn.type = "button";
+    modeImproveBtn.className = "ld-switch on";
+    modeImproveBtn.dataset.i18n = "mejorarMode";
+    modeImproveBtn.dataset.mode = "improve";
+    const modeCritiqueBtn = styleEl("button", {}, t(node, "criticarMode"));
+    modeCritiqueBtn.type = "button";
+    modeCritiqueBtn.className = "ld-switch";
+    modeCritiqueBtn.dataset.i18n = "criticarMode";
+    modeCritiqueBtn.dataset.mode = "critique";
+    improveMode.append(modeImproveBtn, modeCritiqueBtn);
+    const improveOpts = styleEl("div", {});
+    improveOpts.className = "ld-improve-opts";
+    const mkImproveCheck = (key, labelKey, titleKey, fallback) => {
+        const props = node.properties = node.properties || {};
+        if (props[key] === undefined) props[key] = fallback;
+        const lab = document.createElement("label");
+        lab.title = t(node, titleKey);
+        lab.dataset.i18nTitle = titleKey;
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.checked = !!props[key];
+        const span = document.createElement("span");
+        span.dataset.i18n = labelKey;
+        span.textContent = t(node, labelKey);
+        lab.append(box, span);
+        box.addEventListener("change", () => {
+            node.properties = node.properties || {};
+            node.properties[key] = !!box.checked;
+            node.graph?.setDirtyCanvas?.(true, true);
+        });
+        improveOpts.appendChild(lab);
+        return box;
+    };
+    const chkFotos = mkImproveCheck("ld_improve_fotos", "improveFotos", "improveFotosTitle", true);
+    const chkLoras = mkImproveCheck("ld_improve_loras", "improveLoras", "improveLorasTitle", true);
+    const chkRefs = mkImproveCheck("ld_improve_refs", "improveRefs", "improveRefsTitle", false);
+    improveBar.append(improveMode, improveOpts);
+    const critiqueBox = styleEl("div", {}, "");
+    critiqueBox.className = "ld-improve-critique";
+    const applyImproveMode = (mode) => {
+        const next = mode === "critique" ? "critique" : "improve";
+        node.properties = node.properties || {};
+        node.properties.ld_improve_mode = next;
+        modeImproveBtn.classList.toggle("on", next === "improve");
+        modeCritiqueBtn.classList.toggle("on", next === "critique");
+        node.graph?.setDirtyCanvas?.(true, true);
+    };
+    applyImproveMode(node.properties?.ld_improve_mode || "improve");
+    modeImproveBtn.addEventListener("click", () => applyImproveMode("improve"));
+    modeCritiqueBtn.addEventListener("click", () => applyImproveMode("critique"));
+    const setCritiqueText = (text) => {
+        const body = String(text || "").trim();
+        critiqueBox.textContent = body;
+        critiqueBox.style.display = body ? "block" : "none";
+        scheduleWriterResize(node);
+    };
+    const applyIdeaUndoStatus = () => {
+        if (!node._ldIdeaUndo && node._ldIdeaUndo !== "") return;
+        const crit = !!node._ldIdeaUndoCritique;
+        status.textContent = t(node, crit ? "critiqueOk" : "improveOk");
+        status.style.cursor = "pointer";
+        status.title = t(node, "improveUndoTitle");
+        status.onclick = () => {
+            if (ideaArea) ideaArea.value = node._ldIdeaUndo ?? "";
+            const w = widgetByName(node, "idea");
+            if (w) w.value = ideaArea ? ideaArea.value : (node._ldIdeaUndo ?? "");
+            node._ldIdeaUndo = null;
+            node._ldIdeaUndoCritique = false;
+            setCritiqueText("");
+            status.style.cursor = "";
+            status.title = "";
+            status.onclick = null;
+            setStatus(t(node, "improveUndoOk"));
+            syncToWidgets();
+        };
+    };
+    if (includeIdea) {
+        right.append(improveBar, critiqueBox);
+        improveBtn.addEventListener("click", async () => {
+            if (!ideaArea) return;
+            syncToWidgets();
+            const idea = String(ideaArea.value || widgetValue(node, "idea", "") || "").trim();
+            if (!idea) {
+                setStatus(t(node, "improveNeedIdea"));
+                return;
+            }
+            const cfgNode = findUpstreamConfig(node);
+            const cfg = readConfigValues(cfgNode);
+            if (!cfg) {
+                setStatus(t(node, "missingCfg"));
+                return;
+            }
+            const includePhotos = !!chkFotos.checked;
+            const includeLoras = !!chkLoras.checked;
+            const includeRefs = !!chkRefs.checked;
+            const critique = (node.properties?.ld_improve_mode || "improve") === "critique";
+            improveBtn.disabled = true;
+            btn.disabled = true;
+            modifyBtn.disabled = true;
+            setCritiqueText("");
+            setStatus(t(node, critique ? "critiqueWorking" : "improveWorking"));
+            try {
+                if (includePhotos) {
+                    await ensureImageDescriptions(node, { setStatus });
+                    syncToWidgets();
+                }
+                let triggerInfo = { text: "", source: "none" };
+                if (includeLoras) {
+                    try {
+                        triggerInfo = await readUpstreamLoraTriggers(node);
+                    } catch (_e) {
+                        triggerInfo = { text: "", source: "unknown" };
+                    }
+                }
+                const body = {
+                    ...cfg,
+                    idea,
+                    improve_mode: critique ? "critique" : "improve",
+                    include_photos: includePhotos,
+                    include_loras: includeLoras,
+                    include_refs: includeRefs,
+                    estilo_salida: String(widgetValue(node, "estilo_salida", ESTILO_SALIDA_DEFAULT)),
+                    idioma: cfg.idioma || "Español",
+                    num_personas: String(widgetValue(node, "num_personas", "1") || "1"),
+                    num_personas_custom: widgetValue(node, "num_personas_custom", 1),
+                    camara: String(widgetValue(node, "camara", CAMARA_AUTO) || CAMARA_AUTO),
+                    modo_ropa: normalizeRopa(widgetValue(node, "modo_ropa", ROPA_AUTO)),
+                };
+                if (includeLoras && triggerInfo.text) body.lora_triggers = triggerInfo.text;
+                if (includePhotos || includeRefs) {
+                    const aspects = {};
+                    for (let i = 1; i <= N_IMAGES; i++) {
+                        const img = refImageInfo(node, i);
+                        if (img && includeRefs) {
+                            body[`image_${i}`] = img;
+                            body[`archivo_imagen_${i}`] = serializeArchivo(img);
+                        }
+                        if (includePhotos) {
+                            body[`desc_imagen_${i}`] = String(widgetValue(node, `desc_imagen_${i}`, "") || "");
+                            body[`desc_aspects_${i}`] = descSigFor(node, i);
+                            const active = readImageAspects(node, i);
+                            aspects[String(i)] = active;
+                            for (const k of ASPECT_KEYS) {
+                                body[`img${i}_${k}`] = !!widgetValue(node, `img${i}_${k}`, false);
+                            }
+                        }
+                    }
+                    if (includePhotos) body.aspects = aspects;
+                }
+                const data = await postImprove(body);
+                if (!data?.ok) {
+                    setStatus(data?.message || t(node, "improveFail"));
+                    return;
+                }
+                const nextIdea = String(data.idea || "").trim();
+                if (!nextIdea) {
+                    setStatus(t(node, "improveFail"));
+                    return;
+                }
+                node._ldIdeaUndo = idea;
+                node._ldIdeaUndoCritique = critique;
+                ideaArea.value = nextIdea;
+                const w = widgetByName(node, "idea");
+                if (w) w.value = nextIdea;
+                setCritiqueText(data.critique || "");
+                syncToWidgets();
+                applyIdeaUndoStatus();
+            } catch (err) {
+                setStatus(`❌ ${err?.message || t(node, "improveFail")}`);
+            } finally {
+                improveBtn.disabled = false;
+                btn.disabled = false;
+                modifyBtn.disabled = false;
+            }
+        });
+    }
     const modifyRow = styleEl("div", {});
     modifyRow.className = "ld-modify-row";
     const cambiosLabel = styleEl("div", {}, t(node, "cambios"));
@@ -3275,6 +3668,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
     btn.addEventListener("click", async () => {
         setStatus("⏳ Generando...");
         btn.disabled = true;
+        if (improveBtn) improveBtn.disabled = true;
         try {
             syncToWidgets();
             const used = await resolveEditedPrompts(node, { setStatus, pos });
@@ -3296,6 +3690,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
             setStatus(`❌ ${err?.message || "No pude generar el prompt."}`);
         } finally {
             btn.disabled = false;
+            if (improveBtn) improveBtn.disabled = false;
         }
     });
 
@@ -3329,6 +3724,7 @@ function buildWriterPanel(node, { includeIdea, onGenerate, tone }) {
         }
         applyVistaVisibility(node);
         refreshFolds();
+        if (node._ldIdeaUndo != null) applyIdeaUndoStatus();
         scheduleWriterResize(node);
     };
 
@@ -3474,16 +3870,265 @@ function attachConfigActivityLog(node) {
     hookActivityLog();
 }
 
-function growConfigToFit(node) {
+const CONFIG_BOTTOM_PAD = 6;
+const DESCRIBE_BOTTOM_PAD = 8;
+
+function widgetRenderedBottom(node) {
+    const width = node?.size?.[0] || 400;
+    let bottom = 0;
+    let anyY = false;
+    for (const w of node?.widgets || []) {
+        if (!w) continue;
+        let h = 20;
+        if (typeof w.computeSize === "function") {
+            try {
+                const s = w.computeSize(width);
+                h = Array.isArray(s) ? Number(s[1]) : 20;
+            } catch (_e) {}
+        } else if (w.computedHeight != null) {
+            h = Number(w.computedHeight);
+        }
+        if (!Number.isFinite(h) || h <= 0) continue;
+        const y = Number(w.last_y ?? w.y);
+        if (Number.isFinite(y)) {
+            anyY = true;
+            bottom = Math.max(bottom, y + h);
+        }
+    }
+    return anyY ? bottom : 0;
+}
+
+function hookConfigComputeSize(node) {
+    if (!node || node._ldConfigComputeHooked) return;
+    node._ldConfigComputeHooked = true;
+    node.computeSize = function (out) {
+        const width = Math.max(this.size?.[0] || 400, 400);
+        const WH = (typeof LiteGraph !== "undefined" && LiteGraph.NODE_WIDGET_HEIGHT) || 20;
+        const SH = (typeof LiteGraph !== "undefined" && LiteGraph.NODE_SLOT_HEIGHT) || 20;
+        let widgetsH = 0;
+        for (const w of this.widgets || []) {
+            if (!w) continue;
+            let h = WH;
+            if (typeof w.computeSize === "function") {
+                try {
+                    const s = w.computeSize(width);
+                    h = Array.isArray(s) ? Number(s[1]) : WH;
+                } catch (_e) {}
+            }
+            if (!Number.isFinite(h) || h < 0) continue;
+            widgetsH += h + 4;
+        }
+        let slotH = 2 * SH + 4;
+        let maxY = 0;
+        for (const inp of this.inputs || []) {
+            if (!inp || inp.widget) continue;
+            const y = Number(inp.pos?.[1]);
+            if (Number.isFinite(y)) maxY = Math.max(maxY, y);
+        }
+        if (maxY > 0) slotH = Math.ceil(maxY + SH * 0.6);
+        const rendered = widgetRenderedBottom(this);
+        const height = rendered > 0
+            ? Math.ceil(rendered + CONFIG_BOTTOM_PAD)
+            : Math.ceil(slotH + widgetsH + CONFIG_BOTTOM_PAD);
+        const size = out || [width, height];
+        size[0] = width;
+        size[1] = height;
+        return size;
+    };
+}
+
+const DESCRIBE_PANEL_PAD_BOTTOM = 8;
+// Floor from the fixed DOM pieces (layout px, not zoomed viewport px):
+// thumb 140 + textarea 140 + Describir row ~32 + Enviar row ~32 +
+// name 14 + label 14 + hint (~30) + padding 14 + border 2 + margins ~20.
+const DESCRIBE_PANEL_MIN = 430;
+const DESCRIBE_PANEL_FALLBACK = 446;
+
+function describeContentHeight(root) {
+    if (!root) return 0;
+    // Layout (CSS) pixels only. getBoundingClientRect is in viewport pixels
+    // and shrinks/grows with the Comfy canvas zoom, which made the node too
+    // short when zoomed out and too tall when zoomed in.
+    const prevPos = root.style.position;
+    if (!prevPos) root.style.position = "relative";
+    let padTop = 6;
+    let padBot = DESCRIBE_PANEL_PAD_BOTTOM;
+    let borderTop = 1;
+    let borderBot = 1;
     try {
-        const min = typeof node.computeSize === "function" ? node.computeSize() : null;
-        if (!min || !node.size) return;
-        if (node.size[1] < min[1]) {
-            if (typeof node.setSize === "function") node.setSize([node.size[0], min[1]]);
-            else node.size[1] = min[1];
-            node.graph?.setDirtyCanvas?.(true, true);
+        const cs = (typeof getComputedStyle === "function") ? getComputedStyle(root) : null;
+        if (cs) {
+            padTop = parseFloat(cs.paddingTop) || padTop;
+            padBot = parseFloat(cs.paddingBottom) || padBot;
+            borderTop = parseFloat(cs.borderTopWidth) || borderTop;
+            borderBot = parseFloat(cs.borderBottomWidth) || borderBot;
         }
     } catch (_e) {}
+    let sum = padTop + padBot + borderTop + borderBot;
+    for (const child of Array.from(root.children || [])) {
+        let mt = 0;
+        let mb = 0;
+        try {
+            const st = (typeof getComputedStyle === "function") ? getComputedStyle(child) : null;
+            if (st) {
+                mt = parseFloat(st.marginTop) || 0;
+                mb = parseFloat(st.marginBottom) || 0;
+            }
+        } catch (_e) {}
+        sum += mt + (child.offsetHeight || 0) + mb;
+    }
+    const last = root.querySelector?.(".ld-desc-send") || root.lastElementChild;
+    let viaLast = 0;
+    if (last) {
+        viaLast = (last.offsetTop || 0) + (last.offsetHeight || 0) + padBot + borderBot;
+    }
+    // After the caller has set height:auto, these are the shrink-wrapped
+    // content size in layout pixels (not a stretched fill).
+    const viaBox = Math.max(root.offsetHeight || 0, root.scrollHeight || 0);
+    if (prevPos !== undefined && !prevPos) root.style.position = prevPos;
+    return Math.ceil(Math.max(sum, viaLast, viaBox, DESCRIBE_PANEL_MIN));
+}
+
+function applyDescribePanelHeight(host, root, h) {
+    const px = `${h}px`;
+    if (root && root.style) {
+        root.style.height = px;
+        root.style.minHeight = px;
+        root.style.maxHeight = px;
+        root.style.overflow = "hidden";
+    }
+    if (host && host !== root && host.style) {
+        host.style.height = px;
+        host.style.minHeight = px;
+        host.style.maxHeight = px;
+        host.style.overflow = "hidden";
+    }
+}
+
+function measureDescribePanelHeight(node, opts) {
+    const force = !!(opts && opts.force);
+    if (!force && node && node._ldDescPanelH) return node._ldDescPanelH;
+    const panel = (node?.widgets || []).find((w) => w && w.name === "ld_desc_prompt_ui");
+    const host = panel && (panel.element || panel.inputEl);
+    const root = host && (host.querySelector?.(".ld-panel") || host) || host;
+    let h = 0;
+    if (root) {
+        if (host && host !== root && host.style) {
+            host.style.height = "auto";
+            host.style.minHeight = "0";
+            host.style.maxHeight = "none";
+        }
+        root.style.height = "auto";
+        root.style.minHeight = "0";
+        root.style.maxHeight = "none";
+        root.style.overflow = "visible";
+        h = describeContentHeight(root);
+        if (h >= DESCRIBE_PANEL_MIN) applyDescribePanelHeight(host, root, h);
+    }
+    if (h < DESCRIBE_PANEL_MIN) h = 0;
+    if (h && node) {
+        node._ldDescPanelH = h;
+        if (panel) {
+            panel.computeSize = function (width) { return [width || 200, node._ldDescPanelH]; };
+            panel.getMinHeight = () => node._ldDescPanelH;
+            panel.getMaxHeight = () => node._ldDescPanelH;
+            panel.computedHeight = node._ldDescPanelH;
+        }
+    }
+    return h || (node && node._ldDescPanelH) || 0;
+}
+
+function hookDescribeComputeSize(node) {
+    if (!node || node._ldDescribeComputeHooked) return;
+    node._ldDescribeComputeHooked = true;
+    node.computeSize = function () {
+        const width = Math.max(this.size?.[0] || 400, 400);
+        // Use the cached panel height only — never remasure here, or
+        // computeSize grows on every redraw if the host fills the node.
+        const panelH = this._ldDescPanelH || DESCRIBE_PANEL_FALLBACK;
+        const panel = (this.widgets || []).find((w) => w && w.name === "ld_desc_prompt_ui");
+        const y = Number(panel?.last_y ?? panel?.y);
+        const header = Number.isFinite(y) ? y : visibleHeaderHeight(this);
+        return [width, Math.ceil(header + panelH + DESCRIBE_BOTTOM_PAD)];
+    };
+}
+
+function fitDescribeNode(node) {
+    if (!node) return;
+    try {
+        measureDescribePanelHeight(node, { force: true });
+        hookDescribeComputeSize(node);
+        growConfigToFit(node);
+    } catch (err) {
+        console.warn("[LD-PromptWriter] fitDescribeNode:", err);
+    }
+}
+
+function scheduleDescribeFit(node) {
+    if (!node) return;
+    const run = () => fitDescribeNode(node);
+    run();
+    if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+            run();
+            requestAnimationFrame(run);
+        });
+    }
+    setTimeout(run, 0);
+    setTimeout(run, 50);
+    setTimeout(run, 120);
+}
+
+function setNodeSizeAllowPin(node, w, h) {
+    if (!node) return;
+    const wasPinned = !!(node.flags && node.flags.pinned);
+    if (wasPinned) {
+        node.flags = node.flags || {};
+        node.flags.pinned = false;
+    }
+    try {
+        if (typeof node.setSize === "function") node.setSize([w, h]);
+        if (!node.size) node.size = [w, h];
+        else {
+            node.size[0] = w;
+            node.size[1] = h;
+        }
+    } finally {
+        if (wasPinned) {
+            node.flags = node.flags || {};
+            node.flags.pinned = true;
+        }
+    }
+}
+
+function growConfigToFit(node) {
+    if (!node) return;
+    try {
+        const typ = String(node.type || node.comfyClass || "");
+        if (typ === "LD_LMStudioConfig") hookConfigComputeSize(node);
+        if (typ === "LD_DescribirComoPrompt") hookDescribeComputeSize(node);
+        const min = typeof node.computeSize === "function" ? node.computeSize() : null;
+        if (!min) return;
+        const w = Math.max(node.size?.[0] || 0, min[0] || 0, 200);
+        const h = Math.max(1, Math.ceil(min[1] || 0));
+        const curW = node.size?.[0] || 0;
+        const curH = node.size?.[1] || 0;
+        const allowShrink = typ === "LD_LMStudioConfig" || typ === "LD_DescribirComoPrompt";
+        if (!allowShrink) {
+            if (node.size && curH < h) {
+                if (typeof node.setSize === "function") node.setSize([w, h]);
+                else node.size = [w, h];
+                node.graph?.setDirtyCanvas?.(true, true);
+            }
+            return;
+        }
+        if (Math.abs(curH - h) < 2 && curW === w) return;
+        setNodeSizeAllowPin(node, w, h);
+        node.graph?.setDirtyCanvas?.(true, true);
+        node.setDirtyCanvas?.(true, true);
+    } catch (err) {
+        console.warn("[LD-PromptWriter] growConfigToFit:", err);
+    }
 }
 
 // Config inputs (image_1..8, lora_triggers, neg_embeddings) laid out in 2
@@ -3568,10 +4213,9 @@ function setupConfigNode(nodeType) {
         shrinkExtraInstructions(this);
         hookIdiomaWidget(this);
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
-        if (!this.size || this.size[1] < 1000) {
-            if (typeof this.setSize === "function") this.setSize([400, 1040]);
-            else this.size = [400, 1040];
-        }
+        hookConfigComputeSize(this);
+        setTimeout(() => growConfigToFit(this), 0);
+        setTimeout(() => growConfigToFit(this), 50);
     });
     installSafeHook(nodeType, "onConfigure", function (info) {
         repairNodeWidgets(this);
@@ -3586,9 +4230,11 @@ function setupConfigNode(nodeType) {
         if (findModeloGen()) hideWidget(widgetByName(this, "idioma"));
         this._ldRefreshModels?.(false);
         refreshAllWriterI18n();
-        // Saved workflows keep their size; grow only the height if the new
-        // activity box below "Probar conexión" doesn't fit.
+        hookConfigComputeSize(this);
+        // Fit to content (grow or shrink) so leftover empty space under
+        // "Pasadas del LLM" is not kept from a saved oversized height.
         setTimeout(() => growConfigToFit(this), 0);
+        setTimeout(() => growConfigToFit(this), 50);
     });
     installSafeHook(nodeType, "onConnectionsChange", function () {
         layoutConfigInputs(this);
@@ -3681,12 +4327,24 @@ function attachConfigPasadas(node) {
 function shrinkExtraInstructions(node) {
     const w = widgetByName(node, "extra_instructions");
     if (!w) return;
-    w.computeSize = (width) => [width || 200, 52];
-    if (w.inputEl) {
-        w.inputEl.style.minHeight = "36px";
-        w.inputEl.style.height = "40px";
-        w.inputEl.style.maxHeight = "52px";
-    }
+    // Half-height box (24px), but keep enough widget slot for the label
+    // plus the same ~4px gap LiteGraph uses between other Config widgets.
+    // idioma is often hidden, so this slot sits above descarga_idle_min.
+    w.computeSize = (width) => [width || 200, 44];
+    const apply = () => {
+        if (w.inputEl) {
+            w.inputEl.style.minHeight = "22px";
+            w.inputEl.style.height = "24px";
+            w.inputEl.style.maxHeight = "26px";
+            w.inputEl.style.marginBottom = "4px";
+            w.inputEl.style.resize = "none";
+            w.inputEl.style.overflow = "auto";
+            w.inputEl.style.boxSizing = "border-box";
+        }
+        growConfigToFit(node);
+    };
+    apply();
+    if (!w.inputEl) setTimeout(apply, 0);
 }
 
 function hookIdiomaWidget(node) {
@@ -3858,9 +4516,11 @@ function scheduleWriterResize(node) {
         const el = node._ldPanel?.root;
         if (!el) return;
         el.style.height = "auto";
+        el.style.minHeight = "0";
+        el.style.maxHeight = "none";
         const panelH = Math.max(WRITER_PANEL_H_MIN, Math.ceil(el.scrollHeight || 0)) + WRITER_BOTTOM_PAD;
         // Re-measure whenever any block of the panel changes size (thumbnails
-        // loading, notes wrapping, folds), not only on the first layout.
+        // loading, notes wrapping, folds, the Mejorar idea row), not only on the first layout.
         if (!node._ldResizeObs && typeof ResizeObserver === "function") {
             try {
                 node._ldResizeObs = new ResizeObserver(() => {
@@ -3872,15 +4532,21 @@ function scheduleWriterResize(node) {
                 for (const child of Array.from(el.children)) node._ldResizeObs.observe(child);
             } catch (_e) {}
         }
-        // Stretch the background down to the node's bottom edge.
-        el.style.height = `${panelH + WRITER_BG_EXTRA}px`;
-        if (node._ldPanelH && Math.abs(node._ldPanelH - panelH) < 2) return;
+        // Panel height includes WRITER_BOTTOM_PAD so the background ends just
+        // after the last row (Mejorar idea, image grid, etc.), with no overflow.
+        el.style.height = `${panelH}px`;
+        el.style.minHeight = `${panelH}px`;
+        el.style.maxHeight = `${panelH}px`;
+        if (node._ldPanelH && Math.abs(node._ldPanelH - panelH) < 2) {
+            const nodeH0 = panelH + visibleHeaderHeight(node) + 8;
+            const w0 = Math.max(1100, Math.min(node.size?.[0] || WRITER_NODE_W, 1800));
+            if (node.size && Math.abs((node.size[1] || 0) - nodeH0) < 2 && node.size[0] === w0) return;
+        }
         node._ldPanelH = panelH;
-        const nodeH = panelH + visibleHeaderHeight(node) + 4;
+        const nodeH = panelH + visibleHeaderHeight(node) + 8;
         const w = Math.max(1100, Math.min(node.size?.[0] || WRITER_NODE_W, 1800));
         if (!node.size || node.size[0] !== w || Math.abs((node.size[1] || 0) - nodeH) >= 2) {
-            if (typeof node.setSize === "function") node.setSize([w, nodeH]);
-            else node.size = [w, nodeH];
+            setNodeSizeAllowPin(node, w, nodeH);
         }
         const dom = (node.widgets || []).find((x) => x && x.name === "ld_writer_panel");
         if (dom) {
@@ -4086,7 +4752,7 @@ function setupWriterV2(nodeType) {
     const origComputeSize = nodeType.prototype.computeSize;
     nodeType.prototype.computeSize = function () {
         const panelH = this._ldPanelH || WRITER_NODE_H;
-        return [this.size?.[0] || WRITER_NODE_W, panelH + visibleHeaderHeight(this) + 4];
+        return [this.size?.[0] || WRITER_NODE_W, panelH + visibleHeaderHeight(this) + 8];
     };
 
     const hideWriterWidgets = (node) => {
@@ -4908,6 +5574,482 @@ async function prepareAllWritersForQueue() {
     }
 }
 
+
+
+function findDescribeWriter(originNode) {
+    const nodes = (app.graph && (app.graph._nodes || app.graph.nodes)) || [];
+    const writers = [];
+    for (const n of nodes) {
+        const typ = String((n && (n.type || n.comfyClass)) || "");
+        if (typ === WRITER_V2) writers.push(n);
+    }
+    if (!writers.length) return null;
+    const myCfg = walkUpstream(originNode, "config");
+    if (myCfg) {
+        for (let i = 0; i < writers.length; i++) {
+            if (walkUpstream(writers[i], "config") === myCfg) return writers[i];
+        }
+    }
+    return writers[0];
+}
+
+function getWriterField(writer, field) {
+    const panel = writer && writer._ldPanel;
+    if (field === "idea") {
+        if (panel && panel.ideaArea) return String(panel.ideaArea.value ?? "");
+        return String(widgetValue(writer, "idea", "") ?? "");
+    }
+    if (panel && panel.pos) return String(panel.pos.value ?? "");
+    return String(widgetValue(writer, "prompt_generado", "") ?? "");
+}
+
+function setWriterField(writer, field, text) {
+    const value = String(text ?? "");
+    const panel = writer && writer._ldPanel;
+    if (field === "idea") {
+        if (panel && panel.ideaArea) panel.ideaArea.value = value;
+        const w = widgetByName(writer, "idea");
+        if (w) {
+            w.value = value;
+            if (typeof w.callback === "function") w.callback(value);
+        }
+    } else {
+        if (panel && panel.pos) panel.pos.value = value;
+        const w = widgetByName(writer, "prompt_generado");
+        if (w) {
+            w.value = value;
+            if (typeof w.callback === "function") w.callback(value);
+        }
+        const uw = widgetByName(writer, "usar_prompt_generado");
+        if (uw) {
+            uw.value = true;
+            if (typeof uw.callback === "function") uw.callback(true);
+        }
+        if (panel && panel.useBox) panel.useBox.checked = true;
+    }
+    if (panel && typeof panel.syncToWidgets === "function") panel.syncToWidgets();
+    if (writer.graph && typeof writer.graph.setDirtyCanvas === "function") {
+        writer.graph.setDirtyCanvas(true, true);
+    }
+    if (app.graph && typeof app.graph.setDirtyCanvas === "function") {
+        app.graph.setDirtyCanvas(true, true);
+    }
+    if (app.graph && typeof app.graph.change === "function") app.graph.change();
+}
+
+function setupDescribirComoPrompt(nodeType) {
+    const paint = (node) => applyNodeTheme(node, { color: "#203c40", bgcolor: "#1b222b" });
+    const ensureUi = (node) => {
+        paint(node);
+        hideWidget(widgetByName(node, "archivo"));
+        hideWidget(widgetByName(node, "prompt"));
+        const cfgLinked = (node.inputs || []).some((i) => i.name === "config" && i.link != null);
+        const modeW = widgetByName(node, "mode");
+        if (cfgLinked) {
+            hideWidget(modeW);
+        } else if (modeW) {
+            modeW.hidden = false;
+            if (modeW.computeSize) delete modeW.computeSize;
+            if (modeW.label !== undefined) modeW.label = is_english_ui(node) ? "Mode" : "Modo";
+        }
+        if (node._ldDescPromptUi) {
+            node._ldRefreshI18n?.();
+            node._ldRefreshThumb?.();
+            return;
+        }
+
+        const root = document.createElement("div");
+        root.className = "ld-panel ld-desc-prompt";
+        root.style.padding = "6px 8px 8px";
+        root.style.boxSizing = "border-box";
+        root.style.width = "100%";
+        root.style.maxWidth = "100%";
+        root.style.overflow = "hidden";
+
+        const label = document.createElement("div");
+        label.className = "ld-label";
+        label.dataset.i18n = "descPromptLabel";
+        label.textContent = t(node, "descPromptLabel");
+
+        const hint = document.createElement("div");
+        hint.className = "ld-hint";
+        hint.dataset.i18n = "descPromptHint";
+        hint.textContent = t(node, "descPromptHint");
+        hint.style.fontSize = "11px";
+        hint.style.opacity = "0.75";
+        hint.style.margin = "0 0 6px";
+        hint.style.whiteSpace = "normal";
+
+        const thumb = document.createElement("div");
+        thumb.className = "ld-thumb";
+        Object.assign(thumb.style, { height: "140px", width: "100%", position: "relative", cursor: "pointer" });
+        const ph = document.createElement("div");
+        ph.className = "ld-thumb-ph";
+        ph.dataset.i18n = "thumbPh";
+        ph.textContent = t(node, "thumbPh");
+        const imgEl = document.createElement("img");
+        imgEl.alt = "";
+        imgEl.style.display = "none";
+        const pickBtn = document.createElement("button");
+        pickBtn.type = "button";
+        pickBtn.className = "ld-thumb-pick";
+        pickBtn.textContent = "📂";
+        pickBtn.dataset.i18nTitle = "pickTitle";
+        pickBtn.title = t(node, "pickTitle");
+        const clearBtn = document.createElement("button");
+        clearBtn.type = "button";
+        clearBtn.className = "ld-thumb-clear";
+        clearBtn.textContent = "✖";
+        clearBtn.dataset.i18nTitle = "clearTitle";
+        clearBtn.title = t(node, "clearTitle");
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.style.display = "none";
+        thumb.append(ph, imgEl, pickBtn, clearBtn, fileInput);
+
+        const nameEl = document.createElement("div");
+        nameEl.className = "ld-thumb-name";
+
+        const actions = document.createElement("div");
+        actions.style.cssText = "display:flex;flex-direction:row;align-items:center;gap:8px;margin:8px 0 6px;";
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "ld-btn";
+        btn.dataset.i18n = "descPromptBtn";
+        btn.textContent = t(node, "descPromptBtn");
+        const status = document.createElement("div");
+        status.className = "ld-status";
+        status.style.flex = "1 1 auto";
+        actions.append(btn, status);
+
+        const sendRow = document.createElement("div");
+        sendRow.className = "ld-desc-send";
+        const sendIdeaBtn = document.createElement("button");
+        sendIdeaBtn.type = "button";
+        sendIdeaBtn.className = "ld-btn ld-btn-blue";
+        sendIdeaBtn.dataset.i18n = "sendToIdea";
+        sendIdeaBtn.textContent = t(node, "sendToIdea");
+        const sendPromptBtn = document.createElement("button");
+        sendPromptBtn.type = "button";
+        sendPromptBtn.className = "ld-btn ld-btn-blue";
+        sendPromptBtn.dataset.i18n = "sendToPrompt";
+        sendPromptBtn.textContent = t(node, "sendToPrompt");
+        sendRow.append(sendIdeaBtn, sendPromptBtn);
+
+        const area = document.createElement("textarea");
+        area.className = "ld-textarea";
+        area.dataset.i18nPh = "descPromptPh";
+        area.placeholder = t(node, "descPromptPh");
+        Object.assign(area.style, {
+            display: "block",
+            width: "100%",
+            maxWidth: "100%",
+            height: "140px",
+            minHeight: "140px",
+            maxHeight: "140px",
+            margin: "0 0 6px",
+            resize: "none",
+            overflow: "auto",
+            boxSizing: "border-box",
+        });
+        area.value = String(widgetValue(node, "prompt", "") || "");
+        area.addEventListener("input", () => {
+            const w = widgetByName(node, "prompt");
+            if (w) w.value = area.value;
+            node.graph?.setDirtyCanvas?.(true);
+        });
+
+        root.append(label, hint, thumb, nameEl, actions, area, sendRow);
+
+        const setStatus = (msg) => {
+            status.textContent = msg || "";
+        };
+        const syncPrompt = () => {
+            const w = widgetByName(node, "prompt");
+            if (w) w.value = area.value;
+        };
+        const clearSendUndo = () => {
+            node._ldSendUndo = null;
+            status.style.cursor = "";
+            status.title = "";
+            status.onclick = null;
+        };
+        const applySendUndoStatus = () => {
+            const u = node._ldSendUndo;
+            if (!u) return;
+            status.textContent = t(node, u.field === "idea" ? "sendIdeaOk" : "sendPromptOk");
+            status.style.cursor = "pointer";
+            status.title = t(node, "undoTitle");
+            status.onclick = () => undoLastSend();
+        };
+        const undoLastSend = () => {
+            const u = node._ldSendUndo;
+            if (!u) return;
+            const nodes = (app.graph && (app.graph._nodes || app.graph.nodes)) || [];
+            const writer = nodes.find((n) => n && n.id === u.writerId) || findDescribeWriter(node);
+            if (!writer) {
+                setStatus(t(node, "sendNeedWriter"));
+                clearSendUndo();
+                return;
+            }
+            setWriterField(writer, u.field, u.prev);
+            clearSendUndo();
+            setStatus(t(node, "undoOk"));
+        };
+        const sendToWriter = (field) => {
+            const text = String(area.value || "").trim();
+            if (!text) {
+                setStatus(t(node, "sendNeedText"));
+                return;
+            }
+            const writer = findDescribeWriter(node);
+            if (!writer) {
+                setStatus(t(node, "sendNeedWriter"));
+                return;
+            }
+            const prev = getWriterField(writer, field);
+            setWriterField(writer, field, String(area.value || ""));
+            node._ldSendUndo = { field: field, writerId: writer.id, prev: prev };
+            applySendUndoStatus();
+        };
+        sendIdeaBtn.addEventListener("click", () => sendToWriter("idea"));
+        sendPromptBtn.addEventListener("click", () => sendToWriter("prompt"));
+        const setArchivo = (info) => {
+            const w = widgetByName(node, "archivo");
+            if (w) w.value = info ? serializeArchivo(info) : "";
+            node.graph?.setDirtyCanvas?.(true, true);
+            refreshThumb();
+        };
+        const currentImageInfo = () => {
+            const connected = findUpstreamLoadImage(node, "image");
+            if (connected) return Object.assign({}, connected, { connected: true });
+            return parseArchivo(widgetValue(node, "archivo", ""));
+        };
+        const refreshThumb = () => {
+            const info = currentImageInfo();
+            const has = !!(info && info.filename);
+            thumb.classList.toggle("has-img", has);
+            const linked = !!(info && info.connected);
+            pickBtn.style.display = linked ? "none" : "";
+            clearBtn.style.display = linked ? "none" : "";
+            thumb.style.cursor = linked ? "default" : "pointer";
+            if (has) {
+                imgEl.src = imageViewUrl(info);
+                imgEl.style.display = "block";
+                ph.style.display = "none";
+                const suffix = info.subfolder ? " (" + info.subfolder + ")" : "";
+                nameEl.textContent = info.connected
+                    ? t(node, "descPromptConnected") + ": " + info.filename
+                    : info.filename + suffix;
+            } else {
+                imgEl.removeAttribute("src");
+                imgEl.style.display = "none";
+                ph.style.display = "block";
+                nameEl.textContent = "";
+            }
+        };
+        const pickFile = () => fileInput.click();
+        thumb.addEventListener("click", (ev) => {
+            if (ev.target === pickBtn || ev.target === clearBtn) return;
+            if (currentImageInfo()?.connected) return;
+            pickFile();
+        });
+        thumb.addEventListener("dragover", (ev) => {
+            ev.preventDefault();
+            if (currentImageInfo()?.connected) return;
+            thumb.classList.add("drag");
+        });
+        thumb.addEventListener("dragleave", () => thumb.classList.remove("drag"));
+        thumb.addEventListener("drop", async (ev) => {
+            ev.preventDefault();
+            thumb.classList.remove("drag");
+            if (currentImageInfo()?.connected) return;
+            const file = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+            if (!file) return;
+            try {
+                setArchivo(await uploadInputImage(file));
+            } catch (err) {
+                setStatus("\u274c " + (err && err.message ? err.message : err || t(node, "uploadFail")));
+            }
+        });
+        fileInput.addEventListener("change", async () => {
+            const file = fileInput.files && fileInput.files[0];
+            fileInput.value = "";
+            if (!file) return;
+            try {
+                setArchivo(await uploadInputImage(file));
+            } catch (err) {
+                setStatus("\u274c " + (err && err.message ? err.message : err || t(node, "uploadFail")));
+            }
+        });
+        pickBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            showImagePicker(pickBtn, async (picked) => {
+                if (picked && picked.upload) {
+                    pickFile();
+                    return;
+                }
+                if (picked && picked.filename) setArchivo(picked);
+            });
+        });
+        clearBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            setArchivo(null);
+        });
+
+        btn.addEventListener("click", async () => {
+            const info = currentImageInfo();
+            if (!info || !info.filename) {
+                setStatus(t(node, "descPromptNeedImage"));
+                return;
+            }
+            const cfgNode = findUpstreamConfig(node);
+            if (cfgNode) maybeAutoSeed(cfgNode);
+            const cfg = readConfigValues(cfgNode) || {
+                url: "http://127.0.0.1:1234",
+                model: AUTO_MODEL,
+                mode: widgetValue(node, "mode", "Krea2 (natural)"),
+                temperature: 0.4,
+                max_tokens: 1200,
+                seed: 0,
+                extra_instructions: "",
+                unload_after: false,
+                idioma: currentIdioma(),
+                descarga_idle_min: 0,
+            };
+            if (!cfgNode) {
+                cfg.mode = widgetValue(node, "mode", "Krea2 (natural)");
+                cfg.idioma = currentIdioma();
+            }
+            btn.disabled = true;
+            setStatus(t(node, "descPromptWorking"));
+            try {
+                const res = await api.fetchApi("/ld_promptwriter/describe_prompt", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        url: cfg.url,
+                        model: cfg.model,
+                        mode: cfg.mode,
+                        temperature: cfg.temperature,
+                        max_tokens: cfg.max_tokens,
+                        seed: cfg.seed,
+                        extra_instructions: cfg.extra_instructions,
+                        idioma: cfg.idioma,
+                        descarga_idle_min: cfg.descarga_idle_min,
+                        unload_after: cfg.unload_after,
+                        image: {
+                            filename: info.filename,
+                            subfolder: info.subfolder || "",
+                            type: info.type || "input",
+                        },
+                    }),
+                });
+                let data = null;
+                try {
+                    data = await res.json();
+                } catch (_e) {
+                    throw new Error("Error de red o el servidor no respondio (" + (res.status || "sin estado") + ").");
+                }
+                if (!data || !data.ok) {
+                    setStatus((data && data.message) || t(node, "descPromptFail"));
+                    return;
+                }
+                area.value = data.prompt || "";
+                const w = widgetByName(node, "prompt");
+                if (w) w.value = area.value;
+                node.graph && node.graph.setDirtyCanvas && node.graph.setDirtyCanvas(true, true);
+                setStatus(t(node, "descPromptOk"));
+            } catch (err) {
+                setStatus("\u274c " + (err && err.message ? err.message : err || t(node, "descPromptFail")));
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        const dom = node.addDOMWidget("ld_desc_prompt_ui", "div", root, { serialize: false, hideOnZoom: false });
+        if (dom) {
+            dom.serialize = false;
+            const host = dom.element || dom.inputEl || root;
+            if (host && host.style) {
+                host.style.width = "100%";
+                host.style.maxWidth = "100%";
+                host.style.boxSizing = "border-box";
+                host.style.overflow = "hidden";
+            }
+            const panelH = () => node._ldDescPanelH || DESCRIBE_PANEL_FALLBACK;
+            dom.computeSize = function (width) { return [width || 200, panelH()]; };
+            dom.getMinHeight = () => panelH();
+            dom.getMaxHeight = () => panelH();
+        }
+        hookDescribeComputeSize(node);
+        scheduleDescribeFit(node);
+        node._ldSyncPrompt = syncPrompt;
+        node._ldRefreshThumb = refreshThumb;
+        node._ldRefreshI18n = () => {
+            label.textContent = t(node, "descPromptLabel");
+            hint.textContent = t(node, "descPromptHint");
+            btn.textContent = t(node, "descPromptBtn");
+            sendIdeaBtn.textContent = t(node, "sendToIdea");
+            sendPromptBtn.textContent = t(node, "sendToPrompt");
+            area.placeholder = t(node, "descPromptPh");
+            ph.textContent = t(node, "thumbPh");
+            pickBtn.title = t(node, "pickTitle");
+            clearBtn.title = t(node, "clearTitle");
+            if (node._ldSendUndo) applySendUndoStatus();
+            refreshThumb();
+            scheduleDescribeFit(node);
+        };
+        node._ldDescPromptUi = true;
+        refreshThumb();
+    };
+
+    installSafeHook(nodeType, "onNodeCreated", function () {
+        ensureUi(this);
+        hookDescribeComputeSize(this);
+        if (!this.size || this.size[0] < 300) {
+            const h = (typeof this.computeSize === "function" && this.computeSize()?.[1]) || 520;
+            if (typeof this.setSize === "function") this.setSize([400, h]);
+            else this.size = [400, h];
+        }
+        scheduleDescribeFit(this);
+    });
+    installSafeHook(nodeType, "onConfigure", function () {
+        repairNodeWidgets(this);
+        ensureUi(this);
+        const saved = String(widgetValue(this, "prompt", "") || "");
+        setTimeout(() => {
+            const panel = (this.widgets || []).find((w) => w && w.name === "ld_desc_prompt_ui");
+            const host = (panel && (panel.element || panel.inputEl)) || null;
+            const box = host && host.querySelector && host.querySelector("textarea");
+            if (box && saved && !String(box.value || "").trim()) box.value = saved;
+            this._ldRefreshThumb && this._ldRefreshThumb();
+            scheduleDescribeFit(this);
+        }, 0);
+    });
+    installSafeHook(nodeType, "onConnectionsChange", function () {
+        this._ldRefreshThumb && this._ldRefreshThumb();
+        ensureUi(this);
+    });
+}
+
+function is_english_ui(node) {
+    try {
+        return String(currentIdioma() || "").toLowerCase().startsWith("en");
+    } catch (_e) {
+        return false;
+    }
+}
+
+function syncDescribirPromptNodes() {
+    const nodes = (app.graph && (app.graph._nodes || app.graph.nodes)) || [];
+    for (const n of nodes) {
+        const typ = String((n && (n.type || n.comfyClass)) || "");
+        if (typ === "LD_DescribirComoPrompt" && n._ldSyncPrompt) n._ldSyncPrompt();
+    }
+}
+
 app.registerExtension({
     name: "LD.LMStudioPromptWriter",
 
@@ -4927,6 +6069,8 @@ app.registerExtension({
             setupGuardarImagen(nodeType);
         } else if (name === "LD_ImagenBaseI2I") {
             setupImagenBaseI2I(nodeType);
+        } else if (name === "LD_DescribirComoPrompt") {
+            setupDescribirComoPrompt(nodeType);
         } else if (name === OLD_WRITER) {
             setupOldWriter(nodeType);
         }
@@ -4953,6 +6097,7 @@ app.registerExtension({
                 repairAllGraphWidgets(app.graph);
                 await prepareAllWritersForQueue();
                 syncAllWriterPanelsToWidgets();
+                syncDescribirPromptNodes();
                 return orig(...args);
             };
         }
@@ -4961,6 +6106,7 @@ app.registerExtension({
             const origGTP = app.graphToPrompt.bind(app);
             app.graphToPrompt = async function (...args) {
                 syncAllWriterPanelsToWidgets();
+                syncDescribirPromptNodes();
                 const result = await origGTP(...args);
                 return injectWriterPromptsIntoGraphPrompt(result);
             };

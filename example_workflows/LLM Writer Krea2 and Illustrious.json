@@ -1,8 +1,8 @@
 {
   "id": "6aa22b9a-045a-471b-866c-f5ce8df390f2",
   "revision": 0,
-  "last_node_id": 198,
-  "last_link_id": 513,
+  "last_node_id": 199,
+  "last_link_id": 514,
   "nodes": [
     {
       "id": 152,
@@ -19,7 +19,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -108,7 +108,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 21,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -224,7 +224,7 @@
       "flags": {
         "pinned": true
       },
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -366,7 +366,7 @@
       },
       "widgets_values": [
         "enable",
-        238712869449310,
+        812619471180149,
         "randomize",
         8,
         1,
@@ -378,7 +378,7 @@
       ],
       "widgets_values_named": {
         "add_noise": "enable",
-        "noise_seed": 238712869449310,
+        "noise_seed": 812619471180149,
         "control_after_generate": "randomize",
         "steps": 8,
         "cfg": 1,
@@ -532,7 +532,7 @@
       "flags": {
         "pinned": true
       },
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -589,7 +589,7 @@
         true
       ],
       "widgets_values_named": {
-        "filename_prefix": "pornmaster",
+        "filename_prefix": "Krea2",
         "guardado_automatico": true
       },
       "color": "#1e4a56",
@@ -765,7 +765,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -809,7 +809,7 @@
       ],
       "size": [
         1320,
-        1465
+        1488
       ],
       "flags": {
         "pinned": true
@@ -2065,6 +2065,16 @@
             "name": "img8_pelo"
           },
           "link": null
+        },
+        {
+          "localized_name": "pasadas",
+          "name": "pasadas",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "pasadas"
+          },
+          "link": null
         }
       ],
       "outputs": [],
@@ -2119,7 +2129,8 @@
         "ld_vista_es": "",
         "ld_vista_es_dirty": false,
         "ld_pos_dirty": false,
-        "ld_desc_meta": {}
+        "ld_desc_meta": {},
+        "ld_vista_src": ""
       },
       "widgets_values": [
         "",
@@ -2129,7 +2140,7 @@
         "",
         "",
         "(como la referencia)",
-        false,
+        true,
         false,
         false,
         false,
@@ -2159,11 +2170,11 @@
         "",
         "1",
         "(Automático - decide el LLM)",
+        true,
         false,
         false,
         false,
-        false,
-        false,
+        true,
         false,
         false,
         false,
@@ -2374,7 +2385,8 @@
         "img8_colores": false,
         "img8_expresion": false,
         "img8_iluminacion": false,
-        "img8_pelo": false
+        "img8_pelo": false,
+        "pasadas": "1 pasada"
       },
       "color": "#203c40",
       "bgcolor": "#1b222b"
@@ -2394,7 +2406,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -2456,7 +2468,7 @@
       ],
       "size": [
         400,
-        820
+        658
       ],
       "flags": {
         "pinned": true
@@ -2465,73 +2477,123 @@
       "mode": 0,
       "inputs": [
         {
+          "label": "img 1",
           "localized_name": "image_1",
           "name": "image_1",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            10,
+            54
+          ],
           "link": null
         },
         {
+          "label": "img 2",
           "localized_name": "image_2",
           "name": "image_2",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            90,
+            14
+          ],
           "link": null
         },
         {
+          "label": "img 3",
           "localized_name": "image_3",
           "name": "image_3",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            90,
+            34
+          ],
           "link": null
         },
         {
+          "label": "img 4",
           "localized_name": "image_4",
           "name": "image_4",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            90,
+            54
+          ],
           "link": null
         },
         {
+          "label": "img 5",
           "localized_name": "image_5",
           "name": "image_5",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            149,
+            14
+          ],
           "link": null
         },
         {
+          "label": "img 6",
           "localized_name": "image_6",
           "name": "image_6",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            149,
+            34
+          ],
           "link": null
         },
         {
+          "label": "img 7",
           "localized_name": "image_7",
           "name": "image_7",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            149,
+            54
+          ],
           "link": null
         },
         {
+          "label": "img 8",
           "localized_name": "image_8",
           "name": "image_8",
           "shape": 7,
           "type": "IMAGE",
+          "pos": [
+            208,
+            14
+          ],
           "link": null
         },
         {
+          "label": "triggers",
           "localized_name": "lora_triggers",
           "name": "lora_triggers",
           "shape": 7,
           "type": "STRING",
+          "pos": [
+            10,
+            14
+          ],
           "link": 474
         },
         {
+          "label": "emb neg",
           "localized_name": "neg_embeddings",
           "name": "neg_embeddings",
           "shape": 7,
           "type": "STRING",
+          "pos": [
+            10,
+            34
+          ],
           "link": 495
         },
         {
@@ -2623,6 +2685,16 @@
             "name": "descarga_idle_min"
           },
           "link": null
+        },
+        {
+          "localized_name": "pasadas",
+          "name": "pasadas",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "pasadas"
+          },
+          "link": null
         }
       ],
       "outputs": [
@@ -2631,7 +2703,8 @@
           "name": "config",
           "type": "LD_LMSTUDIO_CFG",
           "links": [
-            472
+            472,
+            514
           ]
         },
         {
@@ -2673,7 +2746,7 @@
         }
       },
       "widgets_values": [
-        "http://127.0.0.1:1234",
+        "http://127.0.0.1:1235",
         "(auto: el cargado)",
         "Krea2 (natural)",
         0.7,
@@ -2684,20 +2757,21 @@
         "",
         "Español",
         0,
-        "1 pasada"
+        "2 pasadas"
       ],
       "widgets_values_named": {
         "url": "http://127.0.0.1:1235",
         "model": "(auto: el cargado)",
         "mode": "Krea2 (natural)",
         "temperature": 0.7,
-        "max_tokens": 1200,
+        "max_tokens": 2048,
         "seed": 0,
         "control_after_generate": "fixed",
         "unload_after": true,
         "extra_instructions": "",
         "idioma": "Español",
-        "descarga_idle_min": 0
+        "descarga_idle_min": 0,
+        "pasadas": "2 pasadas"
       },
       "color": "#203c40",
       "bgcolor": "#1b222b"
@@ -2805,18 +2879,18 @@
         }
       },
       "widgets_values": [
-        "1:1",
+        "3:4",
         "1.08 MP",
         false,
         1,
-        "1040 × 1040"
+        "896 × 1200"
       ],
       "widgets_values_named": {
-        "proporcion": "1:1",
+        "proporcion": "3:4",
         "megapixeles": "1.08 MP",
         "intercambiar": false,
         "batch": 1,
-        "resultado": "1040 × 1040"
+        "resultado": "896 × 1200"
       },
       "color": "#1e4a56",
       "bgcolor": "#1b222b"
@@ -3045,7 +3119,7 @@
         "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M\n  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).\n  Más rápido: la versión 4B del mismo modelo.\n• Descargá también su mmproj: sin mmproj el modelo no ve\n  las imágenes y no puede describirlas.\n• Usá Instruct, no Thinking. Evitá modelos de razonamiento o MTP:\n  suelen devolver prompts vacíos o cortados.\n• En el nodo Config elegí el modelo fijo (no \"auto: el cargado\").\n• max_tokens recomendado: 2048.\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."
       ],
       "widgets_values_named": {
-        "text": "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: qwen_qwen3-vl-8b-instruct\n  (Qwen3-VL 8B Instruct, con visión: hace falta para describir imágenes).\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."
+        "text": "Configuración\n\nKrea2\n• UNET: Krea2-Turbo-HD-V1-int8_convrot.safetensors\n• CLIP: qwen3vl_4b_fp8_scaled.safetensors (tipo krea2)\n• VAE: qwen_image_vae.safetensors\n\nLoRAs\n• Los LoRA de Krea2 no sirven en Illustrious y al revés.\n  Cuando cambies de motor, cambiá también los LoRA del loader\n  (se usa un solo Lora Loader para las dos ramas).\n\nIllustrious\n• Checkpoint: waiIllustriousSDXL_v170.safetensors\n  El archivo tiene que estar en ComfyUI/models/checkpoints\n  y seleccionarse en el nodo Load Checkpoint.\n  El CLIP y el VAE vienen incluidos; no hace falta cargarlos aparte.\n• Alternativa realista: illustriousRealism_ilXL10V40.safetensors\n  (estilo más realista; también va en ComfyUI/models/checkpoints\n  y se elige en el mismo Load Checkpoint).\n• Sampler: euler ancestral (euler_a), 28 pasos, CFG 5.5, ~1 MP (p. ej. 2:3).\n• Embeddings negativos: van en ComfyUI/models/embeddings\n  y se eligen en el nodo Embeddings negativos (LD)\n  (se agregan al prompt negativo de Illustrious).\n\nLLM (LM Studio)\n• Recomendado: Qwen3-VL-8B-Instruct abliterated, GGUF Q4_K_M\n  (repo noctrex/Huihui-Qwen3-VL-8B-Instruct-abliterated-GGUF).\n  Más rápido: la versión 4B del mismo modelo.\n• Descargá también su mmproj: sin mmproj el modelo no ve\n  las imágenes y no puede describirlas.\n• Usá Instruct, no Thinking. Evitá modelos de razonamiento o MTP:\n  suelen devolver prompts vacíos o cortados.\n• En el nodo Config elegí el modelo fijo (no \"auto: el cargado\").\n• max_tokens recomendado: 2048.\n• Activá el servidor local de LM Studio (pestaña Developer / Local Server)\n  y usá esa URL en el nodo Config.\n\nNodos necesarios\n\n• LD PromptWriter (LM Studio) — este pack\n• ComfyUI-Lora-Manager (Lora Loader)\n• ComfyUI-Custom-Scripts (PlaySound, opcional)\nEl resto de los nodos son de ComfyUI (core).\n\nInstalación: ComfyUI Manager → Install via Git URL\n(o git clone del repo dentro de ComfyUI/custom_nodes) y reiniciá."
       },
       "color": "#344029",
       "bgcolor": "#1b222b"
@@ -3065,7 +3139,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 15,
+      "order": 16,
       "mode": 2,
       "inputs": [
         {
@@ -3132,7 +3206,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 16,
+      "order": 17,
       "mode": 2,
       "inputs": [
         {
@@ -3318,7 +3392,7 @@
       "flags": {
         "pinned": true
       },
-      "order": 18,
+      "order": 19,
       "mode": 2,
       "inputs": [
         {
@@ -3430,7 +3504,7 @@
         }
       },
       "widgets_values": [
-        345989590171445,
+        953401005781402,
         "randomize",
         28,
         5.5,
@@ -3439,7 +3513,7 @@
         1
       ],
       "widgets_values_named": {
-        "seed": 345989590171445,
+        "seed": 953401005781402,
         "control_after_generate": "randomize",
         "steps": 28,
         "cfg": 5.5,
@@ -3465,7 +3539,7 @@
         "collapsed": true,
         "pinned": true
       },
-      "order": 20,
+      "order": 21,
       "mode": 2,
       "inputs": [
         {
@@ -3520,7 +3594,7 @@
       "flags": {
         "pinned": true
       },
-      "order": 22,
+      "order": 23,
       "mode": 2,
       "inputs": [
         {
@@ -3675,8 +3749,8 @@
       "id": 195,
       "type": "LD_ImagenBaseI2I",
       "pos": [
-        1173.4567382812502,
-        965.2749999999996
+        1178.458626339748,
+        1323.792964900521
       ],
       "size": [
         400,
@@ -3845,9 +3919,109 @@
         "Especificaciones\n\nPasadas (en el nodo Config, debajo de Actividad del LLM)\n• Valen para todos los Writer conectados a ese Config.\n• 1 pasada: Generar describe las imágenes que hagan falta y\n  escribe el prompt.\n• 2 pasadas: en el mismo Generar, una segunda llamada revisa el\n  prompt con todas las especificaciones (imágenes, chips, ropa,\n  participantes, estilo, cámara, LoRA) y lo corrige o mejora.\n  Tarda más. La actividad muestra Pasada 1/2 y 2/2.\n• Si el modelo responde muy corto, se le pide el prompt completo\n  otra vez automáticamente.\n• max_tokens recomendado en Config: 2048.\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas a su valor inicial (Estilo como\n  la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas),\n  LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n• Cada descripción queda atada a su foto y a sus chips: si cambiás\n  o sacás la foto, o cambiás los chips, se borra y el próximo Generar\n  la vuelve a hacer. El ✖ de cada descripción la borra a mano.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión.\n\nSeed (nodo Config)\n• 🎲 Seed aleatoria pone una seed nueva una vez.\n• Con el interruptor \"Aleatoria en cada generación\" prendido,\n  Generar, Modificar y Encolar usan una seed nueva cada vez;\n  apagado, la seed queda fija."
       ],
       "widgets_values_named": {
-        "text": "Especificaciones\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas (Estilo, Cámara, N° de personas,\n  Ropa) a su valor por defecto. No toca Config, LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n\nVista en español\n• Primero se genera el prompt en inglés. Después, una llamada aparte\n  traduce al español el inglés FINAL (con los triggers de LoRA).\n• Podés editar el español: antes de generar o encolar se traduce\n  de vuelta al inglés.\n• Con Español es una llamada extra al LLM (un poco más lento).\n• Si agregás un LoRA después de generar, apretá Generar de nuevo\n  para que el español lo incluya.\n• En Illustrious se muestra una explicación de los tags.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión."
+        "text": "Especificaciones\n\nPasadas (en el nodo Config, debajo de Actividad del LLM)\n• Valen para todos los Writer conectados a ese Config.\n• 1 pasada: Generar describe las imágenes que hagan falta y\n  escribe el prompt.\n• 2 pasadas: en el mismo Generar, una segunda llamada revisa el\n  prompt con todas las especificaciones (imágenes, chips, ropa,\n  participantes, estilo, cámara, LoRA) y lo corrige o mejora.\n  Tarda más. La actividad muestra Pasada 1/2 y 2/2.\n• Si el modelo responde muy corto, se le pide el prompt completo\n  otra vez automáticamente.\n• max_tokens recomendado en Config: 2048.\n\nPrompt positivo\n• Si el recuadro positivo tiene texto, al ejecutar se usa tal cual\n  (no llama al LLM). Si está vacío, se genera.\n• Los trigger words de LoRA se agregan si faltan.\n• Generar describe antes las imágenes sin descripción al día\n  (solo con los chips activos).\n• Modificar: aplica un cambio puntual al prompt actual.\n• Limpiar: borra idea, prompts, las imágenes del Writer, sus chips\n  y descripciones, y vuelve las listas a su valor inicial (Estilo como\n  la referencia, Cámara y Participantes en automático, Ropa LoRA). No toca Config (ni las Pasadas),\n  LoRA ni la imagen i2i.\n\nImágenes del Writer (chips)\n• Chips: Accesorios, Acción, Cámara, Colores, Estilo, Expresión,\n  Fondo, Iluminación, Pelo, Persona, Pose, Ropa.\n• Cada imagen aporta solo los aspectos con el chip prendido;\n  sin ningún chip se usa todo (menos Cámara).\n• Las imágenes con Persona se asignan en orden a las personas.\n• Pelo, Expresión o Accesorios de otra imagen se aplican a la\n  persona elegida sin cambiar su identidad.\n• Iluminación: solo la luz (hora, dirección, calidad, temperatura).\n  Colores: solo la paleta. Accesorios: joyas, anteojos, objetos\n  en la mano (aparte de la ropa; con Desnudo se mantienen).\n• El chip Cámara gana sobre el selector Cámara.\n• Cada descripción queda atada a su foto y a sus chips: si cambiás\n  o sacás la foto, o cambiás los chips, se borra y el próximo Generar\n  la vuelve a hacer. El ✖ de cada descripción la borra a mano.\n\nRopa (selector del Writer)\n• LoRA: la ropa de los triggers del LoRA (sin triggers decide el LLM).\n• Foto: gana la ropa de la imagen con el chip Ropa. Se elige solo al\n  prender un chip Ropa y vuelve a LoRA al apagarlos (o con Limpiar).\n• Desnudo: sin ropa; ignora la ropa de imágenes y LoRA.\n  Nunca se cambia solo.\n\nImagen de referencia (i2i)\n• La IA no ve esta imagen: solo es el punto de partida del render.\n• Sin imagen: texto a imagen (denoise 1). Con imagen: se recorta\n  al Tamaño y se usa con el denoise (0.6 por defecto).\n• Con denoise bajo se conservan su ropa, pose y colores aunque el\n  prompt diga otra cosa (también con Desnudo). Subilo a 0.75–0.9\n  para que gane el prompt (se parece menos a la foto).\n• Para copiar ropa o pose, cargá la misma foto en una imagen\n  del Writer con los chips Ropa / Pose.\n• Limpiar no la borra: usá su ✖.\n\nActividad del LLM\n• Está en el nodo Config, debajo de Probar conexión.\n\nSeed (nodo Config)\n• 🎲 Seed aleatoria pone una seed nueva una vez.\n• Con el interruptor \"Aleatoria en cada generación\" prendido,\n  Generar, Modificar y Encolar usan una seed nueva cada vez;\n  apagado, la seed queda fija."
       },
       "color": "#344029",
+      "bgcolor": "#1b222b"
+    },
+    {
+      "id": 199,
+      "type": "LD_DescribirComoPrompt",
+      "pos": [
+        1174.7089767052057,
+        771.7929649005209
+      ],
+      "size": [
+        400,
+        528
+      ],
+      "flags": {
+        "pinned": true
+      },
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "config",
+          "name": "config",
+          "type": "LD_LMSTUDIO_CFG",
+          "link": 514
+        },
+        {
+          "localized_name": "image",
+          "name": "image",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "prompt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "archivo",
+          "name": "archivo",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "archivo"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "prompt",
+          "name": "prompt",
+          "type": "STRING",
+          "links": null
+        },
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfyui-ld-promptwriter-lmstudio",
+        "ver": "8bbf609b16470deb785d188b74135e254546c6f8",
+        "Node name for S&R": "LD_DescribirComoPrompt",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "mode": true,
+            "prompt": true,
+            "archivo": true
+          },
+          "version": "8.0.1",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Krea2 (natural)",
+        "",
+        ""
+      ],
+      "widgets_values_named": {
+        "mode": "Krea2 (natural)",
+        "prompt": "",
+        "archivo": ""
+      },
+      "color": "#203c40",
       "bgcolor": "#1b222b"
     }
   ],
@@ -4155,6 +4329,14 @@
       195,
       4,
       "VAE"
+    ],
+    [
+      514,
+      178,
+      0,
+      199,
+      0,
+      "LD_LMSTUDIO_CFG"
     ]
   ],
   "groups": [
@@ -4193,7 +4375,7 @@
         1131,
         0,
         1830,
-        1638
+        1823.792964900521
       ],
       "color": "#203c40",
       "flags": {
@@ -4246,10 +4428,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 0.6830134553650705,
+      "scale": 1.2100000000000002,
       "offset": [
-        16.21505088460079,
-        293.495842616231
+        -776.0570098701718,
+        141.40716107835675
       ]
     },
     "frontendVersion": "1.53.10",

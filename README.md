@@ -4,10 +4,11 @@
 
 ComfyUI nodes that connect to a local **LM Studio** server and turn an idea (or up to eight reference images) into a ready-to-use image prompt for **Krea2** (natural language) or **Illustrious** (Danbooru-style tags).
 
-Two nodes work together:
+These nodes work together:
 
 1. **LM Studio Config (LD):** URL, model, Krea2 / Illustrious mode, temperature, `max_tokens`, seed, `unload_after` (on by default), extra instructions and **LLM passes**. Buttons: **🔄 Refresh models**, **Test connection**, **🎲 Random seed** and a **Random on every run** switch. Below Test connection there is the **LLM activity** log (live step-by-step: connection, model load/reuse, each image description, passes, timings, unload, errors). The references (`image_1`…`image_8`), `lora_triggers` and, in Illustrious, `neg_embeddings` connect here; the inputs are laid out in 2–3 rows, connected ones first. Outputs: `config` (a single wire to the Writer), **positive** and **negative**.
-2. **LM Studio Prompt Writer (LD):** the idea, **✍️ Generate prompt**, **✏️ Modify** with its **Changes** box, **🧹 Clear**, the editable positive (English) and negative boxes, and the 8 reference images. Its only visible input is `config`.
+2. **LM Studio Prompt Writer (LD):** the idea, **✍️ Generate prompt**, **✨ Improve idea**, **✏️ Modify** with its **Changes** box, **🧹 Clear**, the editable positive (English) and negative boxes, and the 8 reference images. Its only visible input is `config`.
+3. **Describir como prompt (LD):** load or connect an image and the vision model writes a full, editable prompt (Krea2 or Illustrious). **Enviar a idea** / **Enviar a prompt** copy it to the Writer, with one-level undo. It honors `unload_after` from Config.
 
 ## How to use
 
@@ -16,6 +17,7 @@ Two nodes work together:
 3. Write an idea and/or load reference images, and turn on the chips for what to take from each one.
 4. Press **✍️ Generate prompt**, check the text and queue the workflow.
 5. For a small change (e.g. "make the hair red"), type it in **Changes** and press **✏️ Modify**: only that is changed.
+6. **✨ Improve idea** (next to Generate) rewrites the idea so it is clearer (**Improve**) or points out problems and then improves it (**Critique**), without turning it into the final prompt. Optional checkboxes (saved with the node): **Include photo details**, **Include LoRAs**, **Include reference photos**.
 
 If the **positive** box has text, running the workflow uses the current text as is and the LLM is not called. Clear it to generate a new one. LoRA trigger words are added if missing.
 
@@ -26,6 +28,7 @@ If the **positive** box has text, running the workflow uses the current text as 
   - *Camera*: framing; the Camera chip of an image wins over it; on Automatic the LLM decides.
   - *Clothing*: **LoRA** (clothing from the LoRA triggers; without triggers the LLM decides), **Photo** (clothing from the image with the Clothing chip wins; picked automatically when you turn a Clothing chip on and back to LoRA when they are all off) or **Nude** (no clothing; ignores clothing from images and LoRAs; never changed automatically).
   - *Participants*: 1–8, **Auto (LLM decides)** or Custom. You don't need one image per person.
+- **✨ Improve idea** (next to **✍️ Generate prompt**): **Improve** rewrites the idea so it is clearer and more concrete; **Critique** points out problems and then improves it. It does not write the final prompt (use Generate for that). Checkboxes, saved with the node: **Include photo details** (on by default), **Include LoRAs** (on) and **Include reference photos** (off). One-level undo. Honors `unload_after`.
 - **🧹 Clear** empties the idea, prompts, Writer images, chips and descriptions, and resets the dropdowns (Style as the reference, Camera and Participants automatic, Clothing LoRA). It does not touch Config, the LoRAs or the i2i image.
 
 ## Reference images and chips
@@ -46,6 +49,7 @@ If the model has no vision (no mmproj) and you send an image, the Writer warns y
 
 - **1 pass**: describes the images that need it and writes the prompt.
 - **2 passes**: in the same Generate, a second call reviews the prompt against all the settings (images, chips, clothing, participants, style, camera, LoRA) and fixes or improves it. Slower. The activity shows Pass 1/2 and 2/2.
+- The idea is merged with your settings, people and camera: it no longer overrides them. Pass 2 uses refine prompts that check the result against those settings.
 - If the model answers too briefly, it is automatically asked once for the complete prompt.
 
 The setting applies to every Writer connected to that Config.
@@ -62,7 +66,7 @@ The setting applies to every Writer connected to that Config.
 - Pick a **fixed model** in Config instead of `(auto: el cargado)`.
 - `max_tokens`: **2048** (default for new Config nodes).
 
-`unload_after` (on by default) unloads the model after Generate / Modify / running the workflow, freeing VRAM for the image model; Describe does not unload. `descarga_idle_min` (0 = off) unloads after N idle minutes.
+`unload_after` (on by default) unloads the model after Generate, Modify, **Improve idea**, **Describir como prompt** and running the workflow, freeing VRAM for the image model. The per-image **🔄 Describe** on the Writer does not unload. `descarga_idle_min` (0 = off) unloads after N idle minutes.
 
 ## Krea2 and Illustrious
 
